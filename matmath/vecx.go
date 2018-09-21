@@ -197,11 +197,12 @@ func (self *VECX) RightMul_InPlace(other *MATX) {
 	return
 }
 
+// self * other, the so-called vec dot
 func (self *VECX) Dot(other *VECX) float32 {
-	if self.dimension != other.dimension {
-		panic("cannot dot two vector with different dimensions")
+	if !self.checkHomotype(other) {
+		panic("two vec in-homotype")
 	}
-	var sum float32 = 0
+	var sum float32
 	for i := 0; i < self.dimension; i++ {
 		sum += self.data[i] * other.data[i]
 	}
