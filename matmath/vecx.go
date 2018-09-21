@@ -196,3 +196,14 @@ func (self *VECX) RightMul_InPlace(other *MATX) {
 	}
 	return
 }
+
+func (self *VECX) Dot(other *VECX) float32 {
+	if self.dimension != other.dimension {
+		panic("cannot dot two vector with different dimensions")
+	}
+	var sum float32 = 0
+	for i := 0; i < self.dimension; i++ {
+		sum += self.data[i] * other.data[i]
+	}
+	return sum
+}

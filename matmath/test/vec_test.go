@@ -120,3 +120,30 @@ func TestVecInterpolation(t *testing.T) {
 		t.Error("wrong")
 	}
 }
+
+func TestVecDot(t *testing.T) {
+	vec3_1 := matmath.GetVECX(3)
+	vec3_1.SetIndexValue(0, 1)
+	vec3_1.SetIndexValue(1, 1)
+	vec3_1.SetIndexValue(2, 1)
+
+	vec3_2 := matmath.GetVECX(3)
+	vec3_2.SetIndexValue(0, 2)
+	vec3_2.SetIndexValue(1, 2)
+	vec3_2.SetIndexValue(2, 2)
+
+	cases := []struct {
+		v1   *matmath.VECX
+		v2   *matmath.VECX
+		want float32
+	}{
+		{vec3_1, vec3_2, 6},
+	}
+
+	for _, c := range cases {
+		got := c.v1.Dot(c.v2)
+		if got != c.want {
+			t.Error("wrong")
+		}
+	}
+}
