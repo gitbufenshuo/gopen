@@ -1,0 +1,40 @@
+package asset_manager
+
+import "errors"
+
+var (
+	ErrNameDup        = errors.New("ErrNameDup")
+	ErrTypeNotSupport = errors.New("ErrTypeNotSupport")
+)
+
+type AsssetManager struct {
+	nowID          int
+	assets_by_name map[string]*Asset
+	assets_by_id   map[int]*Asset
+}
+
+func NewAsssetManager() *AsssetManager {
+	var am AsssetManager
+	return &am
+}
+func (am *AsssetManager) FindByName(name string) *Asset {
+	return nil
+}
+func (am *AsssetManager) Register(name string, as *Asset) error {
+	if _as := am.FindByName(name); _as != nil {
+		return ErrNameDup
+	}
+	am.assets_by_name[name] = as
+	return nil
+}
+
+// will assign id field
+func (am *AsssetManager) Load(as *Asset) {
+	err := as.Load()
+	if err == nil {
+		as.ID = am.nowID + 1
+		am.assets_by_id[as.ID] = as
+		am.nowID++
+	}
+	return
+}
