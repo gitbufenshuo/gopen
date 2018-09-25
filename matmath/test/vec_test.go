@@ -1,6 +1,7 @@
 package test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/gitbufenshuo/gopen/matmath"
@@ -142,7 +143,7 @@ func TestVecDot(t *testing.T) {
 
 	for _, c := range cases {
 		got := c.v1.Dot(c.v2)
-		if got != c.want {
+		if math.Abs(float64(got-c.want)) > 0.00001 {
 			t.Error("wrong")
 		}
 	}
