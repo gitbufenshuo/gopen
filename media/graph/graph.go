@@ -21,7 +21,7 @@ func Init(windowWidth, windowHeight int) {
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	window, err := glfw.CreateWindow(windowWidth, windowHeight, "Cube", nil, nil)
+	window, err := glfw.CreateWindow(windowWidth, windowHeight, "Hello-Gopen", nil, nil)
 	if err != nil {
 		panic(err)
 	}
