@@ -76,3 +76,6 @@ func (t *Texture) Upload() {
 		gl.UNSIGNED_BYTE,
 		gl.Ptr(t.Pixels))
 }
+func (t *Texture) Active() {
+
+}

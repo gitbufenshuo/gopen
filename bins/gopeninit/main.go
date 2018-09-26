@@ -25,24 +25,20 @@ var defaultTriangleModel = `
 var defaultMimimalVertexShader = `
 #version 330
 
-in vec3 vert;
-
-out vec3 vert_copy;
+layout (location = 0) in vec3 vert;
 
 void main() {
-    vert_copy = vert;
-    gl_Position = projection * camera * model * vec4(vert, 1);
+    gl_Position = vec4(vert, 1.0);
 }
 `
 var defaultMimimalFragmentShader = `
 #version 330
 
-in vec3 vert_copy;
-
 out vec4 outputColor;
 
+
 void main() {
-    outputColor = vec4(vert_copy.xyz, 1);
+    outputColor = vec4(0, 0, 0, 1.0);
 }
 `
 

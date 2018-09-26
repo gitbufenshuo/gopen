@@ -3,18 +3,20 @@ package game
 import (
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"path"
 	"time"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
+	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 type GlobalInfo struct {
 	AssetManager *asset_manager.AsssetManager
+	gameobjects  map[int]*GameObject
+	nowID        int
 	width        int
 	height       int
 	title        string
@@ -25,7 +27,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.width = windowWidth
 	globalInfo.height = windowHeight
 	globalInfo.title = title
-
+	globalInfo.gameobjects = make(map[int]*GameObject)
 	return globalInfo
 }
 func (gi *GlobalInfo) StartGame(mode string) {
@@ -52,25 +54,63 @@ func (gi *GlobalInfo) StartGame(mode string) {
 
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	fmt.Println("OpenGL version", version)
-	var r float32
 	var frame_number int
 	gi.initAssetManager()
-	gi.AssetManager.PrintAllAsset()
-	if mode == "test" {
+	if mode == "test_init" {
+		gi.AssetManager.PrintAllAsset()
 		return
 	}
+	one := NewGameObject()
+	one.ModelAsset = gi.AssetManager.FindByName("triangle")
+	one.ShaderAsset = gi.AssetManager.FindByName("minimal_shader")
+	gl.ClearColor(1, 1, 1, 1)
+	gi.AddGameObject(one)
+	gl.Enable(gl.DEPTH_TEST)
 	for !window.ShouldClose() {
 		time.Sleep(time.Millisecond * 30)
-		r = float32(math.Sin(math.Pi*float64((frame_number*2)%1000)/500))/2 + 0.5
-		fmt.Println(r)
-		gl.ClearColor(r, 0, 0, 1)
+		// r = float32(math.Sin(math.Pi*float64((frame_number*2)%1000)/500))/2 + 0.5
+		// fmt.Println(r)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		///////////////////////////////////////////////////
+		// the very update every frame
+		gi.update()
+		///////////////////////////////////////////////////
 		// Maintenance
 		window.SwapBuffers()
 		glfw.PollEvents()
 		frame_number++
 	}
 
+}
+func (gi *GlobalInfo) update() {
+	for _, gb := range gi.gameobjects {
+		fmt.Println("update", time.Now().Unix())
+		gi.draw(gb)
+	}
+}
+func (gi *GlobalInfo) draw(gb *GameObject) {
+	if !gb.readyForDraw {
+		// set something
+		fmt.Println("set something")
+		gb.ModelAsset.Resource.Upload()
+		gb.ShaderAsset.Resource.Upload()
+		gb.readyForDraw = true
+	}
+	// change context
+	gb.ShaderAsset.Resource.Active()
+	gb.ModelAsset.Resource.Active()
+	// draw
+	modelResource := gb.ModelAsset.Resource.(*resource.Model)
+	// vertexNum := len(modelResource.Indices)
+	fmt.Println(modelResource.Indices)
+	fmt.Println(modelResource.Vertices)
+	// gl.DrawElements(gl.TRIANGLES, 3, gl.UNSIGNED_INT, gl.PtrOffset(0))
+	gl.DrawArrays(gl.TRIANGLES, 0, 3)
+}
+func (gi *GlobalInfo) AddGameObject(gb *GameObject) {
+	gb.ID = gi.nowID + 1
+	gi.nowID++
+	gi.gameobjects[gb.ID] = gb
 }
 
 // init assetmanager and some default assets

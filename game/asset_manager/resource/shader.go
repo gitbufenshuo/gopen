@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/go-gl/gl/v2.1/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type ShaderProgram struct {
@@ -89,6 +89,7 @@ func (sp *ShaderProgram) Upload() {
 	gl.AttachShader(program, vertexShader)
 	gl.AttachShader(program, fragmentShader)
 	gl.LinkProgram(program)
+	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 
 	var status int32
 	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
@@ -103,4 +104,8 @@ func (sp *ShaderProgram) Upload() {
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
 	sp.glProgram = program
+}
+func (m *ShaderProgram) Active() {
+	fmt.Println("m.glProgram", m.glProgram)
+	gl.UseProgram(m.glProgram)
 }

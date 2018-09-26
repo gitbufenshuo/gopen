@@ -2,7 +2,7 @@ package asset_manager
 
 import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/go-gl/gl/v2.1/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type AssetType string
@@ -13,6 +13,11 @@ var (
 	AssetTypeModel   AssetType = "model"
 )
 
+type Resource interface {
+	Upload()
+	Active()
+}
+
 // Asset is where you can get a resource which is the real thing to use.
 // When you get a resource, you don't need a asset.
 type Asset struct {
@@ -21,7 +26,7 @@ type Asset struct {
 	Name     string
 	Type     AssetType
 	Data     interface{} // type-dependant
-	Resource interface{} // type-dependant
+	Resource Resource    // type-dependant
 }
 
 type TextureDataType struct {
