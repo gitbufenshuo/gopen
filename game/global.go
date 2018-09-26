@@ -28,7 +28,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 
 	return globalInfo
 }
-func (gi *GlobalInfo) StartGame() {
+func (gi *GlobalInfo) StartGame(mode string) {
 	if err := glfw.Init(); err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
 	}
@@ -56,7 +56,9 @@ func (gi *GlobalInfo) StartGame() {
 	var frame_number int
 	gi.initAssetManager()
 	gi.AssetManager.PrintAllAsset()
-	return
+	if mode == "test" {
+		return
+	}
 	for !window.ShouldClose() {
 		time.Sleep(time.Millisecond * 30)
 		r = float32(math.Sin(math.Pi*float64((frame_number*2)%1000)/500))/2 + 0.5

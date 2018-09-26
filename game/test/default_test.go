@@ -8,5 +8,5 @@ import (
 
 func TestGlobalInit(t *testing.T) {
 	gi := game.NewGlobalInfo(600, 800, "hello-gopen")
-	gi.StartGame()
+	gi.StartGame("test")
 }
