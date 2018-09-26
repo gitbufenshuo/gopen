@@ -9,6 +9,7 @@ type AssetType string
 
 var (
 	AssetTypeTexture AssetType = "texture"
+	AssetTypeShader  AssetType = "shaderprogram"
 )
 
 // Asset is where you can get a resource which is the real thing to use.
@@ -31,6 +32,10 @@ type TextureDataType struct {
 	FlipY       bool
 	GenMipMaps  bool
 }
+type ShaderDataType struct {
+	VPath string
+	FPath string
+}
 
 func NewAsset(name string, data interface{}) *Asset {
 	var as Asset
@@ -51,6 +56,10 @@ func (as *Asset) Load() error {
 		_t.GenMipMaps = _data.GenMipMaps
 		_t.FlipY = _data.FlipY
 		_t.ReadFromFile(_data.FilePath)
+	case AssetTypeShader:
+		_data := as.Data.(*ShaderDataType)
+		_t := resource.NewShaderProgram()
+		_t.ReadFromFile(_data.VPath, _data.FPath)
 	default:
 		return ErrTypeNotSupport
 	}
