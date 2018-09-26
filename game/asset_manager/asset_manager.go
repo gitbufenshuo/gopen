@@ -17,6 +17,8 @@ type AsssetManager struct {
 
 func NewAsssetManager() *AsssetManager {
 	var am AsssetManager
+	am.assets_by_name = make(map[string]*Asset)
+	am.assets_by_id = make(map[int]*Asset)
 	return &am
 }
 func (am *AsssetManager) FindByName(name string) *Asset {
