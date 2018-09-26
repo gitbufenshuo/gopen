@@ -25,7 +25,7 @@ var defaultTriangleModel = `
 var defaultMimimalVertexShader = `
 #version 330
 
-layout (location = 0) in vec3 vert;
+in vec3 vert;
 
 void main() {
     gl_Position = vec4(vert, 1.0);
@@ -35,7 +35,6 @@ var defaultMimimalFragmentShader = `
 #version 330
 
 out vec4 outputColor;
-
 
 void main() {
     outputColor = vec4(0, 0, 0, 1.0);

@@ -63,9 +63,10 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	one := NewGameObject()
 	one.ModelAsset = gi.AssetManager.FindByName("triangle")
 	one.ShaderAsset = gi.AssetManager.FindByName("minimal_shader")
-	gl.ClearColor(1, 1, 1, 1)
 	gi.AddGameObject(one)
 	gl.Enable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ClearColor(1, 1, 1, 1)
 	for !window.ShouldClose() {
 		time.Sleep(time.Millisecond * 30)
 		// r = float32(math.Sin(math.Pi*float64((frame_number*2)%1000)/500))/2 + 0.5
@@ -92,8 +93,8 @@ func (gi *GlobalInfo) draw(gb *GameObject) {
 	if !gb.readyForDraw {
 		// set something
 		fmt.Println("set something")
-		gb.ModelAsset.Resource.Upload()
 		gb.ShaderAsset.Resource.Upload()
+		gb.ModelAsset.Resource.Upload()
 		gb.readyForDraw = true
 	}
 	// change context
@@ -104,8 +105,8 @@ func (gi *GlobalInfo) draw(gb *GameObject) {
 	// vertexNum := len(modelResource.Indices)
 	fmt.Println(modelResource.Indices)
 	fmt.Println(modelResource.Vertices)
-	// gl.DrawElements(gl.TRIANGLES, 3, gl.UNSIGNED_INT, gl.PtrOffset(0))
-	gl.DrawArrays(gl.TRIANGLES, 0, 3)
+	gl.DrawElements(gl.TRIANGLES, 3, gl.UNSIGNED_INT, gl.PtrOffset(0))
+	// gl.DrawArrays(gl.TRIANGLES, 0, 3)
 }
 func (gi *GlobalInfo) AddGameObject(gb *GameObject) {
 	gb.ID = gi.nowID + 1

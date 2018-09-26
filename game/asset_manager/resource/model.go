@@ -71,6 +71,7 @@ func (m *Model) Upload() {
 	gl.GenBuffers(1, &m.vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, m.vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, len(m.Vertices)*4, gl.Ptr(m.Vertices), gl.STATIC_DRAW)
+	m.Active()
 }
 func (m *Model) Active() {
 	fmt.Println("m.vao", m.vao)

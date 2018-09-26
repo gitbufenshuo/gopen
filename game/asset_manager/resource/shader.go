@@ -89,7 +89,6 @@ func (sp *ShaderProgram) Upload() {
 	gl.AttachShader(program, vertexShader)
 	gl.AttachShader(program, fragmentShader)
 	gl.LinkProgram(program)
-	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 
 	var status int32
 	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
@@ -103,9 +102,14 @@ func (sp *ShaderProgram) Upload() {
 	}
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
+	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
 	sp.glProgram = program
+	sp.Active()
 }
-func (m *ShaderProgram) Active() {
-	fmt.Println("m.glProgram", m.glProgram)
-	gl.UseProgram(m.glProgram)
+func (sp *ShaderProgram) Active() {
+	fmt.Println("m.glProgram", sp.glProgram)
+	gl.UseProgram(sp.glProgram)
+
+	location := gl.GetAttribLocation(sp.glProgram, gl.Str("vert\x00"))
+	fmt.Println("vertlocation", location)
 }
