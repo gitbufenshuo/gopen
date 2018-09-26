@@ -11,8 +11,8 @@ var (
 	AssetTypeTexture AssetType = "texture"
 )
 
-var ()
-
+// Asset is where you can get a resource which is the real thing to use.
+// When you get a resource, you don't need a asset.
 type Asset struct {
 	ID       int
 	Loaded   bool

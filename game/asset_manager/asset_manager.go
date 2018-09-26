@@ -1,3 +1,5 @@
+// Package asset_manager provides asset definition and asset management.
+
 package asset_manager
 
 import "errors"
