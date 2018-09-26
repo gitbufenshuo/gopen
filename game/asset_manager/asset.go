@@ -10,6 +10,7 @@ type AssetType string
 var (
 	AssetTypeTexture AssetType = "texture"
 	AssetTypeShader  AssetType = "shaderprogram"
+	AssetTypeModel   AssetType = "model"
 )
 
 // Asset is where you can get a resource which is the real thing to use.
@@ -36,6 +37,9 @@ type ShaderDataType struct {
 	VPath string
 	FPath string
 }
+type ModelDataType struct {
+	FilePath string
+}
 
 func NewAsset(name string, data interface{}) *Asset {
 	var as Asset
@@ -60,6 +64,10 @@ func (as *Asset) Load() error {
 		_data := as.Data.(*ShaderDataType)
 		_t := resource.NewShaderProgram()
 		_t.ReadFromFile(_data.VPath, _data.FPath)
+	case AssetTypeModel:
+		_data := as.Data.(*ModelDataType)
+		_t := resource.NewModel()
+		_t.ReadFromFile(_data.FilePath)
 	default:
 		return ErrTypeNotSupport
 	}
