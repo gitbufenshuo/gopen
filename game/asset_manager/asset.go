@@ -41,9 +41,10 @@ type ModelDataType struct {
 	FilePath string
 }
 
-func NewAsset(name string, data interface{}) *Asset {
+func NewAsset(name string, Type AssetType, data interface{}) *Asset {
 	var as Asset
 	as.Name = name
+	as.Type = Type
 	as.Data = data
 	return &as
 }
@@ -60,14 +61,17 @@ func (as *Asset) Load() error {
 		_t.GenMipMaps = _data.GenMipMaps
 		_t.FlipY = _data.FlipY
 		_t.ReadFromFile(_data.FilePath)
+		as.Resource = _t
 	case AssetTypeShader:
 		_data := as.Data.(*ShaderDataType)
 		_t := resource.NewShaderProgram()
 		_t.ReadFromFile(_data.VPath, _data.FPath)
+		as.Resource = _t
 	case AssetTypeModel:
 		_data := as.Data.(*ModelDataType)
 		_t := resource.NewModel()
 		_t.ReadFromFile(_data.FilePath)
+		as.Resource = _t
 	default:
 		return ErrTypeNotSupport
 	}

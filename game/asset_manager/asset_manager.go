@@ -2,7 +2,10 @@
 
 package asset_manager
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	ErrNameDup        = errors.New("ErrNameDup")
@@ -21,7 +24,15 @@ func NewAsssetManager() *AsssetManager {
 	am.assets_by_id = make(map[int]*Asset)
 	return &am
 }
+func (am *AsssetManager) PrintAllAsset() {
+	for name, as := range am.assets_by_name {
+		fmt.Println(name, "--", as.Type, as.ID, as.Resource)
+	}
+}
 func (am *AsssetManager) FindByName(name string) *Asset {
+	if as, found := am.assets_by_name[name]; found {
+		return as
+	}
 	return nil
 }
 func (am *AsssetManager) Register(name string, as *Asset) error {
