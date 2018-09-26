@@ -21,14 +21,14 @@ func NewGlobalInfo() *GlobalInfo {
 func (gi *GlobalInfo) initAssetManager() {
 	gi.AssetManager = asset_manager.NewAsssetManager()
 	// default model
-	gi.initDefaultModel_Cube()
+	gi.initDefaultModel_Triangle()
 	// default shader program
 	gi.initDefaultShaderprogram_minimal()
 }
-func (gi *GlobalInfo) initDefaultModel_Cube() {
+func (gi *GlobalInfo) initDefaultModel_Triangle() {
 	var data asset_manager.ModelDataType
-	data.FilePath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "model", "cube.json")
-	as := asset_manager.NewAsset("cube", &data)
+	data.FilePath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "models", "triangle.json")
+	as := asset_manager.NewAsset("triangle", &data)
 	err := gi.AssetManager.Register(as.Name, as)
 	if err != nil {
 		panic(err)
@@ -37,8 +37,8 @@ func (gi *GlobalInfo) initDefaultModel_Cube() {
 }
 func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
 	var data asset_manager.ShaderDataType
-	data.VPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shader", "minimal_vertex.glsl")
-	data.FPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shader", "minimal_fragment.glsl")
+	data.VPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_vertex.glsl")
+	data.FPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_fragment.glsl")
 	as := asset_manager.NewAsset("minimal_shader", &data)
 	err := gi.AssetManager.Register(as.Name, as)
 	if err != nil {
