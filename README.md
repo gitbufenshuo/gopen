@@ -12,3 +12,5 @@ Golang writen 3D render library and some game-relative concepts.
     cd $GOPATH/src/github.com/gitbufenshuo/gopen
     go run main.go
     ```
+# bug report
+    Please issue anything that runs wrongly.
