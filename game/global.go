@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
@@ -64,6 +65,9 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	one.ModelAsset = gi.AssetManager.FindByName("triangle")
 	one.ShaderAsset = gi.AssetManager.FindByName("minimal_shader")
 	gi.AddGameObject(one)
+	//
+	fortestonly("init")
+	//
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
@@ -88,11 +92,11 @@ func (gi *GlobalInfo) update() {
 		fmt.Println("update", time.Now().Unix())
 		gi.draw(gb)
 	}
+	// fortestonly("update")
 }
 func (gi *GlobalInfo) draw(gb *GameObject) {
 	if !gb.readyForDraw {
 		// set something
-		fmt.Println("set something")
 		gb.ShaderAsset.Resource.Upload()
 		gb.ModelAsset.Resource.Upload()
 		gb.readyForDraw = true
@@ -102,11 +106,8 @@ func (gi *GlobalInfo) draw(gb *GameObject) {
 	gb.ModelAsset.Resource.Active()
 	// draw
 	modelResource := gb.ModelAsset.Resource.(*resource.Model)
-	// vertexNum := len(modelResource.Indices)
-	fmt.Println(modelResource.Indices)
-	fmt.Println(modelResource.Vertices)
-	gl.DrawElements(gl.TRIANGLES, 3, gl.UNSIGNED_INT, gl.PtrOffset(0))
-	// gl.DrawArrays(gl.TRIANGLES, 0, 3)
+	vertexNum := len(modelResource.Indices)
+	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
 func (gi *GlobalInfo) AddGameObject(gb *GameObject) {
 	gb.ID = gi.nowID + 1
@@ -142,4 +143,165 @@ func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
 		panic(err)
 	}
 	gi.AssetManager.Load(as)
+}
+
+//// fortestonly
+var vao uint32
+var vbo uint32
+
+// var program uint32
+
+func fortestonly(mode string) {
+	if mode == "init" {
+		// Configure the vertex and fragment shaders
+		// program, _ = newProgram(vertexShader, fragmentShader)
+
+		gl.GenVertexArrays(1, &vao)
+		gl.BindVertexArray(vao)
+
+		gl.GenBuffers(1, &vbo)
+		gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+		gl.BufferData(gl.ARRAY_BUFFER, len(cubeVertices)*4, gl.Ptr(cubeVertices), gl.STATIC_DRAW)
+
+		gl.EnableVertexAttribArray(0)
+		gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
+	}
+	if mode == "update" {
+		// gl.UseProgram(program)
+
+		gl.BindVertexArray(vao)
+
+		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+
+	}
+	// Configure the vertex data
+}
+
+func newProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error) {
+	vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	if err != nil {
+		return 0, err
+	}
+
+	fragmentShader, err := compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	if err != nil {
+		return 0, err
+	}
+
+	program := gl.CreateProgram()
+
+	gl.AttachShader(program, vertexShader)
+	gl.AttachShader(program, fragmentShader)
+	gl.LinkProgram(program)
+
+	var status int32
+	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
+	if status == gl.FALSE {
+		var logLength int32
+		gl.GetProgramiv(program, gl.INFO_LOG_LENGTH, &logLength)
+
+		log := strings.Repeat("\x00", int(logLength+1))
+		gl.GetProgramInfoLog(program, logLength, nil, gl.Str(log))
+
+		return 0, fmt.Errorf("failed to link program: %v", log)
+	}
+
+	gl.DeleteShader(vertexShader)
+	gl.DeleteShader(fragmentShader)
+
+	return program, nil
+}
+
+func compileShader(source string, shaderType uint32) (uint32, error) {
+	shader := gl.CreateShader(shaderType)
+
+	csources, free := gl.Strs(source)
+	gl.ShaderSource(shader, 1, csources, nil)
+	free()
+	gl.CompileShader(shader)
+
+	var status int32
+	gl.GetShaderiv(shader, gl.COMPILE_STATUS, &status)
+	if status == gl.FALSE {
+		var logLength int32
+		gl.GetShaderiv(shader, gl.INFO_LOG_LENGTH, &logLength)
+
+		log := strings.Repeat("\x00", int(logLength+1))
+		gl.GetShaderInfoLog(shader, logLength, nil, gl.Str(log))
+
+		return 0, fmt.Errorf("failed to compile %v: %v", source, log)
+	}
+
+	return shader, nil
+}
+
+var vertexShader = `
+#version 330
+
+in vec3 vert;
+
+void main() {
+    gl_Position = vec4(vert.xyz, 1);
+}
+` + "\x00"
+
+var fragmentShader = `
+#version 330
+
+out vec4 outputColor;
+
+void main() {
+    outputColor = vec4(1,0,0,1);
+}
+` + "\x00"
+
+var cubeVertices = []float32{
+	//  X, Y, Z, U, V
+	// Bottom
+	-1.0, -1.0, -1.0, 0.0, 0.0,
+	1.0, -1.0, -1.0, 1.0, 0.0,
+	0, 1.0, 1.0, 0.0, 1.0,
+	1.0, -1.0, -1.0, 1.0, 0.0,
+	1.0, -1.0, 1.0, 1.0, 1.0,
+	-1.0, -1.0, 1.0, 0.0, 1.0,
+
+	// Top
+	-1.0, 1.0, -1.0, 0.0, 0.0,
+	-1.0, 1.0, 1.0, 0.0, 1.0,
+	1.0, 1.0, -1.0, 1.0, 0.0,
+	1.0, 1.0, -1.0, 1.0, 0.0,
+	-1.0, 1.0, 1.0, 0.0, 1.0,
+	1.0, 1.0, 1.0, 1.0, 1.0,
+
+	// Front
+	-1.0, -1.0, 1.0, 1.0, 0.0,
+	1.0, -1.0, 1.0, 0.0, 0.0,
+	-1.0, 1.0, 1.0, 1.0, 1.0,
+	1.0, -1.0, 1.0, 0.0, 0.0,
+	1.0, 1.0, 1.0, 0.0, 1.0,
+	-1.0, 1.0, 1.0, 1.0, 1.0,
+
+	// Back
+	-1.0, -1.0, -1.0, 0.0, 0.0,
+	-1.0, 1.0, -1.0, 0.0, 1.0,
+	1.0, -1.0, -1.0, 1.0, 0.0,
+	1.0, -1.0, -1.0, 1.0, 0.0,
+	-1.0, 1.0, -1.0, 0.0, 1.0,
+	1.0, 1.0, -1.0, 1.0, 1.0,
+
+	// Left
+	-1.0, -1.0, 1.0, 0.0, 1.0,
+	-1.0, 1.0, -1.0, 1.0, 0.0,
+	-1.0, -1.0, -1.0, 0.0, 0.0,
+	-1.0, -1.0, 1.0, 0.0, 1.0,
+	-1.0, 1.0, 1.0, 1.0, 1.0,
+	-1.0, 1.0, -1.0, 1.0, 0.0,
+
+	// Right
+	1.0, -1.0, 1.0, 1.0, 1.0,
+	1.0, -1.0, -1.0, 1.0, 0.0,
+	1.0, 1.0, -1.0, 0.0, 0.0,
+	1.0, -1.0, 1.0, 1.0, 1.0,
+	1.0, 1.0, -1.0, 0.0, 0.0,
+	1.0, 1.0, 1.0, 0.0, 1.0,
 }

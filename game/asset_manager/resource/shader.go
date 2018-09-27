@@ -32,6 +32,7 @@ func (sp *ShaderProgram) ReadFromFile(vPath, fPath string) {
 	}
 	sp.VertexCode = string(vByte)
 	sp.VertexCode += "\x00"
+	fmt.Println("--- reading from file vertexcode", sp.VertexCode)
 	/// /// ///
 	fFile, err := os.Open(fPath)
 	defer fFile.Close()
@@ -44,6 +45,7 @@ func (sp *ShaderProgram) ReadFromFile(vPath, fPath string) {
 	}
 	sp.FragmentCode = string(fByte)
 	sp.FragmentCode += "\x00"
+	fmt.Println("--- reading from file fragmentcode", sp.FragmentCode)
 }
 func compileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
@@ -102,14 +104,9 @@ func (sp *ShaderProgram) Upload() {
 	}
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
-	gl.BindFragDataLocation(program, 0, gl.Str("outputColor\x00"))
+
 	sp.glProgram = program
-	sp.Active()
 }
 func (sp *ShaderProgram) Active() {
-	fmt.Println("m.glProgram", sp.glProgram)
 	gl.UseProgram(sp.glProgram)
-
-	location := gl.GetAttribLocation(sp.glProgram, gl.Str("vert\x00"))
-	fmt.Println("vertlocation", location)
 }

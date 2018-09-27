@@ -2,7 +2,6 @@ package resource
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -44,9 +43,14 @@ func (m *Model) Upload() {
 		return
 	}
 	m.uploaded = true
+
 	// VAO is a context for { EBO , VBO }
 	gl.GenVertexArrays(1, &m.vao)
 	gl.BindVertexArray(m.vao)
+	// VBO
+	gl.GenBuffers(1, &m.vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, m.vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(m.Vertices)*4, gl.Ptr(m.Vertices), gl.STATIC_DRAW)
 
 	// location vertex set
 	stripe := 0
@@ -67,13 +71,7 @@ func (m *Model) Upload() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, m.ebo)
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, 4*len(m.Indices), gl.Ptr(m.Indices), gl.STATIC_DRAW)
 
-	// VBO
-	gl.GenBuffers(1, &m.vbo)
-	gl.BindBuffer(gl.ARRAY_BUFFER, m.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(m.Vertices)*4, gl.Ptr(m.Vertices), gl.STATIC_DRAW)
-	m.Active()
 }
 func (m *Model) Active() {
-	fmt.Println("m.vao", m.vao)
 	gl.BindVertexArray(m.vao)
 }

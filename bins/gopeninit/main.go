@@ -28,7 +28,7 @@ var defaultMimimalVertexShader = `
 in vec3 vert;
 
 void main() {
-    gl_Position = vec4(vert, 1.0);
+    gl_Position = vec4(vert.xyz, 1.0);
 }
 `
 var defaultMimimalFragmentShader = `
@@ -37,7 +37,7 @@ var defaultMimimalFragmentShader = `
 out vec4 outputColor;
 
 void main() {
-    outputColor = vec4(0, 0, 0, 1.0);
+    outputColor = vec4(0, 1, 0, 1.0);
 }
 `
 

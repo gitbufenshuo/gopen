@@ -10,6 +10,6 @@ func init() {
 	runtime.LockOSThread()
 }
 func main() {
-	gi := game.NewGlobalInfo(600, 800, "hello-gopen")
+	gi := game.NewGlobalInfo(500, 500, "hello-gopen")
 	gi.StartGame("test")
 }
