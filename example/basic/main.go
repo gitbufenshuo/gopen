@@ -4,6 +4,7 @@ import (
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/game"
+	"github.com/gitbufenshuo/gopen/game/gameobjects"
 )
 
 func init() {
@@ -11,14 +12,18 @@ func init() {
 }
 func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
-	one := game.NewGameObject(false)
+	one := gameobjects.NewBasicObject(false)
 	one.ModelAsset_sg(gi.AssetManager.FindByName("triangle"))
 	one.ShaderAsset_sg(gi.AssetManager.FindByName("minimal_shader"))
 	one.DrawEnable_sg(true)
 	gi.AddGameObject(one)
 }
+func myInitMainCamera(gi *game.GlobalInfo) {
+
+}
 func main() {
 	gi := game.NewGlobalInfo(500, 500, "hello-basic")
+	gi.InitMainCamera = myInitMainCamera
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

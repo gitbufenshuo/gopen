@@ -15,13 +15,14 @@ import (
 )
 
 type GlobalInfo struct {
-	AssetManager *asset_manager.AsssetManager
-	gameobjects  map[int]GameObjectI
-	nowID        int
-	width        int
-	height       int
-	title        string
-	CustomInit   func(*GlobalInfo)
+	AssetManager   *asset_manager.AsssetManager
+	gameobjects    map[int]GameObjectI
+	nowID          int
+	width          int
+	height         int
+	title          string
+	CustomInit     func(*GlobalInfo)
+	InitMainCamera func(*GlobalInfo)
 }
 
 func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
@@ -58,7 +59,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	fmt.Println("OpenGL version", version)
 	var frame_number int
 	gi.initAssetManager()
-	gi.initMainCamera()
+	gi.InitMainCamera(gi)
 	gi.CustomInit(gi)
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
@@ -96,6 +97,7 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 		gb.ModelAsset_sg().Resource.Upload()
 		gb.ReadyForDraw_sg(true)
 	}
+	gb.Update()
 	// change context
 	gb.ShaderAsset_sg().Resource.Active()
 	gb.ModelAsset_sg().Resource.Active()
@@ -139,13 +141,6 @@ func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
 		panic(err)
 	}
 	gi.AssetManager.Load(as)
-}
-
-func (gi *GlobalInfo) initMainCamera() {
-	// create a gameobject that represents the main camera
-	mainCamera := NewGameObject(true) // true means the camera-self doesn't need to be drawn
-
-	gi.AddGameObject(mainCamera)
 }
 
 // the id:0 always is the main camera gameobject

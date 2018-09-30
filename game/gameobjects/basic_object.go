@@ -1,0 +1,86 @@
+package gameobjects
+
+import (
+	"github.com/gitbufenshuo/gopen/game/asset_manager"
+	"github.com/gitbufenshuo/gopen/game/common"
+)
+
+// the common minimal internal implementation of the GameObjectI
+type BasicObject struct {
+	id           int
+	modelAsset   *asset_manager.Asset
+	shaderAsset  *asset_manager.Asset
+	notDrawable  bool // could this gameobject be drawn
+	drawEnable   bool // enable - disable drawing
+	readyForDraw bool
+	transform    *common.Transform
+}
+
+func NewBasicObject(notDrawable bool) *BasicObject {
+	var gb BasicObject
+	gb.transform = common.NewTransform()
+	gb.notDrawable = notDrawable
+	return &gb
+}
+
+func (gb *BasicObject) ID_sg(_id ...int) int {
+	if len(_id) == 0 {
+		return gb.id
+	}
+	if len(_id) > 1 {
+		panic("len(_id)")
+	}
+	gb.id = _id[0]
+	return gb.id
+}
+func (gb *BasicObject) ModelAsset_sg(_as ...*asset_manager.Asset) *asset_manager.Asset {
+	if len(_as) == 0 {
+		return gb.modelAsset
+	}
+	if len(_as) > 1 {
+		panic("len(_as)")
+	}
+	gb.modelAsset = _as[0]
+	return gb.modelAsset
+}
+func (gb *BasicObject) ShaderAsset_sg(_as ...*asset_manager.Asset) *asset_manager.Asset {
+	if len(_as) == 0 {
+		return gb.shaderAsset
+	}
+	if len(_as) > 1 {
+		panic("len(_as)")
+	}
+	gb.shaderAsset = _as[0]
+	return gb.shaderAsset
+}
+func (gb *BasicObject) NotDrawable() bool {
+	return gb.notDrawable
+}
+func (gb *BasicObject) DrawEnable_sg(_bool ...bool) bool {
+	if len(_bool) == 0 {
+		return gb.drawEnable
+	}
+	if len(_bool) > 1 {
+		panic("len(_bool)")
+	}
+	gb.drawEnable = _bool[0]
+	return gb.drawEnable
+}
+
+func (gb *BasicObject) ReadyForDraw_sg(_bool ...bool) bool {
+	if len(_bool) == 0 {
+		return gb.readyForDraw
+	}
+	if len(_bool) > 1 {
+		panic("len(_bool)")
+	}
+	gb.readyForDraw = _bool[0]
+	return gb.readyForDraw
+}
+func (gb *BasicObject) Transform() *common.Transform {
+	return gb.transform
+}
+func (gb *BasicObject) OnDraw() {
+}
+func (gb *BasicObject) Update() {
+}
