@@ -21,6 +21,7 @@ type GlobalInfo struct {
 	width        int
 	height       int
 	title        string
+	CustomInit   func(*GlobalInfo)
 }
 
 func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
@@ -58,14 +59,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	var frame_number int
 	gi.initAssetManager()
 	gi.initMainCamera()
-	{
-		// create a gameobject that can be drawn on the window
-		one := NewGameObject(false)
-		one.ModelAsset_sg(gi.AssetManager.FindByName("triangle"))
-		one.ShaderAsset_sg(gi.AssetManager.FindByName("minimal_shader"))
-		one.DrawEnable_sg(true)
-		gi.AddGameObject(one)
-	}
+	gi.CustomInit(gi)
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
