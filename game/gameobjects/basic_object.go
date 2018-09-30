@@ -1,6 +1,7 @@
 package gameobjects
 
 import (
+	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/common"
 )
@@ -14,15 +15,19 @@ type BasicObject struct {
 	drawEnable   bool // enable - disable drawing
 	readyForDraw bool
 	transform    *common.Transform
+	gi           *game.GlobalInfo
 }
 
-func NewBasicObject(notDrawable bool) *BasicObject {
+func NewBasicObject(_gi *game.GlobalInfo, notDrawable bool) *BasicObject {
 	var gb BasicObject
 	gb.transform = common.NewTransform()
 	gb.notDrawable = notDrawable
+	gb.gi = _gi
 	return &gb
 }
-
+func (gb *BasicObject) GI() *game.GlobalInfo {
+	return gb.gi
+}
 func (gb *BasicObject) ID_sg(_id ...int) int {
 	if len(_id) == 0 {
 		return gb.id

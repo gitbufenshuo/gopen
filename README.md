@@ -9,7 +9,7 @@ Golang writen 3D render library and some game-relative concepts.
     ```
 # start
     ```
-    cd $GOPATH/src/github.com/gitbufenshuo/gopen
+    cd $GOPATH/src/github.com/gitbufenshuo/gopen/example/basic
     go run main.go
     ```
 # bug report

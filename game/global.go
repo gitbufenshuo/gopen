@@ -8,21 +8,30 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gitbufenshuo/gopen/matmath"
+
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
+type Camera struct {
+	Pos    *matmath.VECX
+	Front  *matmath.VECX
+	UP     *matmath.VECX
+	Target *matmath.VECX
+}
+
 type GlobalInfo struct {
-	AssetManager   *asset_manager.AsssetManager
-	gameobjects    map[int]GameObjectI
-	nowID          int
-	width          int
-	height         int
-	title          string
-	CustomInit     func(*GlobalInfo)
-	InitMainCamera func(*GlobalInfo)
+	AssetManager *asset_manager.AsssetManager
+	gameobjects  map[int]GameObjectI
+	nowID        int
+	width        int
+	height       int
+	title        string
+	CustomInit   func(*GlobalInfo)
+	MainCamera   *Camera
 }
 
 func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
@@ -58,9 +67,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	fmt.Println("OpenGL version", version)
 	var frame_number int
-	gi.initAssetManager()
-	gi.InitMainCamera(gi)
-	gi.CustomInit(gi)
+	gi.Boot()
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
@@ -77,6 +84,16 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		frame_number++
 	}
 
+}
+func (gi *GlobalInfo) Boot() {
+	gi.initAssetManager()
+	if gi.CustomInit == nil {
+		panic("gi.CustomInit == nil")
+	}
+	gi.CustomInit(gi)
+	if gi.MainCamera == nil {
+		panic("MainCamera == nil")
+	}
 }
 func (gi *GlobalInfo) update() {
 	for _, gb := range gi.gameobjects {
@@ -141,11 +158,6 @@ func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
 		panic(err)
 	}
 	gi.AssetManager.Load(as)
-}
-
-// the id:0 always is the main camera gameobject
-func (gi *GlobalInfo) mainCamera() GameObjectI {
-	return gi.gameobjects[0]
 }
 
 //// fortestonly
