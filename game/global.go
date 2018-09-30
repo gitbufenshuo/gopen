@@ -16,7 +16,7 @@ import (
 
 type GlobalInfo struct {
 	AssetManager *asset_manager.AsssetManager
-	gameobjects  map[int]*GameObject
+	gameobjects  map[int]GameObjectI
 	nowID        int
 	width        int
 	height       int
@@ -28,7 +28,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.width = windowWidth
 	globalInfo.height = windowHeight
 	globalInfo.title = title
-	globalInfo.gameobjects = make(map[int]*GameObject)
+	globalInfo.gameobjects = make(map[int]GameObjectI)
 	return globalInfo
 }
 func (gi *GlobalInfo) StartGame(mode string) {
@@ -57,24 +57,20 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	fmt.Println("OpenGL version", version)
 	var frame_number int
 	gi.initAssetManager()
-	if mode == "test_init" {
-		gi.AssetManager.PrintAllAsset()
-		return
+	gi.initMainCamera()
+	{
+		// create a gameobject that can be drawn on the window
+		one := NewGameObject(false)
+		one.ModelAsset_sg(gi.AssetManager.FindByName("triangle"))
+		one.ShaderAsset_sg(gi.AssetManager.FindByName("minimal_shader"))
+		one.DrawEnable_sg(true)
+		gi.AddGameObject(one)
 	}
-	one := NewGameObject()
-	one.ModelAsset = gi.AssetManager.FindByName("triangle")
-	one.ShaderAsset = gi.AssetManager.FindByName("minimal_shader")
-	gi.AddGameObject(one)
-	//
-	fortestonly("init")
-	//
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
 	for !window.ShouldClose() {
 		time.Sleep(time.Millisecond * 30)
-		// r = float32(math.Sin(math.Pi*float64((frame_number*2)%1000)/500))/2 + 0.5
-		// fmt.Println(r)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		///////////////////////////////////////////////////
 		// the very update every frame
@@ -92,27 +88,33 @@ func (gi *GlobalInfo) update() {
 		fmt.Println("update", time.Now().Unix())
 		gi.draw(gb)
 	}
-	// fortestonly("update")
 }
-func (gi *GlobalInfo) draw(gb *GameObject) {
-	if !gb.readyForDraw {
+func (gi *GlobalInfo) draw(gb GameObjectI) {
+	if gb.NotDrawable() {
+		return
+	}
+	if !gb.DrawEnable_sg() {
+		return
+	}
+	if !gb.ReadyForDraw_sg() {
 		// set something
-		gb.ShaderAsset.Resource.Upload()
-		gb.ModelAsset.Resource.Upload()
-		gb.readyForDraw = true
+		gb.ShaderAsset_sg().Resource.Upload()
+		gb.ModelAsset_sg().Resource.Upload()
+		gb.ReadyForDraw_sg(true)
 	}
 	// change context
-	gb.ShaderAsset.Resource.Active()
-	gb.ModelAsset.Resource.Active()
+	gb.ShaderAsset_sg().Resource.Active()
+	gb.ModelAsset_sg().Resource.Active()
 	// draw
-	modelResource := gb.ModelAsset.Resource.(*resource.Model)
+	modelResource := gb.ModelAsset_sg().Resource.(*resource.Model)
 	vertexNum := len(modelResource.Indices)
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
-func (gi *GlobalInfo) AddGameObject(gb *GameObject) {
-	gb.ID = gi.nowID + 1
+func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
+	gb.ID_sg(gi.nowID + 1)
+
 	gi.nowID++
-	gi.gameobjects[gb.ID] = gb
+	gi.gameobjects[gb.ID_sg()] = gb
 }
 
 // init assetmanager and some default assets
@@ -143,6 +145,18 @@ func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
 		panic(err)
 	}
 	gi.AssetManager.Load(as)
+}
+
+func (gi *GlobalInfo) initMainCamera() {
+	// create a gameobject that represents the main camera
+	mainCamera := NewGameObject(true) // true means the camera-self doesn't need to be drawn
+
+	gi.AddGameObject(mainCamera)
+}
+
+// the id:0 always is the main camera gameobject
+func (gi *GlobalInfo) mainCamera() GameObjectI {
+	return gi.gameobjects[0]
 }
 
 //// fortestonly

@@ -98,6 +98,13 @@ func (self *VECX) SetIndexValue(index int, value float32) {
 	self.data[index] = value
 }
 
+// set all elements to 0
+func (self *VECX) Clear() {
+	for i := 0; i != self.dimension; i++ {
+		self.SetIndexValue(i, 0)
+	}
+}
+
 // read-only, pretty print the mat
 func (self *VECX) PrettyShow() {
 	for i := 0; i != self.dimension; i++ {
