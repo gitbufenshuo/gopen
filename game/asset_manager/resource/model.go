@@ -72,6 +72,7 @@ func (m *Model) Upload() {
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, 4*len(m.Indices), gl.Ptr(m.Indices), gl.STATIC_DRAW)
 
 }
+
 func (m *Model) Active() {
 	gl.BindVertexArray(m.vao)
 }

@@ -15,4 +15,5 @@ type GameObjectI interface {
 	ReadyForDraw_sg(...bool) bool
 	Transform() *common.Transform
 	Update()
+	OnDraw()
 }

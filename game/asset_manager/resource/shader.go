@@ -107,6 +107,7 @@ func (sp *ShaderProgram) Upload() {
 
 	sp.glProgram = program
 }
+
 func (sp *ShaderProgram) Active() {
 	gl.UseProgram(sp.glProgram)
 }
