@@ -70,6 +70,11 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
+// get the shader program
+func (sp *ShaderProgram) ShaderProgram() uint32 {
+	return sp.glProgram
+}
+
 // to gpu
 func (sp *ShaderProgram) Upload() {
 	if sp.uploaded {

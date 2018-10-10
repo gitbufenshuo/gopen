@@ -1,6 +1,7 @@
 package game
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -22,7 +23,16 @@ type Camera struct {
 	UP     *matmath.VECX
 	Target *matmath.VECX
 }
-
+type GlobalFrameInfo struct {
+	CurFrame       int
+	StartMS        float64 // the time that the globalinfo successfully starts at
+	LastFrameMS    float64 // the time that the last frame begins at
+	NowMS          float64 // the time that the current frame begins at
+	ElapsedMS      float64 // the ms between now and the StartMS
+	FrameElapsedMS float64 // the ms between now and the last frame
+	FrameRate      float64 // the frame per second
+	Debug          bool    // whether print the frame info
+}
 type GlobalInfo struct {
 	AssetManager *asset_manager.AsssetManager
 	gameobjects  map[int]GameObjectI
@@ -32,6 +42,7 @@ type GlobalInfo struct {
 	title        string
 	CustomInit   func(*GlobalInfo)
 	MainCamera   *Camera
+	*GlobalFrameInfo
 }
 
 func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
@@ -94,12 +105,37 @@ func (gi *GlobalInfo) Boot() {
 	if gi.MainCamera == nil {
 		panic("MainCamera == nil")
 	}
+	gi.GlobalFrameInfo = new(GlobalFrameInfo)
+	gi.StartMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
+	for _, gb := range gi.gameobjects {
+		gb.Start()
+	}
+}
+func (gi *GlobalInfo) dealWithTime(mode int) {
+	if mode == 1 { // new frame begins
+		gi.NowMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
+		gi.ElapsedMS = gi.NowMS - gi.StartMS
+		gi.FrameElapsedMS = gi.NowMS - gi.LastFrameMS
+		gi.FrameRate = 1000 / gi.FrameElapsedMS
+	}
+	if mode == 2 { // frame ends
+		gi.LastFrameMS = gi.NowMS
+	}
+	if mode == 0 { // only for print
+		if gi.GlobalFrameInfo.Debug {
+			info, _ := json.Marshal(gi.GlobalFrameInfo)
+			fmt.Println(string(info))
+		}
+	}
 }
 func (gi *GlobalInfo) update() {
+	gi.CurFrame++
+	gi.dealWithTime(1)
+	gi.dealWithTime(0)
 	for _, gb := range gi.gameobjects {
-		fmt.Println("update", time.Now().Unix())
 		gi.draw(gb)
 	}
+	gi.dealWithTime(2)
 }
 func (gi *GlobalInfo) draw(gb GameObjectI) {
 	if gb.NotDrawable() {
@@ -114,6 +150,7 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 		gb.ModelAsset_sg().Resource.Upload()
 		gb.ReadyForDraw_sg(true)
 	}
+	gb.OnDraw()
 	gb.Update()
 	// change context
 	gb.ShaderAsset_sg().Resource.Active()

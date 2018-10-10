@@ -85,6 +85,9 @@ func (gb *BasicObject) ReadyForDraw_sg(_bool ...bool) bool {
 func (gb *BasicObject) Transform() *common.Transform {
 	return gb.transform
 }
+func (gb *BasicObject) Start() {
+
+}
 
 // should update uniform-value to gpu
 func (gb *BasicObject) OnDraw() {
