@@ -83,7 +83,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
 	for !window.ShouldClose() {
-		time.Sleep(time.Millisecond * 30)
+		time.Sleep(time.Millisecond * 20)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		///////////////////////////////////////////////////
 		// the very update every frame
