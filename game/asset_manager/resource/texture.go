@@ -59,7 +59,7 @@ func (t *Texture) Upload() {
 	}
 	t.uploaded = true
 	gl.GenTextures(1, &t.tbo)
-	gl.ActiveTexture(gl.TEXTURE0)
+	gl.ActiveTexture(gl.TEXTURE0) // for multi texture in single shader-program, we can activate multi texture-units
 	gl.BindTexture(gl.TEXTURE_2D, t.tbo)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -77,5 +77,6 @@ func (t *Texture) Upload() {
 		gl.Ptr(t.Pixels))
 }
 func (t *Texture) Active() {
-
+	// gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, t.tbo)
 }

@@ -150,11 +150,14 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 		gb.ModelAsset_sg().Resource.Upload()
 		gb.ReadyForDraw_sg(true)
 	}
-	gb.OnDraw()
-	gb.Update()
+	gb.OnDraw() // call the gameobjects' OnDraw function
+	gb.Update() // call the gameobjects' Update function
 	// change context
-	gb.ShaderAsset_sg().Resource.Active()
-	gb.ModelAsset_sg().Resource.Active()
+	gb.ShaderAsset_sg().Resource.Active()                           // shader
+	gb.ModelAsset_sg().Resource.Active()                            // model
+	if _resource := gb.ModelAsset_sg().Resource; _resource != nil { // texture is optional
+		_resource.Active()
+	}
 	// draw
 	modelResource := gb.ModelAsset_sg().Resource.(*resource.Model)
 	vertexNum := len(modelResource.Indices)
@@ -190,6 +193,19 @@ func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
 	data.VPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_vertex.glsl")
 	data.FPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_fragment.glsl")
 	as := asset_manager.NewAsset("minimal_shader", asset_manager.AssetTypeShader, &data)
+	err := gi.AssetManager.Register(as.Name, as)
+	if err != nil {
+		panic(err)
+	}
+	gi.AssetManager.Load(as)
+}
+func (gi *GlobalInfo) initDefaultTexture_logo() {
+	var data asset_manager.TextureDataType
+	data.FilePath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "textures", "logo.png")
+	data.FlipY = true
+	data.Width = 250
+	data.Height = 340
+	as := asset_manager.NewAsset("logo_texture", asset_manager.AssetTypeTexture, &data)
 	err := gi.AssetManager.Register(as.Name, as)
 	if err != nil {
 		panic(err)

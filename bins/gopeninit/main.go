@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/base64"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/gitbufenshuo/gopen/bins/gopeninit/logo"
 )
 
 // type Model struct {
@@ -53,6 +56,8 @@ func genDefault(assetshome string) {
 	genDefaultTriangle(assetshome)
 	// -- default shader program
 	genDefaultShaderprogram(assetshome)
+	// -- default texture
+	genDefaultTexture(assetshome)
 }
 func genDefaultTriangle(assetshome string) {
 	modelhome := path.Join(assetshome, "models")
@@ -67,5 +72,13 @@ func genDefaultShaderprogram(assetshome string) {
 	ioutil.WriteFile(path.Join(shaderprogramhome, "minimal_vertex.glsl"), []byte(defaultMimimalVertexShader), 0644)
 	os.Remove(path.Join(shaderprogramhome, "minimal_fragment.glsl"))
 	ioutil.WriteFile(path.Join(shaderprogramhome, "minimal_fragment.glsl"), []byte(defaultMimimalFragmentShader), 0644)
+
+}
+func genDefaultTexture(assetshome string) {
+	texturehome := path.Join(assetshome, "textures")
+	os.MkdirAll(texturehome, 0755)
+	os.Remove(path.Join(texturehome, "logo.png"))
+	logobytes, _ := base64.StdEncoding.DecodeString(logo.Logobase64)
+	ioutil.WriteFile(path.Join(texturehome, "logo.png"), logobytes, 0644)
 
 }
