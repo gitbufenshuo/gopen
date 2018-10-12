@@ -5,6 +5,8 @@ import (
 	"image/draw"
 	"os"
 
+	_ "image/png"
+
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -42,14 +44,26 @@ func (t *Texture) ReadFromFile(path string) {
 	}
 	img, _, err := image.Decode(imgFile)
 	if err != nil {
-		panic(err)
+		panic(err.Error() + ":" + path)
 	}
 	rgba := image.NewRGBA(img.Bounds())
 	if rgba.Stride != rgba.Rect.Size().X*4 {
 		panic("unsupported stride")
 	}
+	t.width = int32(rgba.Rect.Size().X)
+	t.height = int32(rgba.Rect.Size().Y)
 	draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
 	t.Pixels = rgba.Pix
+	if t.FlipY {
+		// swap rows of the pixels
+		for row := 0; row != int(t.height/2); row++ {
+			for col := 0; col != int(t.width*4); col++ {
+				upIndex := int(t.width*4)*row + col
+				downIndex := int(t.width*4)*(int(t.height)-1-row) + col
+				t.Pixels[upIndex], t.Pixels[downIndex] = t.Pixels[downIndex], t.Pixels[upIndex]
+			}
+		}
+	}
 }
 
 // to gpu
@@ -61,8 +75,10 @@ func (t *Texture) Upload() {
 	gl.GenTextures(1, &t.tbo)
 	gl.ActiveTexture(gl.TEXTURE0) // for multi texture in single shader-program, we can activate multi texture-units
 	gl.BindTexture(gl.TEXTURE_2D, t.tbo)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	gl.TexImage2D(

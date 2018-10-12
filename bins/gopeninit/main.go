@@ -78,7 +78,6 @@ func genDefaultTexture(assetshome string) {
 	texturehome := path.Join(assetshome, "textures")
 	os.MkdirAll(texturehome, 0755)
 	os.Remove(path.Join(texturehome, "logo.png"))
-	logobytes, _ := base64.StdEncoding.DecodeString(logo.Logobase64)
+	logobytes, _ := base64.StdEncoding.DecodeString(logo.Logo_borderBase64)
 	ioutil.WriteFile(path.Join(texturehome, "logo.png"), logobytes, 0644)
-
 }

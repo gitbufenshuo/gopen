@@ -11,6 +11,7 @@ type BasicObject struct {
 	id           int
 	modelAsset   *asset_manager.Asset
 	shaderAsset  *asset_manager.Asset
+	textureAsset *asset_manager.Asset
 	notDrawable  bool // could this gameobject be drawn
 	drawEnable   bool // enable - disable drawing
 	readyForDraw bool
@@ -57,6 +58,16 @@ func (gb *BasicObject) ShaderAsset_sg(_as ...*asset_manager.Asset) *asset_manage
 	}
 	gb.shaderAsset = _as[0]
 	return gb.shaderAsset
+}
+func (gb *BasicObject) TextureAsset_sg(_as ...*asset_manager.Asset) *asset_manager.Asset {
+	if len(_as) == 0 {
+		return gb.textureAsset
+	}
+	if len(_as) > 1 {
+		panic("len(_as)")
+	}
+	gb.textureAsset = _as[0]
+	return gb.textureAsset
 }
 func (gb *BasicObject) NotDrawable() bool {
 	return gb.notDrawable
