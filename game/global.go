@@ -18,10 +18,13 @@ import (
 )
 
 type Camera struct {
-	Pos    *matmath.VECX
-	Front  *matmath.VECX
-	UP     *matmath.VECX
-	Target *matmath.VECX
+	Pos          *matmath.VECX
+	Front        *matmath.VECX
+	UP           *matmath.VECX
+	Target       *matmath.VECX
+	NearDistance float32
+	ViewT        *matmath.MATX
+	ProjectionT  *matmath.MATX
 }
 type GlobalFrameInfo struct {
 	CurFrame       int
@@ -153,8 +156,8 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 		}
 		gb.ReadyForDraw_sg(true)
 	}
-	gb.OnDraw() // call the gameobjects' OnDraw function
 	gb.Update() // call the gameobjects' Update function
+	gb.OnDraw() // call the gameobjects' OnDraw function
 	// change context
 	gb.ShaderAsset_sg().Resource.Active()                             // shader
 	gb.ModelAsset_sg().Resource.Active()                              // model
@@ -165,6 +168,11 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 	modelResource := gb.ModelAsset_sg().Resource.(*resource.Model)
 	vertexNum := len(modelResource.Indices)
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+	// refresh something that vary every frame
+	matmath.DontNeedMATXAnyMore(gi.MainCamera.ViewT)
+	matmath.DontNeedMATXAnyMore(gi.MainCamera.ProjectionT)
+	gi.MainCamera.ViewT = nil
+	gi.MainCamera.ProjectionT = nil
 }
 func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 	gb.ID_sg(gi.nowID + 1)
@@ -214,6 +222,24 @@ func (gi *GlobalInfo) initDefaultTexture_logo() {
 		panic(err)
 	}
 	gi.AssetManager.Load(as)
+}
+
+func (gi *GlobalInfo) View() *matmath.MATX {
+	if gi.MainCamera.ViewT != nil {
+		return gi.MainCamera.ViewT
+	}
+	gi.MainCamera.Target = gi.MainCamera.Pos.Add(gi.MainCamera.Front)
+	viewT := matmath.LookAtFrom4(gi.MainCamera.Pos, gi.MainCamera.Target, gi.MainCamera.UP)
+	gi.MainCamera.ViewT = viewT
+	return viewT
+}
+func (gi *GlobalInfo) Projection() *matmath.MATX {
+	if gi.MainCamera.ProjectionT != nil {
+		return gi.MainCamera.ProjectionT
+	}
+	projectionT := matmath.Homoz4(gi.MainCamera.NearDistance)
+	gi.MainCamera.ProjectionT = projectionT
+	return projectionT
 }
 
 //// fortestonly

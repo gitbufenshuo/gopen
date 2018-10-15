@@ -65,11 +65,15 @@ func GetMATX(di int) *MATX {
 
 // when you dont need one MATX anymore, you should call this function
 func DontNeedMATXAnyMore(matx *MATX) {
+	if matx == nil {
+		return
+	}
 	global_mat_pool[matx.dimension].Put(matx)
 }
 
 // read-only, pretty print the mat
-func (self *MATX) PrettyShow() {
+func (self *MATX) PrettyShow(logs ...string) {
+	fmt.Println(">>><<<", logs)
 	for row := 1; row <= self.dimension; row++ {
 		fmt.Printf("|")
 		for col := 1; col <= self.dimension; col++ {
@@ -187,4 +191,90 @@ func (self *MATX) RightMul_InPlace(other *MATX) {
 	}
 	DontNeedVECXAnyMore(temp_vec)
 	return
+}
+
+// in-place
+func (self *MATX) ToIdentity() {
+	modula := self.dimension + 1
+	for idx := range self.data {
+		if idx%modula == 0 {
+			self.data[idx] = 1
+		} else {
+			self.data[idx] = 0
+		}
+	}
+}
+
+// return the first element address
+func (self *MATX) Address() *float32 {
+	return &(self.data[0])
+}
+
+// in-place
+func (self *MATX) Rotate4(rotation *VECX) {
+	if self.dimension != 4 {
+		panic("Rotate4 dimension doesn't match")
+	}
+	res := GetMATX(4)
+	res.ToIdentity()
+	defer DontNeedMATXAnyMore(res)
+	//
+	x_degree := rotation.GetIndexValue(0)
+	y_degree := rotation.GetIndexValue(1)
+	z_degree := rotation.GetIndexValue(2)
+	//
+	cosy := float32(math.Cos(float64((3.141592653 * y_degree) / 180.0)))
+	cosz := float32(math.Cos(float64((3.141592653 * z_degree) / 180.0)))
+	sinz := float32(math.Sin(float64((3.141592653 * z_degree) / 180.0)))
+	siny := float32(math.Sin(float64((3.141592653 * y_degree) / 180.0)))
+	cosx := float32(math.Cos(float64((3.141592653 * x_degree) / 180.0)))
+	sinx := float32(math.Sin(float64((3.141592653 * x_degree) / 180.0)))
+
+	(res.data)[0] = cosy * cosz
+	(res.data)[4] = -(cosy * sinz)
+	(res.data)[8] = siny
+
+	(res.data)[1] = cosx*sinz + sinx*siny*cosz
+	(res.data)[5] = cosx*cosz - sinx*siny*sinz
+	(res.data)[9] = -(sinx * cosy)
+
+	(res.data)[2] = sinx*sinz - cosx*siny*cosz
+	(res.data)[6] = sinx*cosz + cosx*siny*sinz
+	(res.data)[10] = cosx * cosy
+
+	self.RightMul_InPlace(res)
+}
+
+// in-place
+func (self *MATX) Translate4(translate *VECX) {
+	// ST_MAT4 *res = NewMat4(0);
+	// Mat4SetValue(res, 1, 4, x_value);
+	// Mat4SetValue(res, 2, 4, y_value);
+	// Mat4SetValue(res, 3, 4, z_value);
+	// ST_MAT4 *shouldReturn = MatMat4(res, mat4);
+	// Mat4Free(res);
+	// return shouldReturn;
+	///////////////////////
+	if self.dimension != 4 {
+		panic("Translate4 dimension doesn't match")
+	}
+	res := GetMATX(4)
+	res.ToIdentity()
+	defer DontNeedMATXAnyMore(res)
+
+	(res.data)[12] = translate.GetIndexValue(0)
+	(res.data)[13] = translate.GetIndexValue(1)
+	(res.data)[14] = translate.GetIndexValue(2)
+	self.RightMul_InPlace(res)
+}
+
+func Homoz4(z float32) *MATX {
+	res := GetMATX(4)
+	res.ToIdentity()
+	p := -(1 / z)
+	res.SetEleByRowAndCol(3, 3, 0.0)
+	res.SetEleByRowAndCol(4, 4, 0.0)
+	res.SetEleByRowAndCol(4, 3, p)
+	res.SetEleByRowAndCol(3, 4, p)
+	return res
 }

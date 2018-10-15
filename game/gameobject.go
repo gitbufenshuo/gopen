@@ -14,7 +14,7 @@ type GameObjectI interface {
 	NotDrawable() bool
 	DrawEnable_sg(...bool) bool
 	ReadyForDraw_sg(...bool) bool
-	Transform() *common.Transform
+	GetTransform() *common.Transform
 	Start()
 	Update()
 	OnDraw()

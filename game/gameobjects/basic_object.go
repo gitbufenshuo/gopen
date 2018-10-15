@@ -4,6 +4,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/common"
+	"github.com/gitbufenshuo/gopen/matmath"
 )
 
 // the common minimal internal implementation of the GameObjectI
@@ -15,13 +16,13 @@ type BasicObject struct {
 	notDrawable  bool // could this gameobject be drawn
 	drawEnable   bool // enable - disable drawing
 	readyForDraw bool
-	transform    *common.Transform
+	Transform    *common.Transform
 	gi           *game.GlobalInfo
 }
 
 func NewBasicObject(_gi *game.GlobalInfo, notDrawable bool) *BasicObject {
 	var gb BasicObject
-	gb.transform = common.NewTransform()
+	gb.Transform = common.NewTransform()
 	gb.notDrawable = notDrawable
 	gb.gi = _gi
 	return &gb
@@ -93,11 +94,26 @@ func (gb *BasicObject) ReadyForDraw_sg(_bool ...bool) bool {
 	gb.readyForDraw = _bool[0]
 	return gb.readyForDraw
 }
-func (gb *BasicObject) Transform() *common.Transform {
-	return gb.transform
+func (gb *BasicObject) GetTransform() *common.Transform {
+	return gb.Transform
 }
 func (gb *BasicObject) Start() {
 
+}
+
+func (gb *BasicObject) Model() *matmath.MATX {
+	transform := matmath.GetMATX(4)
+	transform.ToIdentity()
+	transform.Rotate4(gb.Transform.Rotation)
+	transform.Translate4(gb.Transform.Postion)
+	return transform
+}
+
+func (gb *BasicObject) View() *matmath.MATX {
+	return gb.GI().View()
+}
+func (gb *BasicObject) Projection() *matmath.MATX {
+	return gb.GI().Projection()
 }
 
 // should update uniform-value to gpu

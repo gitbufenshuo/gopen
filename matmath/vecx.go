@@ -63,6 +63,9 @@ func GetVECX(di int) *VECX {
 
 // when you dont need one VECX anymore, you should call this function
 func DontNeedVECXAnyMore(vecx *VECX) {
+	if vecx == nil {
+		return
+	}
 	global_vec_pool[vecx.dimension].Put(vecx)
 }
 
@@ -124,25 +127,42 @@ func (self *VECX) checkHomotype(other *VECX) bool {
 
 // vec math add, the result will be stored int another new-vecx;
 // vec3 and vec4 cannot add, so return nil on that condition;
-func (self *VECX) Add(other *VECX) *VECX {
+func (self *VECX) Add(other *VECX, op ...bool) *VECX {
 	if !self.checkHomotype(other) {
 		return nil
 	}
 	res := GetVECX(self.dimension)
+	var sub bool
+	if len(op) != 0 && op[0] {
+		sub = true
+	}
 	for i := 0; i != self.dimension; i++ {
-		res.data[i] = self.data[i] + other.data[i]
+		if sub {
+			res.data[i] = self.data[i] - other.data[i]
+		} else {
+			res.data[i] = self.data[i] + other.data[i]
+		}
 	}
 	return res
 }
 
 // vec math add in place, will store the result in self
 // vec3 and vec4 cannot add, so return with nothing changed on that condition
-func (self *VECX) Add_InPlace(other *VECX) {
+func (self *VECX) Add_InPlace(other *VECX, op ...bool) {
 	if !self.checkHomotype(other) {
 		return
 	}
+	var sub bool
+	if len(op) != 0 && op[0] {
+		sub = true
+	}
+
 	for i := 0; i != self.dimension; i++ {
-		self.data[i] = self.data[i] + other.data[i]
+		if sub {
+			self.data[i] = self.data[i] - other.data[i]
+		} else {
+			self.data[i] = self.data[i] + other.data[i]
+		}
 	}
 }
 
@@ -214,4 +234,66 @@ func (self *VECX) Dot(other *VECX) float32 {
 		sum += self.data[i] * other.data[i]
 	}
 	return sum
+}
+
+func (self *VECX) Normalize() {
+	weight := math.Sqrt(float64(self.data[0]*self.data[0] + self.data[1]*self.data[1] + self.data[2]*self.data[2]))
+	if math.Abs(weight) < 0.000001 {
+		return
+	}
+	for idx := range self.data {
+		self.data[idx] = self.data[idx] / float32(weight)
+	}
+}
+
+// left X right
+func Vec3Cross(left, right *VECX) *VECX {
+	res := GetVECX(3)
+	(res.data)[0] = (left.data)[1]*(right.data)[2] - (left.data)[2]*(right.data)[1]
+	(res.data)[1] = (left.data)[2]*(right.data)[0] - (left.data)[0]*(right.data)[2]
+	(res.data)[2] = (left.data)[0]*(right.data)[1] - (left.data)[1]*(right.data)[0]
+	return res
+}
+
+// generate mat4
+func LookAtFrom4(point, target, up *VECX) *MATX {
+	left := GetMATX(4)
+	right := GetMATX(4)
+	left.ToIdentity()
+	right.ToIdentity()
+	defer DontNeedMATXAnyMore(left)
+	// first lets calculate the camera-z and camera-x and camera-y
+	// camera-z
+	camera_z := point.Add(target, true)
+	camera_z.Normalize()
+
+	// camera-x
+	camera_x := Vec3Cross(up, camera_z)
+	camera_x.Normalize()
+
+	// camera-y
+	camera_y := Vec3Cross(camera_z, camera_x)
+	camera_y.Normalize()
+
+	// deal with the left mat4
+	left.SetEleByRowAndCol(1, 1, (camera_x.data)[0])
+	left.SetEleByRowAndCol(1, 2, (camera_x.data)[1])
+	left.SetEleByRowAndCol(1, 3, (camera_x.data)[2])
+
+	left.SetEleByRowAndCol(2, 1, (camera_y.data)[0])
+	left.SetEleByRowAndCol(2, 2, (camera_y.data)[1])
+	left.SetEleByRowAndCol(2, 3, (camera_y.data)[2])
+
+	left.SetEleByRowAndCol(3, 1, (camera_z.data)[0])
+	left.SetEleByRowAndCol(3, 2, (camera_z.data)[1])
+	left.SetEleByRowAndCol(3, 3, (camera_z.data)[2])
+
+	// deal with the right mat4
+	right.SetEleByRowAndCol(1, 4, -(point.data)[0])
+	right.SetEleByRowAndCol(2, 4, -(point.data)[1])
+	right.SetEleByRowAndCol(3, 4, -(point.data)[2])
+
+	// left * right --> view mat4
+	right.RightMul_InPlace(left)
+	return right
 }
