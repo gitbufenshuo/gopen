@@ -151,18 +151,19 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 		// set something
 		gb.ShaderAsset_sg().Resource.Upload()
 		gb.ModelAsset_sg().Resource.Upload()
-		if _resource := gb.TextureAsset_sg().Resource; _resource != nil { // texture is optional
-			_resource.Upload()
+		if _asset := gb.TextureAsset_sg(); _asset != nil {
+			_asset.Resource.Upload()
 		}
+
 		gb.ReadyForDraw_sg(true)
 	}
 	gb.Update() // call the gameobjects' Update function
 	gb.OnDraw() // call the gameobjects' OnDraw function
 	// change context
-	gb.ShaderAsset_sg().Resource.Active()                             // shader
-	gb.ModelAsset_sg().Resource.Active()                              // model
-	if _resource := gb.TextureAsset_sg().Resource; _resource != nil { // texture is optional
-		_resource.Active()
+	gb.ShaderAsset_sg().Resource.Active() // shader
+	gb.ModelAsset_sg().Resource.Active()  // model
+	if _asset := gb.TextureAsset_sg(); _asset != nil {
+		_asset.Resource.Active()
 	}
 	// draw
 	modelResource := gb.ModelAsset_sg().Resource.(*resource.Model)
