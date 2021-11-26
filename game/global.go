@@ -45,6 +45,8 @@ type GlobalInfo struct {
 	title        string
 	CustomInit   func(*GlobalInfo)
 	MainCamera   *Camera
+	window       *glfw.Window
+	keyCallback  func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
 	*GlobalFrameInfo
 }
 
@@ -71,6 +73,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	if err != nil {
 		panic(err)
 	}
+	gi.window = window
 	window.MakeContextCurrent()
 
 	// Initialize Glow
@@ -83,10 +86,12 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	var frame_number int
 	gi.Boot()
 	gl.Enable(gl.DEPTH_TEST)
+	gl.Enable(gl.CULL_FACE)
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(1, 1, 1, 1)
+	window.SetKeyCallback(gi.keyCallback)
 	for !window.ShouldClose() {
-		time.Sleep(time.Millisecond * 20)
+		// time.Sleep(time.Millisecond * 10)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		///////////////////////////////////////////////////
 		// the very update every frame
@@ -99,6 +104,11 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	}
 
 }
+
+func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)) {
+	gi.keyCallback = callback
+}
+
 func (gi *GlobalInfo) Boot() {
 	gi.initAssetManager()
 	if gi.CustomInit == nil {
@@ -134,7 +144,7 @@ func (gi *GlobalInfo) dealWithTime(mode int) {
 func (gi *GlobalInfo) update() {
 	gi.CurFrame++
 	gi.dealWithTime(1)
-	gi.dealWithTime(0)
+	// gi.dealWithTime(0)
 	for _, gb := range gi.gameobjects {
 		gi.draw(gb)
 	}
