@@ -1,0 +1,6 @@
+github.com/gitbufenshuo/gopen v0.0.4 h1:9UCRqLc+WfA+IPhF2iwiL5yER2tayN5uN+xiUvsj7LA=
+github.com/gitbufenshuo/gopen v0.0.4/go.mod h1:W3XCuEQoYP/eem/FvxLnbuOKxnFGa4y/lvSJa+6u6l0=
+github.com/go-gl/gl v0.0.0-20211025173605-bda47ffaa784 h1:1Zi56D0LNfvkzM+BdoxKryvUEdyWO7LP8oRT+oSYJW0=
+github.com/go-gl/gl v0.0.0-20211025173605-bda47ffaa784/go.mod h1:9YTyiznxEY1fVinfM7RvRcjRHbw2xLBJ3AAGIT0I4Nw=
+github.com/go-gl/glfw v0.0.0-20211024062804-40e447a793be h1:oYR4JFQpVEKyqRCJB8wsdDLUJ2i+MrEFSGiKQyueTtY=
+github.com/go-gl/glfw v0.0.0-20211024062804-40e447a793be/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
