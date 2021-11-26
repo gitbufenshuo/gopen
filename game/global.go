@@ -17,15 +17,6 @@ import (
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
-type Camera struct {
-	Pos          *matmath.VECX
-	Front        *matmath.VECX
-	UP           *matmath.VECX
-	Target       *matmath.VECX
-	NearDistance float32
-	ViewT        *matmath.MATX
-	ProjectionT  *matmath.MATX
-}
 type GlobalFrameInfo struct {
 	CurFrame       int
 	StartMS        float64 // the time that the globalinfo successfully starts at
@@ -239,7 +230,7 @@ func (gi *GlobalInfo) View() *matmath.MATX {
 	if gi.MainCamera.ViewT != nil {
 		return gi.MainCamera.ViewT
 	}
-	gi.MainCamera.Target = gi.MainCamera.Pos.Add(gi.MainCamera.Front)
+	// gi.MainCamera.Target = gi.MainCamera.Pos.Add(gi.MainCamera.Front)
 	viewT := matmath.LookAtFrom4(gi.MainCamera.Pos, gi.MainCamera.Target, gi.MainCamera.UP)
 	gi.MainCamera.ViewT = viewT
 	return viewT

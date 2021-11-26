@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"path"
 	"runtime"
 
@@ -116,9 +117,13 @@ func myInit(gi *game.GlobalInfo) {
 	gi.MainCamera.UP = matmath.GetVECX(3)
 	gi.MainCamera.UP.SetIndexValue(0, 0)
 	gi.MainCamera.UP.SetIndexValue(1, 1)
-	gi.MainCamera.UP.SetIndexValue(2, 2)
+	gi.MainCamera.UP.SetIndexValue(2, 0)
 
 	gi.MainCamera.Target = matmath.GetVECX(3)
+	gi.MainCamera.Target.SetIndexValue(0, 0)
+	gi.MainCamera.Target.SetIndexValue(1, 0)
+	gi.MainCamera.Target.SetIndexValue(2, 0)
+
 	gi.MainCamera.NearDistance = 0.5
 	// register a new custom shader resource
 	initShader(gi)
@@ -129,33 +134,26 @@ func myInit(gi *game.GlobalInfo) {
 	one := NewCustomObject(gi)
 	gi.AddGameObject(one)
 	// keycallback
+	var cameraCircleRad float64
+	var cameraVertical float64
+	var cameraR float64 = 2
 	onKeyCallback := func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 		if !(action == glfw.Repeat || action == glfw.Press) {
 			return
 		}
 		switch key {
 		case glfw.KeyA:
-			gi.MainCamera.Pos.SetIndexValue(0, gi.MainCamera.Pos.GetIndexValue(0)-0.1)
-			if gi.MainCamera.Pos.GetIndexValue(0) < -1 {
-				gi.MainCamera.Pos.SetIndexValue(0, -1)
-			}
+			cameraCircleRad -= 1 / (2 * math.Pi)
 		case glfw.KeyD:
-			gi.MainCamera.Pos.SetIndexValue(0, gi.MainCamera.Pos.GetIndexValue(0)+0.1)
-			if gi.MainCamera.Pos.GetIndexValue(0) > 1 {
-				gi.MainCamera.Pos.SetIndexValue(0, 1)
-			}
+			cameraCircleRad += 1 / (2 * math.Pi)
 		case glfw.KeyW:
-			gi.MainCamera.Pos.SetIndexValue(1, gi.MainCamera.Pos.GetIndexValue(1)+0.1)
-			if gi.MainCamera.Pos.GetIndexValue(1) > 1 {
-				gi.MainCamera.Pos.SetIndexValue(1, 1)
-			}
+			cameraVertical += 1 / (2 * math.Pi)
 		case glfw.KeyS:
-			gi.MainCamera.Pos.SetIndexValue(1, gi.MainCamera.Pos.GetIndexValue(1)-0.1)
-			if gi.MainCamera.Pos.GetIndexValue(1) < -1 {
-				gi.MainCamera.Pos.SetIndexValue(1, -1)
-			}
+			cameraVertical -= 1 / (2 * math.Pi)
 		}
-
+		gi.MainCamera.Pos.SetIndexValue(0, float32(cameraR*math.Sin(cameraCircleRad)))
+		gi.MainCamera.Pos.SetIndexValue(2, float32(cameraR*math.Cos(cameraCircleRad)))
+		gi.MainCamera.Pos.SetIndexValue(1, float32(cameraR*math.Sin(cameraVertical)))
 	}
 
 	gi.SetKeyCallback(onKeyCallback)

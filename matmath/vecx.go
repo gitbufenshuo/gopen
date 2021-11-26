@@ -101,6 +101,14 @@ func (self *VECX) SetIndexValue(index int, value float32) {
 	self.data[index] = value
 }
 
+// set all elements from the target
+// node: index begins from 0
+func (self *VECX) CopyValue(target *VECX) {
+	for index := 0; index != self.dimension; index++ {
+		self.data[index] = target.data[index]
+	}
+}
+
 // set all elements to 0
 func (self *VECX) Clear() {
 	for i := 0; i != self.dimension; i++ {
@@ -164,6 +172,11 @@ func (self *VECX) Add_InPlace(other *VECX, op ...bool) {
 			self.data[i] = self.data[i] + other.data[i]
 		}
 	}
+}
+
+func (self *VECX) Sub_InPlace(other *VECX) {
+	self.Add_InPlace(other, true)
+	return
 }
 
 // vec math scale in place, will store the result in self
