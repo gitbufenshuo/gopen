@@ -132,7 +132,11 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	one := NewCustomObject(gi)
+	one.Transform.Postion.SetIndexValue(0, -0.6)
+	two := NewCustomObject(gi)
+	two.Transform.Postion.SetIndexValue(0, 0.6)
 	gi.AddGameObject(one)
+	gi.AddGameObject(two)
 	// keycallback
 	var cameraCircleRad float64
 	var cameraVertical float64
