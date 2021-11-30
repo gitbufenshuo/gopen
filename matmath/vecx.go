@@ -100,6 +100,24 @@ func (self *VECX) GetIndexValue(index int) float32 {
 func (self *VECX) SetIndexValue(index int, value float32) {
 	self.data[index] = value
 }
+func (self *VECX) SetValue1(value0 float32) {
+	self.data[0] = value0
+}
+func (self *VECX) SetValue2(value0, value1 float32) {
+	self.data[0] = value0
+	self.data[1] = value1
+}
+func (self *VECX) SetValue3(value0, value1, value2 float32) {
+	self.data[0] = value0
+	self.data[1] = value1
+	self.data[2] = value2
+}
+func (self *VECX) SetValue4(value0, value1, value2, value3 float32) {
+	self.data[0] = value0
+	self.data[1] = value1
+	self.data[2] = value2
+	self.data[3] = value3
+}
 
 // set all elements from the target
 // node: index begins from 0
@@ -269,6 +287,7 @@ func Vec3Cross(left, right *VECX) *VECX {
 }
 
 // generate mat4
+// target : the target point coord
 func LookAtFrom4(point, target, up *VECX) *MATX {
 	left := GetMATX(4)
 	right := GetMATX(4)
@@ -279,7 +298,6 @@ func LookAtFrom4(point, target, up *VECX) *MATX {
 	// camera-z
 	camera_z := point.Add(target, true)
 	camera_z.Normalize()
-
 	// camera-x
 	camera_x := Vec3Cross(up, camera_z)
 	camera_x.Normalize()
@@ -287,7 +305,6 @@ func LookAtFrom4(point, target, up *VECX) *MATX {
 	// camera-y
 	camera_y := Vec3Cross(camera_z, camera_x)
 	camera_y.Normalize()
-
 	// deal with the left mat4
 	left.SetEleByRowAndCol(1, 1, (camera_x.data)[0])
 	left.SetEleByRowAndCol(1, 2, (camera_x.data)[1])
