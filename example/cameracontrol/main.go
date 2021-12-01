@@ -66,11 +66,11 @@ type CustomObject struct {
 	mvp           *MVP
 }
 
-func NewCustomObject(gi *game.GlobalInfo) *CustomObject {
+func NewCustomObject(gi *game.GlobalInfo, modelname, texturename string) *CustomObject {
 	innerBasic := gameobjects.NewBasicObject(gi, false)
-	innerBasic.ModelAsset_sg(gi.AssetManager.FindByName("mvp_model"))
+	innerBasic.ModelAsset_sg(gi.AssetManager.FindByName(modelname))
 	innerBasic.ShaderAsset_sg(gi.AssetManager.FindByName("mvp_shader"))
-	innerBasic.TextureAsset_sg(gi.AssetManager.FindByName("grid.png.texuture"))
+	innerBasic.TextureAsset_sg(gi.AssetManager.FindByName(texturename))
 	innerBasic.DrawEnable_sg(true)
 
 	one := new(CustomObject)
@@ -102,38 +102,36 @@ func (co *CustomObject) OnDraw() {
 	// co.frame.Upload(co)
 }
 
-func myInit(gi *game.GlobalInfo) {
+func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
 	gi.MainCamera.Pos = matmath.GetVECX(3)
-	gi.MainCamera.Pos.SetIndexValue(0, 0)
-	gi.MainCamera.Pos.SetIndexValue(1, 0)
-	gi.MainCamera.Pos.SetIndexValue(2, 2)
+	gi.MainCamera.Pos.SetValue3(0, 0, 2)
+
 	gi.MainCamera.Front = matmath.GetVECX(3)
-	gi.MainCamera.Front.SetIndexValue(0, 0)
-	gi.MainCamera.Front.SetIndexValue(1, 0)
-	gi.MainCamera.Front.SetIndexValue(2, -1)
+	gi.MainCamera.Front.SetValue3(0, 0, -1)
 
 	gi.MainCamera.UP = matmath.GetVECX(3)
-	gi.MainCamera.UP.SetIndexValue(0, 0)
-	gi.MainCamera.UP.SetIndexValue(1, 1)
-	gi.MainCamera.UP.SetIndexValue(2, 0)
+	gi.MainCamera.UP.SetValue3(0, 1, 0)
 
 	gi.MainCamera.Target = matmath.GetVECX(3)
-	gi.MainCamera.Target.SetIndexValue(0, 0)
-	gi.MainCamera.Target.SetIndexValue(1, 0)
-	gi.MainCamera.Target.SetIndexValue(2, 0)
+	gi.MainCamera.Target.SetValue3(0, 0, 0)
 
 	gi.MainCamera.NearDistance = 0.5
+
+}
+func myInit(gi *game.GlobalInfo) {
+	myInit_Camera(gi) // init the main camera
 	// register a new custom shader resource
 	initShader(gi)
 	// register a new custom model resource
 	initModel(gi)
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
-	one := NewCustomObject(gi)
+	//
+	one := NewCustomObject(gi, "mvp_model.1", "grid.png.texuture")
 	one.Transform.Postion.SetIndexValue(0, -0.6)
-	two := NewCustomObject(gi)
+	two := NewCustomObject(gi, "mvp_model.2", "logo_texture")
 	two.Transform.Postion.SetIndexValue(0, 0.6)
 	gi.AddGameObject(one)
 	gi.AddGameObject(two)
@@ -176,15 +174,27 @@ func initShader(gi *game.GlobalInfo) {
 }
 
 func initModel(gi *game.GlobalInfo) {
-	var data asset_manager.ModelDataType
-	data.FilePath = path.Join("mvp_model.json")
-	as := asset_manager.NewAsset("mvp_model", asset_manager.AssetTypeModel, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
+	{
+		var data asset_manager.ModelDataType
+		data.FilePath = path.Join("mvp_model1.json")
+		as := asset_manager.NewAsset("mvp_model.1", asset_manager.AssetTypeModel, &data)
+		err := gi.AssetManager.Register(as.Name, as)
+		if err != nil {
+			panic(err)
+		}
+		gi.AssetManager.Load(as)
 	}
-	gi.AssetManager.Load(as)
 
+	{
+		var data asset_manager.ModelDataType
+		data.FilePath = path.Join("mvp_model2.json")
+		as := asset_manager.NewAsset("mvp_model.2", asset_manager.AssetTypeModel, &data)
+		err := gi.AssetManager.Register(as.Name, as)
+		if err != nil {
+			panic(err)
+		}
+		gi.AssetManager.Load(as)
+	}
 }
 
 func initTexture(gi *game.GlobalInfo) {

@@ -39,8 +39,8 @@ type TextureDataType struct {
 	GenMipMaps  bool
 }
 type ShaderDataType struct {
-	VPath string
-	FPath string
+	VPath string // vertex shader script file path
+	FPath string // fragment shader script file path
 }
 type ModelDataType struct {
 	FilePath string
