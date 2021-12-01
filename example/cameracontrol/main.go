@@ -104,7 +104,7 @@ func (co *CustomObject) OnDraw() {
 
 func myInit(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
-	gi.MainCamera = new(game.Camera)
+	gi.MainCamera = game.NewDefaultCamera()
 	gi.MainCamera.Pos = matmath.GetVECX(3)
 	gi.MainCamera.Pos.SetIndexValue(0, 0)
 	gi.MainCamera.Pos.SetIndexValue(1, 0)

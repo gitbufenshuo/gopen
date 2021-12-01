@@ -278,3 +278,23 @@ func Homoz4(z float32) *MATX {
 	res.SetEleByRowAndCol(3, 4, p)
 	return res
 }
+
+// @title    Perspective
+// @description   获取一个 Perspective 的矩阵
+// @auth      onebook
+// @param     near near plane
+// @param     far far plane
+// @param     fov
+func Perspective(near, far, fov float32) *MATX {
+	res := GetMATX(4)
+	res.ToIdentity()
+	//
+	topdown := float32(math.Tan(float64(fov/2))) * near
+	leftright := topdown // cause aspect is always 1
+	res.SetEleByRowAndCol(1, 1, 2*near/(leftright))
+	res.SetEleByRowAndCol(2, 2, 2*near/(leftright))
+	res.SetEleByRowAndCol(3, 3, -(far+near)/(far-near))
+	res.SetEleByRowAndCol(3, 4, 2*far*near/(near-far))
+	res.SetEleByRowAndCol(4, 3, 2*far*near/(near-far))
+	return res
+}

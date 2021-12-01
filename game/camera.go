@@ -1,6 +1,10 @@
 package game
 
-import "github.com/gitbufenshuo/gopen/matmath"
+import (
+	"math"
+
+	"github.com/gitbufenshuo/gopen/matmath"
+)
 
 type Camera struct {
 	Pos          *matmath.VECX
@@ -8,8 +12,19 @@ type Camera struct {
 	UP           *matmath.VECX
 	Target       *matmath.VECX
 	NearDistance float32
+	FarDistance  float32
+	FOV          float32
 	ViewT        *matmath.MATX
 	ProjectionT  *matmath.MATX
+}
+
+func NewDefaultCamera() *Camera {
+	c := new(Camera)
+	////////////////
+	c.NearDistance = 0.1
+	c.FarDistance = 100
+	c.FOV = math.Pi / 2
+	return c
 }
 
 // set the camera so that it looks at the target

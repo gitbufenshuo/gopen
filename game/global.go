@@ -239,7 +239,7 @@ func (gi *GlobalInfo) Projection() *matmath.MATX {
 	if gi.MainCamera.ProjectionT != nil {
 		return gi.MainCamera.ProjectionT
 	}
-	projectionT := matmath.Homoz4(gi.MainCamera.NearDistance)
+	projectionT := matmath.Perspective(gi.MainCamera.NearDistance, gi.MainCamera.FarDistance, gi.MainCamera.FOV)
 	gi.MainCamera.ProjectionT = projectionT
 	return projectionT
 }
