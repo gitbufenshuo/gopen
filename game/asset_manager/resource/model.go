@@ -76,3 +76,9 @@ func (m *Model) Upload() {
 func (m *Model) Active() {
 	gl.BindVertexArray(m.vao)
 }
+
+func (m *Model) Release() {
+	gl.DeleteBuffers(1, &m.vao)
+	gl.DeleteBuffers(1, &m.vbo)
+	gl.DeleteBuffers(1, &m.ebo)
+}
