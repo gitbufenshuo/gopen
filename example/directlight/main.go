@@ -82,9 +82,9 @@ func (co *CustomObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
 }
 func (co *CustomObject) Update() {
-	return
 	co.Transform.Rotation.SetIndexValue(1, float32(co.GI().CurFrame))
 	co.Transform.Rotation.SetIndexValue(0, float32(co.GI().CurFrame))
+	return
 }
 func (co *CustomObject) OnDraw() {
 	co.mvp.m = co.Model()
