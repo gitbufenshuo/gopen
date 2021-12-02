@@ -7,7 +7,8 @@ import (
 )
 
 func TestMATX_ToIdentity(t *testing.T) {
-	mat4 := matmath.GetMATX(4)
+	var mat4 matmath.MATX
+	mat4.Init4()
 	mat4.ToIdentity()
 	mat4.PrettyShow()
 }

@@ -20,7 +20,7 @@ func init() {
 }
 
 type MVP struct {
-	m, v, p                         *matmath.MATX
+	m, v, p                         matmath.MATX
 	mname, vname, pname             string
 	ShaderProgram                   uint32
 	mlocation, vlocation, plocation int32
@@ -54,6 +54,7 @@ func (mvp *MVP) Upload(gb *CustomObject) {
 		// need find the location
 		mvp.plocation = gl.GetUniformLocation(mvp.ShaderProgram, gl.Str(mvp.pname))
 	}
+
 	gl.UniformMatrix4fv(mvp.mlocation, 1, false, mvp.m.Address())
 	gl.UniformMatrix4fv(mvp.vlocation, 1, false, mvp.v.Address())
 	gl.UniformMatrix4fv(mvp.plocation, 1, false, mvp.p.Address())
@@ -90,7 +91,6 @@ func (co *CustomObject) OnDraw() {
 	co.mvp.m = co.Model()
 	co.mvp.v = co.GI().View()
 	co.mvp.p = co.GI().Projection()
-
 	co.mvp.Upload(co)
 }
 

@@ -3,33 +3,7 @@ package matmath
 import (
 	"fmt"
 	"math"
-	"sync"
 )
-
-var global_mat_pool map[int]*sync.Pool
-
-func init() {
-	global_mat_pool = make(map[int]*sync.Pool)
-	for i := 2; i != 5; i++ {
-		var newfunc = func(di int) func() interface{} {
-			switch di {
-			case 2:
-				return newMAT2
-			case 3:
-				return newMAT3
-			case 4:
-				return newMAT4
-			default:
-				panic("MATX only supports [2, 3, 4] dimension")
-			}
-		}(i)
-		global_sync_pool := &sync.Pool{
-			New: newfunc,
-		}
-		global_mat_pool[i] = global_sync_pool
-	}
-
-}
 
 // element in the data is arranged in column.
 // For example: int a mat2 , data[0] == mat2[1][1], data[1] == mat2[2][1]
@@ -38,37 +12,29 @@ type MATX struct {
 	dimension int
 }
 
-func newMAT2() interface{} {
-	var matx MATX
+func (matx *MATX) InitDimension(di int) {
+	if di == 2 {
+		matx.Init2()
+	} else if di == 3 {
+		matx.Init3()
+	} else {
+		matx.Init4()
+	}
+}
+
+func (matx *MATX) Init2() {
 	matx.dimension = 2
 	matx.data = make([]float32, 4, 4)
-	return &matx
 }
-func newMAT3() interface{} {
-	var matx MATX
+
+func (matx *MATX) Init3() {
 	matx.dimension = 3
 	matx.data = make([]float32, 9, 9)
-	return &matx
 }
-func newMAT4() interface{} {
-	var matx MATX
+
+func (matx *MATX) Init4() {
 	matx.dimension = 4
 	matx.data = make([]float32, 16, 16)
-	return &matx
-}
-
-// this is the only function that you should new-a-MATX
-// the data inside the result is dirty, don't think they are zero-initialized
-func GetMATX(di int) *MATX {
-	return global_mat_pool[di].Get().(*MATX)
-}
-
-// when you dont need one MATX anymore, you should call this function
-func DontNeedMATXAnyMore(matx *MATX) {
-	if matx == nil {
-		return
-	}
-	global_mat_pool[matx.dimension].Put(matx)
 }
 
 // read-only, pretty print the mat
@@ -116,11 +82,14 @@ func (self *MATX) checkHomotype_vec(other *VECX) bool {
 
 // mat math add, the result will be stored int another new-matx;
 // mat3 and mat4 cannot add, so return nil on that condition;
-func (self *MATX) Add(other *MATX) *MATX {
+func (self *MATX) Add(other *MATX) MATX {
 	if !self.checkHomotype(other) {
-		return nil
+		panic("mat add dimension")
 	}
-	res := GetMATX(self.dimension)
+	var res MATX
+	p := &res
+	p.InitDimension(other.Di())
+	p = nil
 	for i := 0; i != self.dimension; i++ {
 		res.data[i] = self.data[i] + other.data[i]
 	}
@@ -131,7 +100,7 @@ func (self *MATX) Add(other *MATX) *MATX {
 // mat3 and mat4 cannot add, so return with nothing changed on that condition
 func (self *MATX) Add_InPlace(other *MATX) {
 	if !self.checkHomotype(other) {
-		return
+		panic("MATX.Add_InPlace")
 	}
 	for i := 0; i != self.dimension; i++ {
 		self.data[i] = self.data[i] + other.data[i]
@@ -210,14 +179,18 @@ func (self *MATX) Address() *float32 {
 	return &(self.data[0])
 }
 
+func (self *MATX) Data() []float32 {
+	return self.data
+}
+
 // in-place
 func (self *MATX) Rotate4(rotation *VECX) {
 	if self.dimension != 4 {
 		panic("Rotate4 dimension doesn't match")
 	}
-	res := GetMATX(4)
-	res.ToIdentity()
-	defer DontNeedMATXAnyMore(res)
+	var helperMat MATX
+	helperMat.Init4()
+	helperMat.ToIdentity()
 	//
 	x_degree := rotation.GetIndexValue(0)
 	y_degree := rotation.GetIndexValue(1)
@@ -230,19 +203,19 @@ func (self *MATX) Rotate4(rotation *VECX) {
 	cosx := float32(math.Cos(float64((3.141592653 * x_degree) / 180.0)))
 	sinx := float32(math.Sin(float64((3.141592653 * x_degree) / 180.0)))
 
-	(res.data)[0] = cosy * cosz
-	(res.data)[4] = -(cosy * sinz)
-	(res.data)[8] = siny
+	(helperMat.data)[0] = cosy * cosz
+	(helperMat.data)[4] = -(cosy * sinz)
+	(helperMat.data)[8] = siny
 
-	(res.data)[1] = cosx*sinz + sinx*siny*cosz
-	(res.data)[5] = cosx*cosz - sinx*siny*sinz
-	(res.data)[9] = -(sinx * cosy)
+	(helperMat.data)[1] = cosx*sinz + sinx*siny*cosz
+	(helperMat.data)[5] = cosx*cosz - sinx*siny*sinz
+	(helperMat.data)[9] = -(sinx * cosy)
 
-	(res.data)[2] = sinx*sinz - cosx*siny*cosz
-	(res.data)[6] = sinx*cosz + cosx*siny*sinz
-	(res.data)[10] = cosx * cosy
+	(helperMat.data)[2] = sinx*sinz - cosx*siny*cosz
+	(helperMat.data)[6] = sinx*cosz + cosx*siny*sinz
+	(helperMat.data)[10] = cosx * cosy
 
-	self.RightMul_InPlace(res)
+	self.RightMul_InPlace(&helperMat)
 }
 
 // in-place
@@ -258,25 +231,14 @@ func (self *MATX) Translate4(translate *VECX) {
 	if self.dimension != 4 {
 		panic("Translate4 dimension doesn't match")
 	}
-	res := GetMATX(4)
-	res.ToIdentity()
-	defer DontNeedMATXAnyMore(res)
-
-	(res.data)[12] = translate.GetIndexValue(0)
-	(res.data)[13] = translate.GetIndexValue(1)
-	(res.data)[14] = translate.GetIndexValue(2)
-	self.RightMul_InPlace(res)
-}
-
-func Homoz4(z float32) *MATX {
-	res := GetMATX(4)
-	res.ToIdentity()
-	p := -(1 / z)
-	res.SetEleByRowAndCol(3, 3, 0.0)
-	res.SetEleByRowAndCol(4, 4, 0.0)
-	res.SetEleByRowAndCol(4, 3, p)
-	res.SetEleByRowAndCol(3, 4, p)
-	return res
+	var helperMat MATX
+	p := &helperMat
+	p.Init4()
+	p.ToIdentity()
+	(p.data)[12] = translate.GetIndexValue(0)
+	(p.data)[13] = translate.GetIndexValue(1)
+	(p.data)[14] = translate.GetIndexValue(2)
+	self.RightMul_InPlace(p)
 }
 
 // @title    Perspective
@@ -285,9 +247,11 @@ func Homoz4(z float32) *MATX {
 // @param     near near plane
 // @param     far far plane
 // @param     fov
-func Perspective(near, far, fov float32) *MATX {
-	res := GetMATX(4)
-	res.ToIdentity()
+func Perspective(near, far, fov float32) MATX {
+	var res MATX
+	p := &res
+	p.Init4()
+	p.ToIdentity()
 	//
 	topdown := float32(math.Tan(float64(fov/2))) * near
 	leftright := topdown // cause aspect is always 1

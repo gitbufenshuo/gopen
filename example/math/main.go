@@ -18,7 +18,7 @@ func TryLookAt() {
 	objectPos := matmath.GetVECX(4)
 	objectPos.SetValue4(1, 0, 0, 1)
 	//////
-	objectPos.RightMul_InPlace(viewMAT)
+	objectPos.RightMul_InPlace(&viewMAT)
 
 	objectPos.PrettyShow()
 }

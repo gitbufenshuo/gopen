@@ -20,7 +20,7 @@ func init() {
 }
 
 type MVP struct {
-	m, v, p                         *matmath.MATX
+	m, v, p                         matmath.MATX
 	mname, vname, pname             string
 	ShaderProgram                   uint32
 	mlocation, vlocation, plocation int32

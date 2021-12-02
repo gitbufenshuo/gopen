@@ -101,18 +101,23 @@ func (gb *BasicObject) Start() {
 
 }
 
-func (gb *BasicObject) Model() *matmath.MATX {
-	transform := matmath.GetMATX(4)
+func (gb *BasicObject) Model() matmath.MATX {
+	var transform matmath.MATX
+	transform.Init4()
 	transform.ToIdentity()
+
 	transform.Rotate4(gb.Transform.Rotation)
+
 	transform.Translate4(gb.Transform.Postion)
+
 	return transform
 }
 
-func (gb *BasicObject) View() *matmath.MATX {
+func (gb *BasicObject) View() matmath.MATX {
 	return gb.GI().View()
 }
-func (gb *BasicObject) Projection() *matmath.MATX {
+
+func (gb *BasicObject) Projection() matmath.MATX {
 	return gb.GI().Projection()
 }
 

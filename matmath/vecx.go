@@ -288,12 +288,14 @@ func Vec3Cross(left, right *VECX) *VECX {
 
 // generate mat4
 // target : the target point coord
-func LookAtFrom4(point, target, up *VECX) *MATX {
-	left := GetMATX(4)
-	right := GetMATX(4)
+func LookAtFrom4(point, target, up *VECX) MATX {
+	var left MATX
+	left.Init4()
+	var right MATX
+	right.Init4()
 	left.ToIdentity()
 	right.ToIdentity()
-	defer DontNeedMATXAnyMore(left)
+
 	// first lets calculate the camera-z and camera-x and camera-y
 	// camera-z
 	camera_z := point.Add(target, true)
@@ -324,6 +326,6 @@ func LookAtFrom4(point, target, up *VECX) *MATX {
 	right.SetEleByRowAndCol(3, 4, -(point.data)[2])
 
 	// left * right --> view mat4
-	right.RightMul_InPlace(left)
+	right.RightMul_InPlace(&left)
 	return right
 }

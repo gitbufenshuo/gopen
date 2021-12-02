@@ -15,4 +15,5 @@ void main() {
     fragTexCoord = vertTexCoord;
     fragVertNormal = wNormal.xyz;
     gl_Position = projection * view * model * vec4(vert, 1);
+    // gl_Position = vec4(vert, 1);
 }

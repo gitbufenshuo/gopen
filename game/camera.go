@@ -14,8 +14,8 @@ type Camera struct {
 	NearDistance float32
 	FarDistance  float32
 	FOV          float32
-	ViewT        *matmath.MATX
-	ProjectionT  *matmath.MATX
+	ViewT        matmath.MATX
+	ProjectionT  matmath.MATX
 }
 
 func NewDefaultCamera() *Camera {
