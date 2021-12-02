@@ -83,9 +83,9 @@ func (co *CustomObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
 }
 func (co *CustomObject) Update() {
+	return
 	co.Transform.Rotation.SetIndexValue(1, float32(co.GI().CurFrame))
 	co.Transform.Rotation.SetIndexValue(0, float32(co.GI().CurFrame))
-	return
 }
 func (co *CustomObject) OnDraw() {
 	co.mvp.m = co.Model()
@@ -117,8 +117,13 @@ func myInit(gi *game.GlobalInfo) {
 	//
 	initTexture(gi)
 	//
-	customObject := NewCustomObject(gi, "mvp_model", "mvp_shader", "direct_light.texture")
-	gi.AddGameObject(customObject)
+	customObject1 := NewCustomObject(gi, "mvp_model", "mvp_shader", "solid.texture")
+	customObject1.Transform.Postion.SetIndexValue(2, -2)
+	gi.AddGameObject(customObject1)
+
+	customObject2 := NewCustomObject(gi, "mvp_model", "mvp_shader", "direct_light.texture")
+	gi.AddGameObject(customObject2)
+
 	// keycallback
 	var cameraCircleRad float64
 	var cameraVertical float64
@@ -158,15 +163,28 @@ func initShader(gi *game.GlobalInfo) {
 }
 
 func initTexture(gi *game.GlobalInfo) {
-	var data asset_manager.TextureDataType
-	data.FilePath = "direct_light.png"
-	data.FlipY = true
-	as := asset_manager.NewAsset("direct_light.texture", asset_manager.AssetTypeTexture, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
+	{
+		var data asset_manager.TextureDataType
+		data.FilePath = "direct_light.png"
+		data.FlipY = true
+		as := asset_manager.NewAsset("direct_light.texture", asset_manager.AssetTypeTexture, &data)
+		err := gi.AssetManager.Register(as.Name, as)
+		if err != nil {
+			panic(err)
+		}
+		gi.AssetManager.Load(as)
 	}
-	gi.AssetManager.Load(as)
+	{
+		var data asset_manager.TextureDataType
+		data.FilePath = "solid.png"
+		data.FlipY = true
+		as := asset_manager.NewAsset("solid.texture", asset_manager.AssetTypeTexture, &data)
+		err := gi.AssetManager.Register(as.Name, as)
+		if err != nil {
+			panic(err)
+		}
+		gi.AssetManager.Load(as)
+	}
 }
 
 func initModel(gi *game.GlobalInfo) {

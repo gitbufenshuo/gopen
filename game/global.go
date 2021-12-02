@@ -79,6 +79,9 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gl.Enable(gl.DEPTH_TEST)
 	gl.Enable(gl.CULL_FACE)
 	gl.DepthFunc(gl.LESS)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
 	gl.ClearColor(1, 1, 1, 1)
 	window.SetKeyCallback(gi.keyCallback)
 	for !window.ShouldClose() {
@@ -137,7 +140,14 @@ func (gi *GlobalInfo) update() {
 	gi.dealWithTime(1)
 	// gi.dealWithTime(0)
 	for _, gb := range gi.gameobjects {
+		// if idx == 0 {
+		// 	gl.DepthMask(true)
+		// }
+		// if idx == 1 {
+		// 	gl.DepthMask(false)
+		// }
 		gi.draw(gb)
+		// time.Sleep(time.Second * 3)
 	}
 	gi.dealWithTime(2)
 }
