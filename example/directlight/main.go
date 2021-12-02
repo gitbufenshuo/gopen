@@ -82,6 +82,7 @@ func (co *CustomObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
 }
 func (co *CustomObject) Update() {
+	return
 	co.Transform.Rotation.SetIndexValue(1, float32(co.GI().CurFrame))
 	co.Transform.Rotation.SetIndexValue(0, float32(co.GI().CurFrame))
 }
@@ -118,7 +119,9 @@ func myInit(gi *game.GlobalInfo) {
 	// register a new custom model resource
 	initModel(gi)
 	//
-	customObject := NewCustomObject(gi, "mvp_model", "mvp_shader", "logo_texture")
+	initTexture(gi)
+	//
+	customObject := NewCustomObject(gi, "mvp_model", "mvp_shader", "direct_light.texture")
 	gi.AddGameObject(customObject)
 	// keycallback
 	var cameraCircleRad float64
@@ -151,6 +154,18 @@ func initShader(gi *game.GlobalInfo) {
 	data.VPath = path.Join("mvp_vertex.glsl")
 	data.FPath = path.Join("mvp_fragment.glsl")
 	as := asset_manager.NewAsset("mvp_shader", asset_manager.AssetTypeShader, &data)
+	err := gi.AssetManager.Register(as.Name, as)
+	if err != nil {
+		panic(err)
+	}
+	gi.AssetManager.Load(as)
+}
+
+func initTexture(gi *game.GlobalInfo) {
+	var data asset_manager.TextureDataType
+	data.FilePath = "direct_light.png"
+	data.FlipY = true
+	as := asset_manager.NewAsset("direct_light.texture", asset_manager.AssetTypeTexture, &data)
 	err := gi.AssetManager.Register(as.Name, as)
 	if err != nil {
 		panic(err)
