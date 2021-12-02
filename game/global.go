@@ -224,7 +224,7 @@ func (gi *GlobalInfo) initDefaultTexture_logo() {
 func (gi *GlobalInfo) View() matmath.MATX {
 
 	// gi.MainCamera.Target = gi.MainCamera.Pos.Add(gi.MainCamera.Front)
-	viewT := matmath.LookAtFrom4(gi.MainCamera.Pos, gi.MainCamera.Target, gi.MainCamera.UP)
+	viewT := matmath.LookAtFrom4(&gi.MainCamera.Pos, &gi.MainCamera.Target, &gi.MainCamera.UP)
 	gi.MainCamera.ViewT = viewT
 	return viewT
 }

@@ -106,9 +106,9 @@ func (gb *BasicObject) Model() matmath.MATX {
 	transform.Init4()
 	transform.ToIdentity()
 
-	transform.Rotate4(gb.Transform.Rotation)
+	transform.Rotate4(&gb.Transform.Rotation)
 
-	transform.Translate4(gb.Transform.Postion)
+	transform.Translate4(&gb.Transform.Postion)
 
 	return transform
 }

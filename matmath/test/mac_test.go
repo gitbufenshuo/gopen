@@ -19,37 +19,40 @@ func TestMATPrettyShow(t *testing.T) {
 	mat4.PrettyShow()
 }
 func TestMATSetCol(t *testing.T) {
-	vec4_1 := matmath.GetVECX(4)
+	var vec4_1 matmath.VECX
+	vec4_1.Init4()
 	vec4_1.SetIndexValue(0, 1)
 	vec4_1.SetIndexValue(1, 2)
 	vec4_1.SetIndexValue(2, 3)
 
 	var mat4_1 matmath.MATX
 	mat4_1.Init4()
-	mat4_1.SetByCol_InPlace(vec4_1, 3)
+	mat4_1.SetByCol_InPlace(&vec4_1, 3)
 
 	mat4_1.PrettyShow()
 }
 func TestMatMatEqual(t *testing.T) {
-	vec4_1 := matmath.GetVECX(4)
+	var vec4_1 matmath.VECX
+	vec4_1.Init4()
 	vec4_1.SetIndexValue(0, 1)
 	vec4_1.SetIndexValue(1, 2)
 	vec4_1.SetIndexValue(2, 3)
 
 	var mat4_1 matmath.MATX
 	mat4_1.Init4()
-	mat4_1.SetByCol_InPlace(vec4_1, 3)
+	mat4_1.SetByCol_InPlace(&vec4_1, 3)
 
 	var mat4_2 matmath.MATX
 	mat4_2.Init4()
-	mat4_2.SetByCol_InPlace(vec4_1, 3)
+	mat4_2.SetByCol_InPlace(&vec4_1, 3)
 
 	if !mat4_1.EqualsTo(&mat4_2) {
 		t.Error("wrong")
 	}
 }
 func TestMatMat(t *testing.T) {
-	vec4_1 := matmath.GetVECX(4)
+	var vec4_1 matmath.VECX
+	vec4_1.Init4()
 	vec4_1.SetIndexValue(0, 1)
 	vec4_1.SetIndexValue(1, 2)
 	vec4_1.SetIndexValue(2, 3)
@@ -57,13 +60,13 @@ func TestMatMat(t *testing.T) {
 
 	var mat4_1 matmath.MATX
 	mat4_1.Init4()
-	mat4_1.SetByCol_InPlace(vec4_1, 3)
-	mat4_1.SetByCol_InPlace(vec4_1, 1)
+	mat4_1.SetByCol_InPlace(&vec4_1, 3)
+	mat4_1.SetByCol_InPlace(&vec4_1, 1)
 
 	var mat4_2 matmath.MATX
 	mat4_2.Init4()
-	mat4_2.SetByCol_InPlace(vec4_1, 3)
-	mat4_2.SetByCol_InPlace(vec4_1, 2)
+	mat4_2.SetByCol_InPlace(&vec4_1, 3)
+	mat4_2.SetByCol_InPlace(&vec4_1, 2)
 
 	fmt.Println("--")
 	mat4_1.PrettyShow()
@@ -72,7 +75,8 @@ func TestMatMat(t *testing.T) {
 	mat4_2.PrettyShow()
 }
 func TestMatVec(t *testing.T) {
-	vec4_1 := matmath.GetVECX(4)
+	var vec4_1 matmath.VECX
+	vec4_1.Init4()
 	vec4_1.SetIndexValue(0, 1)
 	vec4_1.SetIndexValue(1, 2)
 	vec4_1.SetIndexValue(2, 3)
@@ -81,10 +85,10 @@ func TestMatVec(t *testing.T) {
 	vec4_1.PrettyShow()
 	var mat4_1 matmath.MATX
 	mat4_1.Init4()
-	mat4_1.SetByCol_InPlace(vec4_1, 1)
-	mat4_1.SetByCol_InPlace(vec4_1, 2)
-	mat4_1.SetByCol_InPlace(vec4_1, 3)
-	mat4_1.SetByCol_InPlace(vec4_1, 4)
+	mat4_1.SetByCol_InPlace(&vec4_1, 1)
+	mat4_1.SetByCol_InPlace(&vec4_1, 2)
+	mat4_1.SetByCol_InPlace(&vec4_1, 3)
+	mat4_1.SetByCol_InPlace(&vec4_1, 4)
 	mat4_1.PrettyShow()
 	vec4_1.RightMul_InPlace(&mat4_1)
 	vec4_1.PrettyShow()

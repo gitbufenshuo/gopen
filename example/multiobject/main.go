@@ -6,7 +6,6 @@ import (
 	"path"
 	"runtime"
 
-	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 
 	"github.com/gitbufenshuo/gopen/game"
@@ -89,9 +88,7 @@ func (co *CustomObject) OnDraw() {
 func myInit(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = new(game.Camera)
-	gi.MainCamera.Front = matmath.GetVECX(3)
-	gi.MainCamera.UP = matmath.GetVECX(3)
-	gi.MainCamera.Target = matmath.GetVECX(3)
+
 	// register a new custom shader resource
 	initShader(gi)
 	// create multi gameobjects that can be drawn on the window

@@ -152,13 +152,13 @@ func (self *MATX) RightMul_InPlace(other *MATX) {
 	if !self.checkHomotype(other) {
 		return
 	}
-	temp_vec := GetVECX(self.dimension)
+	var temp_vec VECX
+	temp_vec.InitDimension(self.Di())
 	for i := 0; i != self.dimension; i++ {
 		temp_vec.GrabColToVec(self, i+1)
 		temp_vec.RightMul_InPlace(other)
-		self.SetByCol_InPlace(temp_vec, i+1)
+		self.SetByCol_InPlace(&temp_vec, i+1)
 	}
-	DontNeedVECXAnyMore(temp_vec)
 	return
 }
 

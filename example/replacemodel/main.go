@@ -111,16 +111,13 @@ func (co *CustomObject) OnDraw() {
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Pos = matmath.GetVECX(3)
+
 	gi.MainCamera.Pos.SetValue3(0, 0, 2)
 
-	gi.MainCamera.Front = matmath.GetVECX(3)
 	gi.MainCamera.Front.SetValue3(0, 0, -1)
 
-	gi.MainCamera.UP = matmath.GetVECX(3)
 	gi.MainCamera.UP.SetValue3(0, 1, 0)
 
-	gi.MainCamera.Target = matmath.GetVECX(3)
 	gi.MainCamera.Target.SetValue3(0, 0, 0)
 
 	gi.MainCamera.NearDistance = 0.5

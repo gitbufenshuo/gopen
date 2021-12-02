@@ -97,21 +97,19 @@ func (co *CustomObject) OnDraw() {
 func myInit(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Pos = matmath.GetVECX(3)
+
 	gi.MainCamera.Pos.SetIndexValue(0, 0)
 	gi.MainCamera.Pos.SetIndexValue(1, 0)
 	gi.MainCamera.Pos.SetIndexValue(2, 2)
-	gi.MainCamera.Front = matmath.GetVECX(3)
+
 	gi.MainCamera.Front.SetIndexValue(0, 0)
 	gi.MainCamera.Front.SetIndexValue(1, 0)
 	gi.MainCamera.Front.SetIndexValue(2, -1)
 
-	gi.MainCamera.UP = matmath.GetVECX(3)
 	gi.MainCamera.UP.SetIndexValue(0, 0)
 	gi.MainCamera.UP.SetIndexValue(1, 1)
 	gi.MainCamera.UP.SetIndexValue(2, 2)
 
-	gi.MainCamera.Target = matmath.GetVECX(3)
 	gi.MainCamera.NearDistance = 0.5
 	// register a new custom shader resource
 	initShader(gi)
