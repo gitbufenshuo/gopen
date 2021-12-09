@@ -184,6 +184,16 @@ func (self *MATX) Data() []float32 {
 }
 
 // in-place
+func (self *MATX) Scale4(scale *VECX) {
+	if self.dimension != 4 {
+		panic("Rotate4 dimension doesn't match")
+	}
+	self.data[0] = scale.data[0]
+	self.data[5] = scale.data[1]
+	self.data[10] = scale.data[1]
+}
+
+// in-place
 func (self *MATX) Rotate4(rotation *VECX) {
 	if self.dimension != 4 {
 		panic("Rotate4 dimension doesn't match")
