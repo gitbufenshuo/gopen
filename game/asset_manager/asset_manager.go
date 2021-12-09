@@ -43,6 +43,39 @@ func (am *AsssetManager) Register(name string, as *Asset) error {
 	return nil
 }
 
+func (am *AsssetManager) LoadModelFromFile(filepath, assetname string) {
+	var data ModelDataType
+	data.FilePath = filepath
+	as := NewAsset(assetname, AssetTypeModel, &data)
+	err := am.Register(as.Name, as)
+	if err != nil {
+		panic(err)
+	}
+	am.Load(as)
+}
+func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
+	var data TextureDataType
+	data.FilePath = filepath
+	data.FlipY = true
+	as := NewAsset(assetname, AssetTypeTexture, &data)
+	err := am.Register(as.Name, as)
+	if err != nil {
+		panic(err)
+	}
+	am.Load(as)
+}
+func (am *AsssetManager) LoadShaderFromFile(vetexPath, fragPath, assetname string) {
+	var data ShaderDataType
+	data.VPath = vetexPath
+	data.FPath = fragPath
+	as := NewAsset("mvp_shader", AssetTypeShader, &data)
+	err := am.Register(as.Name, as)
+	if err != nil {
+		panic(err)
+	}
+	am.Load(as)
+}
+
 // will assign id field
 func (am *AsssetManager) Load(as *Asset) {
 	err := as.Load()
