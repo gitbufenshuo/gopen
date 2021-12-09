@@ -28,16 +28,17 @@ type GlobalFrameInfo struct {
 	Debug          bool    // whether print the frame info
 }
 type GlobalInfo struct {
-	AssetManager *asset_manager.AsssetManager
-	gameobjects  map[int]GameObjectI
-	nowID        int
-	width        int
-	height       int
-	title        string
-	CustomInit   func(*GlobalInfo)
-	MainCamera   *Camera
-	window       *glfw.Window
-	keyCallback  func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
+	AssetManager        *asset_manager.AsssetManager
+	gameobjects         map[int]GameObjectI
+	nowID               int
+	width               int
+	height              int
+	title               string
+	CustomInit          func(*GlobalInfo)
+	MainCamera          *Camera
+	window              *glfw.Window
+	InputSystemKeyPress []bool
+	keyCallback         func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
 	*GlobalFrameInfo
 }
 
@@ -47,6 +48,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.height = windowHeight
 	globalInfo.title = title
 	globalInfo.gameobjects = make(map[int]GameObjectI)
+	globalInfo.InputSystemKeyPress = make([]bool, 300)
 	return globalInfo
 }
 func (gi *GlobalInfo) StartGame(mode string) {
@@ -83,12 +85,15 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	gl.ClearColor(1, 1, 1, 1)
-	window.SetKeyCallback(gi.keyCallback)
+	if gi.keyCallback != nil {
+		window.SetKeyCallback(gi.keyCallback)
+	}
 	for !window.ShouldClose() {
 		// time.Sleep(time.Millisecond * 10)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		///////////////////////////////////////////////////
 		// the very update every frame
+		gi.InputSystem()
 		gi.update()
 		///////////////////////////////////////////////////
 		// Maintenance
@@ -97,6 +102,35 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		frame_number++
 	}
 
+}
+
+func (gi *GlobalInfo) InputSystem() {
+	if gi.window.GetKey(glfw.KeyW) == glfw.Press {
+		gi.InputSystemKeyPress[glfw.KeyW] = true
+	} else {
+		gi.InputSystemKeyPress[glfw.KeyW] = false
+	}
+
+	if gi.window.GetKey(glfw.KeyS) == glfw.Press {
+		gi.InputSystemKeyPress[glfw.KeyS] = true
+	} else {
+		gi.InputSystemKeyPress[glfw.KeyS] = false
+	}
+
+	if gi.window.GetKey(glfw.KeyA) == glfw.Press {
+		gi.InputSystemKeyPress[glfw.KeyA] = true
+	} else {
+		gi.InputSystemKeyPress[glfw.KeyA] = false
+	}
+	if gi.window.GetKey(glfw.KeyD) == glfw.Press {
+		gi.InputSystemKeyPress[glfw.KeyD] = true
+	} else {
+		gi.InputSystemKeyPress[glfw.KeyD] = false
+	}
+}
+
+func (gi *GlobalInfo) InputSystemPressed(whickKey int) bool {
+	return gi.InputSystemKeyPress[whickKey]
 }
 
 func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)) {
