@@ -4,8 +4,6 @@ import (
 	"path"
 	"runtime"
 
-	"github.com/gitbufenshuo/gopen/matmath"
-
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
@@ -37,10 +35,8 @@ func (co *CustomObject) OnDraw() {
 
 func myInit(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
-	gi.MainCamera = new(game.Camera)
-	gi.MainCamera.Front = matmath.GetVECX(3)
-	gi.MainCamera.UP = matmath.GetVECX(3)
-	gi.MainCamera.Target = matmath.GetVECX(3)
+
+	gi.MainCamera = game.NewDefaultCamera()
 	// register a new custom shader resource
 	initShader(gi)
 	// register a new custom model resource
