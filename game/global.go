@@ -39,6 +39,8 @@ type GlobalInfo struct {
 	window              *glfw.Window
 	InputSystemKeyPress []bool
 	keyCallback         func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
+	cursorPosCallback   func(win *glfw.Window, xpos float64, ypos float64)
+
 	*GlobalFrameInfo
 }
 
@@ -85,8 +87,15 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	gl.ClearColor(1, 1, 1, 1)
-	if gi.keyCallback != nil {
-		window.SetKeyCallback(gi.keyCallback)
+	{
+		// interact
+		window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
+		if gi.keyCallback != nil {
+			window.SetKeyCallback(gi.keyCallback)
+		}
+		if gi.cursorPosCallback != nil {
+			window.SetCursorPosCallback(gi.cursorPosCallback)
+		}
 	}
 	for !window.ShouldClose() {
 		// time.Sleep(time.Millisecond * 10)
@@ -136,7 +145,9 @@ func (gi *GlobalInfo) InputSystemPressed(whickKey int) bool {
 func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)) {
 	gi.keyCallback = callback
 }
-
+func (gi *GlobalInfo) SetCursorPosCallback(callback func(win *glfw.Window, xpos float64, ypos float64)) {
+	gi.cursorPosCallback = callback
+}
 func (gi *GlobalInfo) Boot() {
 	gi.initAssetManager()
 	if gi.CustomInit == nil {

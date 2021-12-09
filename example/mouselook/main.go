@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/example/mouselook/stblock"
 	"github.com/gitbufenshuo/gopen/example/mouselook/stplane"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 func init() {
@@ -41,6 +43,13 @@ func myInit(gi *game.GlobalInfo) {
 	block.Rotating = true
 	block.Transform.Postion.SetIndexValue(1, 3)
 	gi.AddGameObject(block)
+	//
+	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {
+		fmt.Printf(
+			"xpos: %f   ypos: %f \n", xpos, ypos,
+		)
+	}
+	gi.SetCursorPosCallback(cursorPosUpdateFunc)
 }
 
 func initShader(gi *game.GlobalInfo) {
