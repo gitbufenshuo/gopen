@@ -83,6 +83,7 @@ func (co *CustomObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
 }
 func (co *CustomObject) Update() {
+	return
 	co.Transform.Rotation.SetIndexValue(1, float32(co.GI().CurFrame))
 	co.Transform.Rotation.SetIndexValue(0, float32(co.GI().CurFrame))
 }
@@ -116,8 +117,12 @@ func myInit(gi *game.GlobalInfo) {
 	//
 	initTexture(gi)
 	//
-	customObject := NewCustomObject(gi, "mvp_model", "mvp_shader", "solid.texture")
-	gi.AddGameObject(customObject)
+	customObject1 := NewCustomObject(gi, "mvp_model", "mvp_shader", "solid.texture")
+	customObject1.Transform.Postion.SetIndexValue(2, -2) // far solid
+	gi.AddGameObject(customObject1)
+
+	customObject2 := NewCustomObject(gi, "mvp_model", "mvp_shader", "direct_light.texture")
+	gi.AddGameObject(customObject2) // near direct_light
 
 	// keycallback
 	var cameraCircleRad float64
