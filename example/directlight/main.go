@@ -118,11 +118,11 @@ func myInit(gi *game.GlobalInfo) {
 	initTexture(gi)
 	//
 	customObject1 := NewCustomObject(gi, "mvp_model", "mvp_shader", "solid.texture")
-	customObject1.Transform.Postion.SetIndexValue(2, -2)
+	customObject1.Transform.Postion.SetIndexValue(2, -2) // far solid
 	gi.AddGameObject(customObject1)
 
-	customObject2 := NewCustomObject(gi, "mvp_model", "mvp_shader", "direct_light.texture")
-	gi.AddGameObject(customObject2)
+	customObject2 := NewCustomObject(gi, "mvp_model", "mvp_shader", "transparent.texture")
+	gi.AddGameObject(customObject2) // near transparent
 
 	// keycallback
 	var cameraCircleRad float64
@@ -165,9 +165,9 @@ func initShader(gi *game.GlobalInfo) {
 func initTexture(gi *game.GlobalInfo) {
 	{
 		var data asset_manager.TextureDataType
-		data.FilePath = "direct_light.png"
+		data.FilePath = "transparent.png"
 		data.FlipY = true
-		as := asset_manager.NewAsset("direct_light.texture", asset_manager.AssetTypeTexture, &data)
+		as := asset_manager.NewAsset("transparent.texture", asset_manager.AssetTypeTexture, &data)
 		err := gi.AssetManager.Register(as.Name, as)
 		if err != nil {
 			panic(err)

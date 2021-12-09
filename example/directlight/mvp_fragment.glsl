@@ -14,5 +14,8 @@ void main() {
     if (light <0.1){
         light = 0.5;
     }
+    if (outputColor.w<0.5) {
+        discard;
+    }
     outputColor.xyz *= light;
 }
