@@ -2,7 +2,6 @@ package main
 
 import (
 	"math"
-	"path"
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/matmath"
@@ -10,7 +9,6 @@ import (
 	"github.com/go-gl/glfw/v3.1/glfw"
 
 	"github.com/gitbufenshuo/gopen/game"
-	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 )
@@ -64,6 +62,7 @@ type CustomObject struct {
 	*gameobjects.BasicObject
 	shaderProgram uint32
 	mvp           *MVP
+	rotating      bool
 }
 
 func NewCustomObject(gi *game.GlobalInfo, modelname, texturename string) *CustomObject {
@@ -82,14 +81,9 @@ func (co *CustomObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
 }
 func (co *CustomObject) Update() {
-	// if co.GI().CurFrame%100 == 0 {
-	// 	co.GI().MainCamera.Pos.SetIndexValue(2, float32(co.GI().CurFrame/100))
-	// }
-
-	// co.GI().MainCamera.Pos.SetIndexValue(0, float32(math.Sin(float64(co.GI().CurFrame)/(3*math.Pi))))
-	// co.GI().MainCamera.Pos.SetIndexValue(1, float32(math.Cos(float64(co.GI().CurFrame)/(3*math.Pi))))
-	// co.Transform.Postion.SetIndexValue(0, float32(math.Sin(float32(co.GI().ElapsedMS))))
-	// co.Transform.Rotation.SetIndexValue(0, float32(co.GI().CurFrame))
+	if co.rotating {
+		co.Transform.Rotation.SetIndexValue(1, float32((co.GI().CurFrame)))
+	}
 }
 func (co *CustomObject) OnDraw() {
 	co.mvp.m = co.Model()
@@ -105,7 +99,7 @@ func (co *CustomObject) OnDraw() {
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Pos.SetValue3(0, 0, 2)
+	gi.MainCamera.Pos.SetValue3(0, 0, 10)
 
 	gi.MainCamera.Front.SetValue3(0, 0, -1)
 
@@ -124,15 +118,21 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	one := NewCustomObject(gi, "mvp_model.1", "grid.png.texuture")
-	gi.AddGameObject(one)
+	plane := NewCustomObject(gi, "plane.model", "grid.png.texuture")
+	gi.AddGameObject(plane)
+
+	block := NewCustomObject(gi, "block.model", "grid.png.texuture")
+	block.rotating = true
+	block.Transform.Postion.SetIndexValue(1, 3)
+	gi.AddGameObject(block)
+
 	// two := NewCustomObject(gi, "mvp_model.2", "logo_texture")
 	// two.Transform.Postion.SetIndexValue(0, 0.6)
 	// gi.AddGameObject(two)
 	// keycallback
 	var cameraCircleRad float64
 	var cameraVertical float64
-	var cameraR float64 = 2
+	var cameraR float64 = 10
 	onKeyCallback := func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 		if !(action == glfw.Repeat || action == glfw.Press) {
 			return
@@ -156,51 +156,16 @@ func myInit(gi *game.GlobalInfo) {
 }
 
 func initShader(gi *game.GlobalInfo) {
-	var data asset_manager.ShaderDataType
-	data.VPath = path.Join("mvp_vertex.glsl")
-	data.FPath = path.Join("mvp_fragment.glsl")
-	as := asset_manager.NewAsset("mvp_shader", asset_manager.AssetTypeShader, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
-	}
-	gi.AssetManager.Load(as)
+	gi.AssetManager.LoadShaderFromFile("mvp_vertex.glsl", "mvp_fragment.glsl", "mvp_shader")
 }
 
 func initModel(gi *game.GlobalInfo) {
-	{
-		var data asset_manager.ModelDataType
-		data.FilePath = path.Join("mvp_model1.json")
-		as := asset_manager.NewAsset("mvp_model.1", asset_manager.AssetTypeModel, &data)
-		err := gi.AssetManager.Register(as.Name, as)
-		if err != nil {
-			panic(err)
-		}
-		gi.AssetManager.Load(as)
-	}
-
-	{
-		var data asset_manager.ModelDataType
-		data.FilePath = path.Join("mvp_model2.json")
-		as := asset_manager.NewAsset("mvp_model.2", asset_manager.AssetTypeModel, &data)
-		err := gi.AssetManager.Register(as.Name, as)
-		if err != nil {
-			panic(err)
-		}
-		gi.AssetManager.Load(as)
-	}
+	gi.AssetManager.CreateModel("plane.model", resource.PlaneModel)
+	gi.AssetManager.CreateModel("block.model", resource.BlockModel)
 }
 
 func initTexture(gi *game.GlobalInfo) {
-	var data asset_manager.TextureDataType
-	data.FilePath = path.Join("grid.png")
-	data.FlipY = true
-	as := asset_manager.NewAsset("grid.png.texuture", asset_manager.AssetTypeTexture, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
-	}
-	gi.AssetManager.Load(as)
+	gi.AssetManager.LoadTextureFromFile("grid.png", "grid.png.texuture")
 }
 
 func main() {

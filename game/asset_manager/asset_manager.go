@@ -5,6 +5,8 @@ package asset_manager
 import (
 	"errors"
 	"fmt"
+
+	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 )
 
 var (
@@ -53,6 +55,17 @@ func (am *AsssetManager) LoadModelFromFile(filepath, assetname string) {
 	}
 	am.Load(as)
 }
+
+func (am *AsssetManager) CreateModel(assetname string, modelResource *resource.Model) {
+	as := NewAsset(assetname, AssetTypeModel, nil)
+	err := am.Register(as.Name, as)
+	if err != nil {
+		panic(err)
+	}
+	as.Resource = modelResource
+	am.Load(as)
+}
+
 func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
 	var data TextureDataType
 	data.FilePath = filepath

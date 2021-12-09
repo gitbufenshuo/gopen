@@ -73,10 +73,12 @@ func (as *Asset) Load() error {
 		_t.ReadFromFile(_data.VPath, _data.FPath)
 		as.Resource = _t
 	case AssetTypeModel:
-		_data := as.Data.(*ModelDataType)
-		_t := resource.NewModel()
-		_t.ReadFromFile(_data.FilePath)
-		as.Resource = _t
+		if as.Resource == nil {
+			_data := as.Data.(*ModelDataType)
+			_t := resource.NewModel()
+			_t.ReadFromFile(_data.FilePath)
+			as.Resource = _t
+		}
 	default:
 		return ErrTypeNotSupport
 	}
