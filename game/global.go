@@ -28,19 +28,22 @@ type GlobalFrameInfo struct {
 	Debug          bool    // whether print the frame info
 }
 type GlobalInfo struct {
-	AssetManager        *asset_manager.AsssetManager
-	gameobjects         map[int]GameObjectI
-	nowID               int
-	width               int
-	height              int
-	title               string
-	CustomInit          func(*GlobalInfo)
-	MainCamera          *Camera
-	window              *glfw.Window
-	InputSystemKeyPress []bool
-	keyCallback         func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
-	cursorPosCallback   func(win *glfw.Window, xpos float64, ypos float64)
-
+	AssetManager          *asset_manager.AsssetManager
+	gameobjects           map[int]GameObjectI
+	nowID                 int
+	width                 int
+	height                int
+	title                 string
+	CustomInit            func(*GlobalInfo)
+	MainCamera            *Camera
+	window                *glfw.Window
+	InputSystemKeyPress   []bool
+	InputSystemKeyRelease []bool
+	keyCallback           func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
+	cursorPosCallback     func(win *glfw.Window, xpos float64, ypos float64)
+	CursorMode            int
+	//
+	MouseXDiff, MouseYDiff float64
 	*GlobalFrameInfo
 }
 
@@ -51,6 +54,8 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.title = title
 	globalInfo.gameobjects = make(map[int]GameObjectI)
 	globalInfo.InputSystemKeyPress = make([]bool, 300)
+	globalInfo.InputSystemKeyRelease = make([]bool, 300)
+	globalInfo.CursorMode = glfw.CursorNormal
 	return globalInfo
 }
 func (gi *GlobalInfo) StartGame(mode string) {
@@ -89,7 +94,6 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gl.ClearColor(1, 1, 1, 1)
 	{
 		// interact
-		// window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
 		if gi.keyCallback != nil {
 			window.SetKeyCallback(gi.keyCallback)
 		}
@@ -108,17 +112,28 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		gi.InputSystem()
 		gi.update()
 		gi.draw()
+		gi.OnFrameEnd()
 		///////////////////////////////////////////////////
 		// Maintenance
 		window.SwapBuffers()
 		glfw.PollEvents()
 		frame_number++
-		fmt.Printf("curframe:%d\n", gi.CurFrame)
 	}
 
 }
 
+func (gi *GlobalInfo) OnFrameEnd() {
+	gi.MouseXDiff = 0
+	gi.MouseYDiff = 0
+}
+
+func (gi *GlobalInfo) SetCursorMode(mode int) {
+	gi.CursorMode = mode
+	gi.window.SetInputMode(glfw.CursorMode, gi.CursorMode)
+	fmt.Println(":asdfasdfasdf")
+}
 func (gi *GlobalInfo) InputSystem() {
+	//
 	if gi.window.GetKey(glfw.KeyW) == glfw.Press {
 		gi.InputSystemKeyPress[glfw.KeyW] = true
 	} else {
@@ -141,10 +156,19 @@ func (gi *GlobalInfo) InputSystem() {
 	} else {
 		gi.InputSystemKeyPress[glfw.KeyD] = false
 	}
+	// release
+	if gi.window.GetKey(glfw.KeyEscape) == glfw.Release {
+		gi.InputSystemKeyRelease[glfw.KeyEscape] = true
+	} else {
+		gi.InputSystemKeyRelease[glfw.KeyEscape] = false
+	}
 }
 
-func (gi *GlobalInfo) InputSystemPressed(whickKey int) bool {
+func (gi *GlobalInfo) InputSystemPressed(whickKey glfw.Key) bool {
 	return gi.InputSystemKeyPress[whickKey]
+}
+func (gi *GlobalInfo) InputSystemReleased(whickKey glfw.Key) bool {
+	return gi.InputSystemKeyRelease[whickKey]
 }
 
 func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)) {
@@ -251,7 +275,6 @@ func (gi *GlobalInfo) initDefaultTexture_logo() {
 
 func (gi *GlobalInfo) View() matmath.MATX {
 
-	// gi.MainCamera.Target = gi.MainCamera.Pos.Add(gi.MainCamera.Front)
 	viewT := matmath.LookAtFrom4(&gi.MainCamera.Pos, &gi.MainCamera.Target, &gi.MainCamera.UP)
 	gi.MainCamera.ViewT = viewT
 	return viewT

@@ -5,7 +5,6 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 type PlaneObject struct {
@@ -40,22 +39,6 @@ func (co *PlaneObject) Update() {
 		co.Transform.Rotation.SetIndexValue(1, float32((co.GI().CurFrame)))
 		co.Transform.Postion.SetIndexValue(2, float32(math.Sin(float64(co.GI().CurFrame)*0.077))-2)
 	}
-	return
-	if co.GI().InputSystemPressed(int(glfw.KeyA)) {
-		co.cameraCircleRad -= 1 / (2 * math.Pi)
-	}
-	if co.GI().InputSystemPressed(int(glfw.KeyD)) {
-		co.cameraCircleRad += 1 / (2 * math.Pi)
-	}
-	if co.GI().InputSystemPressed(int(glfw.KeyW)) {
-		co.cameraVertical += 1 / (2 * math.Pi)
-	}
-	if co.GI().InputSystemPressed(int(glfw.KeyS)) {
-		co.cameraVertical -= 1 / (2 * math.Pi)
-	}
-	co.GI().MainCamera.Pos.SetIndexValue(0, float32(co.cameraR*math.Sin(co.cameraCircleRad)))
-	co.GI().MainCamera.Pos.SetIndexValue(2, float32(co.cameraR*math.Cos(co.cameraCircleRad)))
-	co.GI().MainCamera.Pos.SetIndexValue(1, float32(co.cameraR*math.Sin(co.cameraVertical)))
 
 }
 func (co *PlaneObject) OnDraw() {

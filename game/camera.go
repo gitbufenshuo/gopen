@@ -36,7 +36,4 @@ func (camera *Camera) SetTarget(x, y, z float32) {
 	camera.Target.SetIndexValue(0, x)
 	camera.Target.SetIndexValue(1, y)
 	camera.Target.SetIndexValue(2, z)
-	camera.Front.CopyValue(&camera.Target)
-	camera.Front.Sub_InPlace(&camera.Pos) // front = target - pos
-	camera.Front.Normalize()
 }

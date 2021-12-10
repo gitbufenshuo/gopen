@@ -66,6 +66,9 @@ func (self *VECX) GetIndexValue(index int) float32 {
 func (self *VECX) SetIndexValue(index int, value float32) {
 	self.data[index] = value
 }
+func (self *VECX) AddIndexValue(index int, value float32) {
+	self.data[index] += value
+}
 func (self *VECX) SetValue1(value0 float32) {
 	self.data[0] = value0
 }

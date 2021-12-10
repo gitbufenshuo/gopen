@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 
+	"github.com/gitbufenshuo/gopen/example/mouselook/stmyplane"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
@@ -18,8 +19,6 @@ func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
 	gi.MainCamera.Pos.SetValue3(0, 0, 10)
-
-	gi.MainCamera.Front.SetValue3(0, 0, -1)
 
 	gi.MainCamera.UP.SetValue3(0, 1, 0)
 	gi.MainCamera.Target.SetValue3(0, 0, 0)
@@ -36,16 +35,20 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	plane := gameobjects.NewPlane(gi, "plane.model", "grid.png.texuture")
+	plane := stmyplane.NewMyPlane(gi, "plane.model", "grid.png.texuture")
 	gi.AddGameObject(plane)
 	block := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
 	block.Rotating = true
 	block.Transform.Postion.SetIndexValue(1, 3)
 	gi.AddGameObject(block)
 	//
+	var mouseXPos, mouseYPos float64
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {
+		gi.MouseXDiff = xpos - mouseXPos
+		gi.MouseYDiff = ypos - mouseYPos
+		mouseXPos, mouseYPos = xpos, ypos
 		fmt.Printf(
-			"xpos: %f   ypos: %f \n", xpos, ypos,
+			"xdiff: %f   ydiff: %f \n", gi.MouseXDiff, gi.MouseYDiff,
 		)
 	}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)
