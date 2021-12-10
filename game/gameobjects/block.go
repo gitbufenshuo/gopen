@@ -1,22 +1,21 @@
-package stblock
+package gameobjects
 
 import (
 	"math/rand"
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/gameobjects"
 )
 
 type BlockObject struct {
-	*gameobjects.BasicObject
+	*BasicObject
 	shaderProgram uint32
 	shaderCtl     *game.ShaderCtl
 	Rotating      bool
 }
 
 func NewBlock(gi *game.GlobalInfo, modelname, texturename string) *BlockObject {
-	innerBasic := gameobjects.NewBasicObject(gi, false)
+	innerBasic := NewBasicObject(gi, false)
 	innerBasic.ModelAsset_sg(gi.AssetManager.FindByName(modelname))
 	innerBasic.ShaderAsset_sg(gi.AssetManager.FindByName("mvp_shader"))
 	innerBasic.TextureAsset_sg(gi.AssetManager.FindByName(texturename))

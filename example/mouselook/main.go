@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/gitbufenshuo/gopen/example/mouselook/stblock"
-	"github.com/gitbufenshuo/gopen/example/mouselook/stplane"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -37,9 +36,9 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	plane := stplane.NewPlane(gi, "plane.model", "grid.png.texuture")
+	plane := gameobjects.NewPlane(gi, "plane.model", "grid.png.texuture")
 	gi.AddGameObject(plane)
-	block := stblock.NewBlock(gi, "block.model", "grid.png.texuture")
+	block := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
 	block.Rotating = true
 	block.Transform.Postion.SetIndexValue(1, 3)
 	gi.AddGameObject(block)

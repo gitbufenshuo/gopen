@@ -3,10 +3,9 @@ package main
 import (
 	"runtime"
 
-	"github.com/gitbufenshuo/gopen/example/nodetree/stblock"
-	"github.com/gitbufenshuo/gopen/example/nodetree/stplane"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -36,11 +35,11 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	plane := stplane.NewPlane(gi, "plane.model", "grid.png.texuture")
+	plane := gameobjects.NewPlane(gi, "plane.model", "grid.png.texuture")
 	plane.Rotating = true
 	gi.AddGameObject(plane)
 	//
-	block := stblock.NewBlock(gi, "block.model", "grid.png.texuture")
+	block := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
 	block.Rotating = true
 	block.Transform.Postion.SetValue3(3, 3, 0)
 	block.Transform.SetParent(plane.Transform)

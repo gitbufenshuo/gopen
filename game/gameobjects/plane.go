@@ -1,16 +1,15 @@
-package stplane
+package gameobjects
 
 import (
 	"math"
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 type PlaneObject struct {
-	*gameobjects.BasicObject
+	*BasicObject
 	shaderProgram uint32
 	shaderCtl     *game.ShaderCtl
 	Rotating      bool
@@ -21,7 +20,7 @@ type PlaneObject struct {
 }
 
 func NewPlane(gi *game.GlobalInfo, modelname, texturename string) *PlaneObject {
-	innerBasic := gameobjects.NewBasicObject(gi, false)
+	innerBasic := NewBasicObject(gi, false)
 	innerBasic.ModelAsset_sg(gi.AssetManager.FindByName(modelname))
 	innerBasic.ShaderAsset_sg(gi.AssetManager.FindByName("mvp_shader"))
 	innerBasic.TextureAsset_sg(gi.AssetManager.FindByName(texturename))
