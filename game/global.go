@@ -238,36 +238,15 @@ func (gi *GlobalInfo) initAssetManager() {
 	gi.initDefaultTexture_logo()
 }
 func (gi *GlobalInfo) initDefaultModel_Triangle() {
-	var data asset_manager.ModelDataType
-	data.FilePath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "models", "triangle.json")
-	as := asset_manager.NewAsset("triangle", asset_manager.AssetTypeModel, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
-	}
-	gi.AssetManager.Load(as)
+	gi.AssetManager.LoadModelFromFile(path.Join(os.Getenv("HOME"), ".gopen", "assets", "models", "triangle.json"), "triangle")
 }
 func (gi *GlobalInfo) initDefaultShaderprogram_minimal() {
-	var data asset_manager.ShaderDataType
-	data.VPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_vertex.glsl")
-	data.FPath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_fragment.glsl")
-	as := asset_manager.NewAsset("minimal_shader", asset_manager.AssetTypeShader, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
-	}
-	gi.AssetManager.Load(as)
+	gi.AssetManager.LoadShaderFromFile(path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_vertex.glsl"),
+		path.Join(os.Getenv("HOME"), ".gopen", "assets", "shaderprograms", "minimal_fragment.glsl"), "minimal_shader",
+	)
 }
 func (gi *GlobalInfo) initDefaultTexture_logo() {
-	var data asset_manager.TextureDataType
-	data.FilePath = path.Join(os.Getenv("HOME"), ".gopen", "assets", "textures", "logo.png")
-	data.FlipY = true
-	as := asset_manager.NewAsset("logo_texture", asset_manager.AssetTypeTexture, &data)
-	err := gi.AssetManager.Register(as.Name, as)
-	if err != nil {
-		panic(err)
-	}
-	gi.AssetManager.Load(as)
+	gi.AssetManager.LoadTextureFromFile(path.Join(os.Getenv("HOME"), ".gopen", "assets", "textures", "logo.png"), "logo_texture")
 }
 
 func (gi *GlobalInfo) View() matmath.MATX {

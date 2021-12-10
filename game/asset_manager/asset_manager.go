@@ -84,7 +84,7 @@ func (am *AsssetManager) LoadShaderFromFile(vetexPath, fragPath, assetname strin
 	var data ShaderDataType
 	data.VPath = vetexPath
 	data.FPath = fragPath
-	as := NewAsset("mvp_shader", AssetTypeShader, &data)
+	as := NewAsset(assetname, AssetTypeShader, &data)
 	err := am.Register(as.Name, as)
 	if err != nil {
 		panic(err)
