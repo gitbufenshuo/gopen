@@ -6,7 +6,7 @@ type Transform struct {
 	Postion  matmath.VECX
 	Rotation matmath.VECX
 	Scale    matmath.VECX
-	Parent   *Transform
+	Parent   *Transform // nil if root
 	Children []*Transform
 }
 
@@ -42,6 +42,19 @@ func NewTransform() *Transform {
 	transform.Scale.Init3()
 	transform.Scale.SetValue3(1, 1, 1)
 	return &transform
+}
+func (transform *Transform) Model() matmath.MATX {
+	var matRes matmath.MATX
+	matRes.Init4()
+	matRes.ToIdentity()
+
+	matRes.Scale4(&transform.Scale)
+
+	matRes.Rotate4(&transform.Rotation)
+
+	matRes.Translate4(&transform.Postion)
+
+	return matRes
 }
 
 func (trans *Transform) SetParent(parent *Transform) {

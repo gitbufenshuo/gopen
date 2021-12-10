@@ -112,7 +112,6 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		window.SwapBuffers()
 		glfw.PollEvents()
 		frame_number++
-		time.Sleep(time.Second)
 		fmt.Printf("curframe:%d\n", gi.CurFrame)
 	}
 
