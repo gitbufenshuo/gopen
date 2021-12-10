@@ -82,14 +82,14 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gi.Boot()
 	gl.Enable(gl.DEPTH_TEST)
 	gl.Enable(gl.CULL_FACE)
-	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.BLEND)
+	gl.DepthFunc(gl.LESS)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	gl.ClearColor(1, 1, 1, 1)
 	{
 		// interact
-		window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
+		// window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
 		if gi.keyCallback != nil {
 			window.SetKeyCallback(gi.keyCallback)
 		}
@@ -99,7 +99,10 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	}
 	for !window.ShouldClose() {
 		// time.Sleep(time.Millisecond * 10)
+		gl.ClearColor(0.5, 0.5, 0.5, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		// window.SwapBuffers()
+		// time.Sleep(time.Second)
 		///////////////////////////////////////////////////
 		// the very update every frame
 		gi.InputSystem()
@@ -109,6 +112,8 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		window.SwapBuffers()
 		glfw.PollEvents()
 		frame_number++
+		time.Sleep(time.Second)
+		fmt.Printf("curframe:%d\n", gi.CurFrame)
 	}
 
 }
@@ -185,14 +190,7 @@ func (gi *GlobalInfo) update() {
 	gi.dealWithTime(1)
 	// gi.dealWithTime(0)
 	for _, gb := range gi.gameobjects {
-		// if idx == 0 {
-		// 	gl.DepthMask(true)
-		// }
-		// if idx == 1 {
-		// 	gl.DepthMask(false)
-		// }
 		gi.draw(gb)
-		// time.Sleep(time.Second * 3)
 	}
 	gi.dealWithTime(2)
 }
@@ -212,6 +210,7 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 		}
 
 		gb.ReadyForDraw_sg(true)
+		fmt.Printf("[%d] not ready in [%d]\n", gb.ID_sg(), gi.CurFrame)
 	}
 	gb.Update() // call the gameobjects' Update function
 	gb.OnDraw() // call the gameobjects' OnDraw function

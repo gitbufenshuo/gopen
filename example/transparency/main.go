@@ -1,12 +1,10 @@
 package main
 
 import (
-	"math"
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/glfw/v3.1/glfw"
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
@@ -81,6 +79,7 @@ func (co *CustomObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
 }
 func (co *CustomObject) Update() {
+	return
 	co.Transform.Rotation.SetIndexValue(1, float32(co.GI().CurFrame))
 	co.Transform.Rotation.SetIndexValue(0, float32(co.GI().CurFrame))
 }
@@ -94,7 +93,7 @@ func (co *CustomObject) OnDraw() {
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Pos.SetValue3(0, 0, 2)
+	gi.MainCamera.Pos.SetValue3(2.2, 0, 2)
 
 	gi.MainCamera.Front.SetValue3(0, 0, -1)
 
@@ -118,33 +117,8 @@ func myInit(gi *game.GlobalInfo) {
 	customObject1.Transform.Postion.SetIndexValue(2, -2) // far solid
 	gi.AddGameObject(customObject1)
 
-	customObject2 := NewCustomObject(gi, "mvp_model", "mvp_shader", "direct_light.texture")
+	customObject2 := NewCustomObject(gi, "mvp_model", "mvp_shader", "blend.texture")
 	gi.AddGameObject(customObject2) // near direct_light
-
-	// keycallback
-	var cameraCircleRad float64
-	var cameraVertical float64
-	var cameraR float64 = 2
-	onKeyCallback := func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-		if !(action == glfw.Repeat || action == glfw.Press) {
-			return
-		}
-		switch key {
-		case glfw.KeyA:
-			cameraCircleRad -= 1 / (2 * math.Pi)
-		case glfw.KeyD:
-			cameraCircleRad += 1 / (2 * math.Pi)
-		case glfw.KeyW:
-			cameraVertical += 1 / (2 * math.Pi)
-		case glfw.KeyS:
-			cameraVertical -= 1 / (2 * math.Pi)
-		}
-		gi.MainCamera.Pos.SetIndexValue(0, float32(cameraR*math.Sin(cameraCircleRad)))
-		gi.MainCamera.Pos.SetIndexValue(2, float32(cameraR*math.Cos(cameraCircleRad)))
-		gi.MainCamera.Pos.SetIndexValue(1, float32(cameraR*math.Sin(cameraVertical)))
-	}
-
-	gi.SetKeyCallback(onKeyCallback)
 }
 
 func initShader(gi *game.GlobalInfo) {
@@ -154,6 +128,7 @@ func initShader(gi *game.GlobalInfo) {
 func initTexture(gi *game.GlobalInfo) {
 	gi.AssetManager.LoadTextureFromFile("direct_light.png", "direct_light.texture")
 	gi.AssetManager.LoadTextureFromFile("solid.png", "solid.texture")
+	gi.AssetManager.LoadTextureFromFile("blend.png", "blend.texture")
 }
 
 func initModel(gi *game.GlobalInfo) {
