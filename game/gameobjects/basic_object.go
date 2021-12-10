@@ -126,6 +126,7 @@ func (gb *BasicObject) Projection() matmath.MATX {
 // should update uniform-value to gpu
 func (gb *BasicObject) OnDraw() {
 }
-
+func (gb *BasicObject) OnDrawFinish() {
+}
 func (gb *BasicObject) Update() {
 }

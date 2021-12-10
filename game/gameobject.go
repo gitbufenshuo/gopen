@@ -18,4 +18,5 @@ type GameObjectI interface {
 	Start()
 	Update()
 	OnDraw()
+	OnDrawFinish()
 }

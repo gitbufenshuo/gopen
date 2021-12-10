@@ -41,6 +41,7 @@ func myInit(gi *game.GlobalInfo) {
 	gi.AddGameObject(plane)
 	//
 	block := stblock.NewBlock(gi, "block.model", "grid.png.texuture")
+	block.Rotating = true
 	block.Transform.Postion.SetValue3(3, 3, 0)
 	block.Transform.SetParent(plane.Transform)
 	gi.AddGameObject(block)

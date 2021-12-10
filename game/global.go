@@ -107,6 +107,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		// the very update every frame
 		gi.InputSystem()
 		gi.update()
+		gi.draw()
 		///////////////////////////////////////////////////
 		// Maintenance
 		window.SwapBuffers()
@@ -189,29 +190,23 @@ func (gi *GlobalInfo) update() {
 	gi.dealWithTime(1)
 	// gi.dealWithTime(0)
 	for _, gb := range gi.gameobjects {
-		gi.draw(gb)
+		gb.Update() // call the gameobjects' Update function
 	}
 	gi.dealWithTime(2)
 }
-func (gi *GlobalInfo) draw(gb GameObjectI) {
+func (gi *GlobalInfo) draw() {
+	// gi.dealWithTime(0)
+	for _, gb := range gi.gameobjects {
+		gi.drawGameobject(gb)
+	}
+}
+func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 	if gb.NotDrawable() {
 		return
 	}
 	if !gb.DrawEnable_sg() {
 		return
 	}
-	if !gb.ReadyForDraw_sg() {
-		// set something
-		gb.ShaderAsset_sg().Resource.Upload()
-		gb.ModelAsset_sg().Resource.Upload()
-		if _asset := gb.TextureAsset_sg(); _asset != nil {
-			_asset.Resource.Upload()
-		}
-
-		gb.ReadyForDraw_sg(true)
-		fmt.Printf("[%d] not ready in [%d]\n", gb.ID_sg(), gi.CurFrame)
-	}
-	gb.Update() // call the gameobjects' Update function
 	gb.OnDraw() // call the gameobjects' OnDraw function
 	// change context
 	gb.ShaderAsset_sg().Resource.Active() // shader
@@ -223,6 +218,7 @@ func (gi *GlobalInfo) draw(gb GameObjectI) {
 	modelResource := gb.ModelAsset_sg().Resource.(*resource.Model)
 	vertexNum := len(modelResource.Indices)
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+	gb.OnDrawFinish()
 }
 func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 	gb.ID_sg(gi.nowID + 1)

@@ -56,7 +56,13 @@ func (transform *Transform) Model() matmath.MATX {
 
 	return matRes
 }
-
+func (transform *Transform) RotationMAT4() matmath.MATX {
+	var matRes matmath.MATX
+	matRes.Init4()
+	matRes.ToIdentity()
+	matRes.Rotate4(&transform.Rotation)
+	return matRes
+}
 func (trans *Transform) SetParent(parent *Transform) {
 	if trans.Parent == parent {
 		return

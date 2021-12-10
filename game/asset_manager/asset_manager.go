@@ -54,6 +54,7 @@ func (am *AsssetManager) LoadModelFromFile(filepath, assetname string) {
 		panic(err)
 	}
 	am.Load(as)
+	as.Resource.Upload()
 }
 
 func (am *AsssetManager) CreateModel(assetname string, modelResource *resource.Model) {
@@ -64,6 +65,7 @@ func (am *AsssetManager) CreateModel(assetname string, modelResource *resource.M
 	}
 	as.Resource = modelResource
 	am.Load(as)
+	as.Resource.Upload()
 }
 
 func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
@@ -76,6 +78,7 @@ func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
 		panic(err)
 	}
 	am.Load(as)
+	as.Resource.Upload()
 }
 func (am *AsssetManager) LoadShaderFromFile(vetexPath, fragPath, assetname string) {
 	var data ShaderDataType
@@ -87,6 +90,7 @@ func (am *AsssetManager) LoadShaderFromFile(vetexPath, fragPath, assetname strin
 		panic(err)
 	}
 	am.Load(as)
+	as.Resource.Upload()
 }
 
 // will assign id field

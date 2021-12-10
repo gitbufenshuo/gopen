@@ -6,56 +6,13 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
-	"github.com/gitbufenshuo/gopen/matmath"
-	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
-
-type MVP struct {
-	m, v, p                         matmath.MATX
-	mname, vname, pname             string
-	ShaderProgram                   uint32
-	mlocation, vlocation, plocation int32
-}
-
-func NewMVP(mname, vname, pname string) *MVP {
-	mvp := new(MVP)
-	mvp.mname = mname + "\x00"
-	mvp.vname = vname + "\x00"
-	mvp.pname = pname + "\x00" // "projection"
-	mvp.mlocation = -1
-	mvp.vlocation = -1
-	mvp.plocation = -1
-	return mvp
-}
-
-func (mvp *MVP) Upload(gb *PlaneObject) {
-	if mvp.ShaderProgram == 0 {
-		// need find the shader program
-		mvp.ShaderProgram = gb.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram()
-	}
-	if mvp.mlocation == -1 {
-		// need find the location
-		mvp.mlocation = gl.GetUniformLocation(mvp.ShaderProgram, gl.Str(mvp.mname))
-	}
-	if mvp.vlocation == -1 {
-		// need find the location
-		mvp.vlocation = gl.GetUniformLocation(mvp.ShaderProgram, gl.Str(mvp.vname))
-	}
-	if mvp.plocation == -1 {
-		// need find the location
-		mvp.plocation = gl.GetUniformLocation(mvp.ShaderProgram, gl.Str(mvp.pname))
-	}
-	gl.UniformMatrix4fv(mvp.mlocation, 1, false, mvp.m.Address())
-	gl.UniformMatrix4fv(mvp.vlocation, 1, false, mvp.v.Address())
-	gl.UniformMatrix4fv(mvp.plocation, 1, false, mvp.p.Address())
-
-}
 
 type PlaneObject struct {
 	*gameobjects.BasicObject
 	shaderProgram uint32
-	mvp           *MVP
+	shaderCtl     *game.ShaderCtl
 	Rotating      bool
 	////////////////////////
 	cameraCircleRad float64
@@ -72,7 +29,7 @@ func NewPlane(gi *game.GlobalInfo, modelname, texturename string) *PlaneObject {
 
 	one := new(PlaneObject)
 	one.BasicObject = innerBasic
-	one.mvp = NewMVP("model", "view", "projection")
+	one.shaderCtl = game.NewShaderCtl(one.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram())
 	one.cameraR = 20
 	return one
 }
@@ -103,9 +60,11 @@ func (co *PlaneObject) Update() {
 
 }
 func (co *PlaneObject) OnDraw() {
-	co.mvp.m = co.Model()
-	co.mvp.v = co.GI().View()
-	co.mvp.p = co.GI().Projection()
-
-	co.mvp.Upload(co)
+	co.shaderCtl.M = co.Transform.Model()
+	co.shaderCtl.V = co.GI().View()
+	co.shaderCtl.P = co.GI().Projection()
+	co.shaderCtl.Rotation = co.Transform.RotationMAT4()
+	co.shaderCtl.Upload(co)
+}
+func (co *PlaneObject) OnDrawFinish() {
 }
