@@ -274,10 +274,10 @@ func (gi *GlobalInfo) initDefaultTexture_logo() {
 }
 
 func (gi *GlobalInfo) View() matmath.MATX {
-
-	viewT := matmath.LookAtFrom4(&gi.MainCamera.Pos, &gi.MainCamera.Target, &gi.MainCamera.UP)
-	gi.MainCamera.ViewT = viewT
-	return viewT
+	return gi.MainCamera.ViewMat()
+	// viewT := matmath.LookAtFrom4(&gi.MainCamera.Pos, &gi.MainCamera.Target, &gi.MainCamera.UP)
+	// gi.MainCamera.ViewT = viewT
+	// return viewT
 }
 
 func (gi *GlobalInfo) Projection() matmath.MATX {

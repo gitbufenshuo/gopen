@@ -34,8 +34,7 @@ func (myplane *MyPlane) mouseLook() {
 	gi := myplane.GI()
 	fmt.Printf("mouse diff , %f %f\n", gi.MouseXDiff, gi.MouseYDiff)
 	mainCamera := myplane.GI().MainCamera
-	mainCamera.Target.AddIndexValue(0, float32(gi.MouseXDiff)/60)
-	mainCamera.Target.AddIndexValue(1, -float32(gi.MouseYDiff)/60)
+	mainCamera.RotateLocalHorizontal(float32(gi.MouseXDiff) / 60)
 }
 
 func NewMyPlane(gi *game.GlobalInfo, modelname, texturename string) *MyPlane {
