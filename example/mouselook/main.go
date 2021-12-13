@@ -65,7 +65,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(500, 500, "hello-texture")
+	gi := game.NewGlobalInfo(800, 800, "hello-texture")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }
