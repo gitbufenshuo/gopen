@@ -30,6 +30,8 @@ func NewDefaultCamera() *Camera {
 	c.Front.Init4()
 	c.Front.SetValue4(0, 0, -1, 1)
 	c.UP.Init3()
+	c.UP.SetValue3(0, 1, 0)
+
 	c.Target.Init3()
 	c.Transform = common.NewTransform()
 	return c

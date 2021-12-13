@@ -1,8 +1,6 @@
 package gameobjects
 
 import (
-	"math"
-
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 )
@@ -36,8 +34,9 @@ func (co *PlaneObject) Start() {
 }
 func (co *PlaneObject) Update() {
 	if co.Rotating {
+		co.Transform.Rotation.SetIndexValue(0, float32((co.GI().CurFrame)))
 		co.Transform.Rotation.SetIndexValue(1, float32((co.GI().CurFrame)))
-		co.Transform.Postion.SetIndexValue(2, float32(math.Sin(float64(co.GI().CurFrame)*0.077))-2)
+		// co.Transform.Postion.SetIndexValue(2, float32(math.Sin(float64(co.GI().CurFrame)*0.077))-2)
 	}
 
 }

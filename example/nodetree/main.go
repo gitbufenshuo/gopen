@@ -16,12 +16,7 @@ func init() {
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Pos.SetValue3(0, 5, 10)
-
-	gi.MainCamera.Front.SetValue3(0, 0, -1)
-
-	gi.MainCamera.UP.SetValue3(0, 1, 0)
-	gi.MainCamera.Target.SetValue3(0, 0, 0)
+	gi.MainCamera.Pos.SetValue3(0, 3, 13)
 
 	gi.MainCamera.NearDistance = 0.5
 
@@ -35,16 +30,32 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	plane := gameobjects.NewPlane(gi, "plane.model", "grid.png.texuture")
-	plane.Rotating = true
-	gi.AddGameObject(plane)
+	block1 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
+	block1.Rotating = true
+	block1.Color = []float32{1, 0, 0}
+	gi.AddGameObject(block1)
 	//
-	block := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
-	block.Rotating = true
-	block.Transform.Postion.SetValue3(3, 3, 0)
-	block.Transform.SetParent(plane.Transform)
-	gi.AddGameObject(block)
+	block2 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
+	block2.Rotating = true
+	block2.Color = []float32{0, 1, 0}
+	block2.Transform.Postion.SetValue3(4, 1, 0)
+	block2.Transform.SetParent(block1.Transform)
+	gi.AddGameObject(block2)
 	//
+	block3 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
+	block3.Rotating = true
+	block3.Color = []float32{0, 0, 1}
+	block3.Transform.Postion.SetValue3(4, 1, 0)
+	block3.Transform.SetParent(block2.Transform)
+	gi.AddGameObject(block3)
+	//
+	block4 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
+	block4.Rotating = true
+	block4.Color = []float32{1, 1, 1}
+	block4.Transform.Postion.SetValue3(4, 1, 0)
+	block4.Transform.SetParent(block3.Transform)
+	gi.AddGameObject(block4)
+
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)
 }

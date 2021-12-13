@@ -1,10 +1,9 @@
 package gameobjects
 
 import (
-	"math/rand"
-
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/game/common"
 )
 
 type BlockObject struct {
@@ -12,6 +11,7 @@ type BlockObject struct {
 	shaderProgram uint32
 	shaderCtl     *game.ShaderCtl
 	Rotating      bool
+	Color         []float32
 }
 
 func NewBlock(gi *game.GlobalInfo, modelname, texturename string) *BlockObject {
@@ -32,6 +32,7 @@ func (co *BlockObject) Start() {
 func (co *BlockObject) Update() {
 	if co.Rotating {
 		co.Transform.Rotation.SetIndexValue(1, float32((co.GI().CurFrame)))
+		// co.Transform.Rotation.SetIndexValue(1, float32((co.GI().CurFrame)))
 		// co.Transform.Postion.SetIndexValue(2, float32(math.Sin(float64(co.GI().CurFrame)*0.077))-2)
 	}
 
@@ -39,17 +40,24 @@ func (co *BlockObject) Update() {
 func (co *BlockObject) OnDraw() {
 	co.shaderCtl.M = co.Transform.Model()
 	co.shaderCtl.Rotation = co.Transform.RotationMAT4()
-	if co.Transform.Parent != nil { // not root
-		parentM := co.Transform.Parent.Model()
-		co.shaderCtl.M.RightMul_InPlace(&parentM)
-		parentR := co.Transform.Parent.RotationMAT4()
-		co.shaderCtl.Rotation.RightMul_InPlace(&parentR)
+	var curTransform *common.Transform
+	curTransform = co.Transform
+	for {
+		if curTransform.Parent != nil { // not root
+			parentM := curTransform.Parent.Model()
+			co.shaderCtl.M.RightMul_InPlace(&parentM)
+			parentR := curTransform.Parent.RotationMAT4()
+			co.shaderCtl.Rotation.RightMul_InPlace(&parentR)
+		} else {
+			break
+		}
+		curTransform = curTransform.Parent
 	}
 	co.shaderCtl.V = co.GI().View()
 	co.shaderCtl.P = co.GI().Projection()
 	co.shaderCtl.Upload(co)
 	//
-	co.shaderCtl.UniformU_Colur(rand.Float32(), rand.Float32(), rand.Float32())
+	co.shaderCtl.UniformU_Colur(co.Color[0], co.Color[1], co.Color[2])
 }
 func (co *BlockObject) OnDrawFinish() {
 	co.shaderCtl.UniformU_Colur(1, 1, 1)
