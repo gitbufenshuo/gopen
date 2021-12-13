@@ -240,6 +240,13 @@ func (self *VECX) Normalize() {
 		self.data[idx] = self.data[idx] / float32(weight)
 	}
 }
+func (self *VECX) Clone() VECX {
+	var res VECX
+	res.InitDimension(self.Di())
+	//
+	res.CopyValue(self)
+	return res
+}
 
 // left X right
 func Vec3Cross(left, right *VECX) VECX {
