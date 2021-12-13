@@ -13,6 +13,7 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
@@ -224,6 +225,28 @@ func (gi *GlobalInfo) draw() {
 		gi.drawGameobject(gb)
 	}
 }
+
+func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
+	co.ShaderCtl().M = co.GetTransform().Model()
+	co.ShaderCtl().Rotation = co.GetTransform().RotationMAT4()
+	var curTransform *common.Transform
+	curTransform = co.GetTransform()
+	for {
+		if curTransform.Parent != nil { // not root
+			parentM := curTransform.Parent.Model()
+			co.ShaderCtl().M.RightMul_InPlace(&parentM)
+			parentR := curTransform.Parent.RotationMAT4()
+			co.ShaderCtl().Rotation.RightMul_InPlace(&parentR)
+		} else {
+			break
+		}
+		curTransform = curTransform.Parent
+	}
+	co.ShaderCtl().V = gi.View()
+	co.ShaderCtl().P = gi.Projection()
+	co.ShaderCtl().Upload(co)
+}
+
 func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 	if gb.NotDrawable() {
 		return
@@ -231,6 +254,7 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 	if !gb.DrawEnable_sg() {
 		return
 	}
+	gi.prepareMVP(gb)
 	gb.OnDraw() // call the gameobjects' OnDraw function
 	// change context
 	gb.ShaderAsset_sg().Resource.Active() // shader

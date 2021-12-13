@@ -3,6 +3,7 @@ package gameobjects
 import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
+	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
@@ -17,6 +18,7 @@ type BasicObject struct {
 	drawEnable   bool // enable - disable drawing
 	readyForDraw bool
 	Transform    *common.Transform
+	shaderCtl    *game.ShaderCtl
 	gi           *game.GlobalInfo
 }
 
@@ -96,6 +98,12 @@ func (gb *BasicObject) ReadyForDraw_sg(_bool ...bool) bool {
 }
 func (gb *BasicObject) GetTransform() *common.Transform {
 	return gb.Transform
+}
+func (gb *BasicObject) ShaderCtl() *game.ShaderCtl {
+	if gb.shaderCtl == nil {
+		gb.shaderCtl = game.NewShaderCtl(gb.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram())
+	}
+	return gb.shaderCtl
 }
 func (gb *BasicObject) Start() {
 

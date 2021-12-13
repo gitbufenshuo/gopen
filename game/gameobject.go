@@ -11,6 +11,7 @@ type GameObjectI interface {
 	ModelAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
 	ShaderAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
 	TextureAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
+	ShaderCtl() *ShaderCtl
 	NotDrawable() bool
 	DrawEnable_sg(...bool) bool
 	ReadyForDraw_sg(...bool) bool
