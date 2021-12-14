@@ -102,6 +102,14 @@ func (gi *GlobalInfo) StartGame(mode string) {
 			window.SetCursorPosCallback(gi.cursorPosCallback)
 		}
 	}
+	go func() {
+		for {
+			gi.InputSystem()
+			gi.update()
+			gi.OnFrameEnd()
+			time.Sleep(time.Millisecond * 10)
+		}
+	}()
 	for !window.ShouldClose() {
 		// time.Sleep(time.Millisecond * 10)
 		gl.ClearColor(0.5, 0.5, 0.5, 1)
@@ -110,10 +118,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		// time.Sleep(time.Second)
 		///////////////////////////////////////////////////
 		// the very update every frame
-		gi.InputSystem()
-		gi.update()
 		gi.draw()
-		gi.OnFrameEnd()
 		///////////////////////////////////////////////////
 		// Maintenance
 		window.SwapBuffers()
