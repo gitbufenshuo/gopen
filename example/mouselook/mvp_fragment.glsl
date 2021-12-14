@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D tex;
+uniform vec3 u_Color;
 
 in vec2 fragTexCoord;
 in vec3 fragVertNormal;
@@ -18,4 +19,5 @@ void main() {
         discard;
     }
     outputColor.xyz *= light;
+    outputColor.xyz *= u_Color;
 }

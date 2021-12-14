@@ -20,6 +20,7 @@ func NewBlock(gi *game.GlobalInfo, modelname, texturename string) *BlockObject {
 
 	one := new(BlockObject)
 	one.BasicObject = innerBasic
+	one.Color = []float32{0, 0, 0}
 	return one
 }
 func (co *BlockObject) Start() {
