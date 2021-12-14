@@ -3,9 +3,9 @@ package main
 import (
 	"runtime"
 
+	"github.com/gitbufenshuo/gopen/example/fullone/stchunk"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -30,32 +30,9 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	block1 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
-	block1.Rotating = true
-	block1.Color = []float32{1, 0, 0}
-	gi.AddGameObject(block1)
+	chunk := stchunk.NewChunk(gi)
+	gi.AddGameObject(chunk)
 	//
-	block2 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
-	block2.Rotating = true
-	block2.Color = []float32{0, 1, 0}
-	block2.Transform.Postion.SetValue3(4, 1, 0)
-	block2.Transform.SetParent(block1.Transform)
-	gi.AddGameObject(block2)
-	//
-	block3 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
-	block3.Rotating = true
-	block3.Color = []float32{0, 0, 1}
-	block3.Transform.Postion.SetValue3(4, 1, 0)
-	block3.Transform.SetParent(block2.Transform)
-	gi.AddGameObject(block3)
-	//
-	block4 := gameobjects.NewBlock(gi, "block.model", "grid.png.texuture")
-	block4.Rotating = true
-	block4.Color = []float32{1, 1, 1}
-	block4.Transform.Postion.SetValue3(4, 1, 0)
-	block4.Transform.SetParent(block3.Transform)
-	gi.AddGameObject(block4)
-
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)
 }

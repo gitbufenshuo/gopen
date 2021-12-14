@@ -83,13 +83,17 @@ func (m *Model) Active() {
 	gl.BindVertexArray(m.vao)
 }
 
-func (m *Model) CopyFrom(otherModel *Model) {
+// clear the gpu buffers
+func (m *Model) Clear() {
 	gl.DeleteBuffers(1, &m.vao)
 	gl.DeleteBuffers(1, &m.vbo)
 	gl.DeleteBuffers(1, &m.ebo)
-	///////////////////////////
 	m.uploaded = false
-	//////////////////////////
+}
+
+func (m *Model) CopyFrom(otherModel *Model) {
+	m.Clear()
+	///////////////////////////
 	m.Vertices = otherModel.Vertices
 	m.Indices = otherModel.Indices
 	m.Stripes = otherModel.Stripes

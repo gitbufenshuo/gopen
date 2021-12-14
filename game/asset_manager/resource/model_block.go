@@ -16,3 +16,9 @@ func init() {
 		}
 	}
 }
+
+func NewBlockModel() *Model {
+	res := NewModel()
+	res.ReadFromContent(modelBlockJSON)
+	return res
+}
