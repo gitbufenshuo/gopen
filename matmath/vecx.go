@@ -162,6 +162,27 @@ func (self *VECX) Add_InPlace(other *VECX, op ...bool) {
 	}
 }
 
+func (self *VECX) Add2_InPlace(other1, other2 *VECX, op ...bool) {
+	if !self.checkHomotype(other1) {
+		return
+	}
+	if !self.checkHomotype(other2) {
+		return
+	}
+	var sub bool
+	if len(op) != 0 && op[0] {
+		sub = true
+	}
+
+	for i := 0; i != self.dimension; i++ {
+		if sub {
+			self.data[i] = other1.data[i] - other2.data[i]
+		} else {
+			self.data[i] = other1.data[i] + other2.data[i]
+		}
+	}
+}
+
 func (self *VECX) Sub_InPlace(other *VECX) {
 	self.Add_InPlace(other, true)
 	return

@@ -22,6 +22,7 @@ func NewModel() *Model {
 	var m Model
 	return &m
 }
+
 func (m *Model) ReadFromContent(content string) {
 	rawbyte := []byte(content)
 	if err := json.Unmarshal(rawbyte, m); err != nil {

@@ -31,7 +31,9 @@ type GlobalFrameInfo struct {
 type GlobalInfo struct {
 	AssetManager          *asset_manager.AsssetManager
 	gameobjects           map[int]GameObjectI
+	manageobjects         map[int]ManageObjectI
 	nowID                 int
+	nowMD                 int
 	width                 int
 	height                int
 	title                 string
@@ -54,6 +56,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.height = windowHeight
 	globalInfo.title = title
 	globalInfo.gameobjects = make(map[int]GameObjectI)
+	globalInfo.manageobjects = make(map[int]ManageObjectI)
 	globalInfo.InputSystemKeyPress = make([]bool, 300)
 	globalInfo.InputSystemKeyRelease = make([]bool, 300)
 	globalInfo.CursorMode = glfw.CursorNormal
@@ -107,7 +110,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		gl.ClearColor(0.5, 0.5, 0.5, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		// window.SwapBuffers()
-		// time.Sleep(time.Second)
+		time.Sleep(time.Millisecond * 20)
 		///////////////////////////////////////////////////
 		// the very update every frame
 		gi.InputSystem()
@@ -192,6 +195,9 @@ func (gi *GlobalInfo) Boot() {
 	for _, gb := range gi.gameobjects {
 		gb.Start()
 	}
+	for _, mb := range gi.manageobjects {
+		mb.Start()
+	}
 }
 func (gi *GlobalInfo) dealWithTime(mode int) {
 	if mode == 1 { // new frame begins
@@ -216,6 +222,9 @@ func (gi *GlobalInfo) update() {
 	// gi.dealWithTime(0)
 	for _, gb := range gi.gameobjects {
 		gb.Update() // call the gameobjects' Update function
+	}
+	for _, mb := range gi.manageobjects {
+		mb.Update() // call the manageobjects' Update function
 	}
 	gi.dealWithTime(2)
 }
@@ -273,6 +282,12 @@ func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 
 	gi.nowID++
 	gi.gameobjects[gb.ID_sg()] = gb
+}
+func (gi *GlobalInfo) AddManageObject(mb ManageObjectI) {
+	mb.ID_sg(gi.nowMD + 1)
+
+	gi.nowMD++
+	gi.manageobjects[mb.ID_sg()] = mb
 }
 
 // init assetmanager and some default assets

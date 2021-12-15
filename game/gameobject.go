@@ -21,3 +21,8 @@ type GameObjectI interface {
 	OnDraw()
 	OnDrawFinish()
 }
+type ManageObjectI interface {
+	ID_sg(...int) int
+	Start()
+	Update()
+}

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 
-	"github.com/gitbufenshuo/gopen/example/fullone/stchunk"
+	"github.com/gitbufenshuo/gopen/example/fullone/stblockman"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/go-gl/glfw/v3.1/glfw"
@@ -30,8 +31,9 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	chunk := stchunk.NewChunk(gi)
-	gi.AddGameObject(chunk)
+	blockMan := stblockman.NewBlockMan(gi)
+	fmt.Println(blockMan)
+	gi.AddManageObject(blockMan)
 	//
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)
@@ -48,6 +50,9 @@ func initModel(gi *game.GlobalInfo) {
 
 func initTexture(gi *game.GlobalInfo) {
 	gi.AssetManager.LoadTextureFromFile("grid.png", "grid.png.texuture")
+	gi.AssetManager.LoadTextureFromFile("head.png", "head.png.texuture")
+	gi.AssetManager.LoadTextureFromFile("hand.png", "hand.png.texuture")
+	gi.AssetManager.LoadTextureFromFile("body.png", "body.png.texuture")
 }
 
 func main() {
