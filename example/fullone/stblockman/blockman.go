@@ -171,8 +171,25 @@ func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
 	return head
 }
 
+type BlockManCore struct {
+	*gameobjects.NilObject
+}
+
+func NewBlockManCore(gi *game.GlobalInfo) *BlockManCore {
+	core := new(BlockManCore)
+	///
+	core.NilObject = gameobjects.NewNilObject(gi)
+	return core
+}
+
+func (bmc *BlockManCore) Update() {
+	v := float32(bmc.GI().CurFrame) * 1.2
+	bmc.Transform.Rotation.SetIndexValue(1, v)
+}
+
 type BlockMan struct {
 	ID        int
+	Core      *BlockManCore
 	Body      *BlockManBody
 	Head      *BlockManHead
 	HandLeft  *BlockManHand
@@ -238,6 +255,7 @@ func (bm *BlockMan) ID_sg(_id ...int) int {
 func NewBlockMan(gi *game.GlobalInfo) *BlockMan {
 	blockMan := new(BlockMan)
 	//
+	blockMan.Core = NewBlockManCore(gi)
 	blockMan.Body = NewBlockManBody(gi)
 	blockMan.Head = NewBlockManHead(gi)
 	blockMan.HandLeft = NewBlockManHand(gi)
@@ -245,12 +263,15 @@ func NewBlockMan(gi *game.GlobalInfo) *BlockMan {
 	blockMan.HandRight = NewBlockManHand(gi)
 	blockMan.HandRight.Transform.Postion.SetValue2(0.7, 1)
 	blockMan.Wheel = NewBlockManWheel(gi)
+
+	gi.AddGameObject(blockMan.Core)
 	gi.AddGameObject(blockMan.Body)
 	gi.AddGameObject(blockMan.Head)
 	gi.AddGameObject(blockMan.HandLeft)
 	gi.AddGameObject(blockMan.HandRight)
 	gi.AddGameObject(blockMan.Wheel)
 	//
+	blockMan.Body.Transform.SetParent(blockMan.Core.Transform)
 	blockMan.Head.Transform.SetParent(blockMan.Body.Transform)
 	blockMan.HandLeft.Transform.SetParent(blockMan.Body.Transform)
 	blockMan.HandRight.Transform.SetParent(blockMan.Body.Transform)
