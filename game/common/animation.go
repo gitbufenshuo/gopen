@@ -1,10 +1,36 @@
 package common
 
-import "github.com/gitbufenshuo/gopen/matmath"
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"strings"
+
+	"github.com/gitbufenshuo/gopen/help"
+	"github.com/gitbufenshuo/gopen/matmath"
+)
 
 type BoneSatus struct {
 	Position *matmath.VECX
 	Rotation *matmath.VECX
+}
+
+func (bs *BoneSatus) ToByte() []byte {
+	return []byte(fmt.Sprintf("%f|%f|%f|%f|%f|%f", bs.Position.GetIndexValue(0),
+		bs.Position.GetIndexValue(1),
+		bs.Position.GetIndexValue(2),
+		bs.Rotation.GetIndexValue(0),
+		bs.Rotation.GetIndexValue(1),
+		bs.Rotation.GetIndexValue(2),
+	))
+}
+
+// 0|1|2|3|4|5
+func NewBoneStatusFromData(data string) *BoneSatus {
+	segs := strings.Split(data, "|")
+	px, py, pz, rx, ry, rz := help.Str2Float32(segs[0]), help.Str2Float32(segs[1]), help.Str2Float32(segs[2]), help.Str2Float32(segs[3]), help.Str2Float32(segs[4]), help.Str2Float32(segs[5])
+	return NewBoneSatus(px, py, pz, rx, ry, rz)
 }
 
 func NewBoneSatus(px, py, pz, rx, ry, rz float32) *BoneSatus {
@@ -28,6 +54,30 @@ type AnimationFrame struct {
 	WheelStatus     *BoneSatus
 }
 
+func (af *AnimationFrame) ToByte() []byte {
+	var list = [][]byte{
+		af.HeadStatus.ToByte(),
+		af.BodyStatus.ToByte(),
+		af.HandLeftStatus.ToByte(),
+		af.HandRightStatus.ToByte(),
+		af.WheelStatus.ToByte(),
+	}
+	return bytes.Join(list, []byte(","))
+}
+
+// 0|1|2|3|4|5,0|1|2|3|4|5,0|1|2|3|4|5,0|1|2|3|4|5,0|1|2|3|4|5
+func NewAnimationFrameFromData(data string) *AnimationFrame {
+	af := new(AnimationFrame)
+	//
+	segs := strings.Split(data, ",")
+	af.HeadStatus = NewBoneStatusFromData(segs[0])
+	af.BodyStatus = NewBoneStatusFromData(segs[1])
+	af.HandLeftStatus = NewBoneStatusFromData(segs[2])
+	af.HandRightStatus = NewBoneStatusFromData(segs[3])
+	af.WheelStatus = NewBoneStatusFromData(segs[4])
+	return af
+}
+
 type AnimationController struct {
 	InitFrame *AnimationFrame
 	AniMode   map[string][]*AnimationFrame
@@ -48,6 +98,94 @@ func NewAnimationController() *AnimationController {
 	res.AniMode = make(map[string][]*AnimationFrame)
 	res.CurDir = 1
 	return res
+}
+
+/*
+STOP
+head,body,left,right,wheel
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+--------------------------
+JUMP
+head,body,left,right,wheel
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+--------------------------
+FIRE
+head,body,left,right,wheel
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+,       ,    ,    ,     ,
+
+
+*/
+func (ac *AnimationController) LoadFromFile(filename string) {
+	data, _ := ioutil.ReadFile(filename)
+	ac.LoadFromData(data)
+}
+
+func (ac *AnimationController) LoadFromData(data []byte) {
+	split := []byte("\n--------------------------\n")
+	modeList := bytes.Split(data, split)
+	////////////////////////////////////
+	for _, onemodeData := range modeList {
+		buffer := bytes.NewBuffer(onemodeData)
+		scanner := bufio.NewScanner(buffer)
+		mode := ""
+		linenum := 0
+		aflist := []*AnimationFrame{}
+		for scanner.Scan() { // 扫描一行
+			content := scanner.Text()
+			////////////////////////
+			if linenum == 0 {
+				mode = content
+				linenum++
+				continue
+			}
+			////////////////////////
+			if linenum == 1 {
+				linenum++
+				continue
+			}
+			if len(content) < 10 {
+				linenum++
+				continue
+			}
+			////////////////////////
+			linenum++
+			af := NewAnimationFrameFromData(content)
+			aflist = append(aflist, af)
+		}
+		ac.ModeList = append(ac.ModeList, mode)
+		ac.AniMode[mode] = aflist
+	}
+	ac.CurMode = ac.ModeList[0]
+}
+
+func (ac *AnimationController) Write2Data() []byte {
+	split := []byte("\n--------------------------\n")
+	////////
+	modeDataList := [][]byte{}
+	for _, modename := range ac.ModeList {
+		modebuffer := bytes.NewBuffer(nil)
+		modebuffer.Reset()
+		modebuffer.WriteString(modename)
+		modebuffer.WriteString("\n")
+		modebuffer.WriteString("head,body,left,right,wheel\n")
+		afList := ac.AniMode[modename]
+		dataList := [][]byte{}
+		for _, oneaf := range afList {
+			dataList = append(dataList, oneaf.ToByte())
+		}
+		modebuffer.Write(bytes.Join(dataList, []byte("\n")))
+		modeDataList = append(modeDataList, modebuffer.Bytes())
+	}
+	return bytes.Join(modeDataList, split)
 }
 
 func (ac *AnimationController) AddMode(mode string, frameList []*AnimationFrame) {

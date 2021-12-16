@@ -1,6 +1,7 @@
 package stblockman
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/gitbufenshuo/gopen/game"
@@ -213,113 +214,8 @@ func (blockMan *BlockMan) CreateAnimation() {
 		blockMan.HandLeft.Transform,
 		blockMan.HandRight.Transform,
 		blockMan.Wheel.Transform)
-	{
-		STOPMODE := make([]*common.AnimationFrame, 80)
-		for idx := 0; idx != 80; idx++ {
-			STOPMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, float32(idx)*2, 0),
-				BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-			if idx > 60 {
-				STOPMODE[idx] = &common.AnimationFrame{
-					HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, float32(60)*0.5, 0),
-					BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-					HandLeftStatus:  common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-					HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-					WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				}
-			}
-		}
 
-		blockMan.AnimationCtl.AddMode("__init", STOPMODE)
-		blockMan.AnimationCtl.CurMode = "__init"
-		blockMan.AnimationCtl.ModeList = append(blockMan.AnimationCtl.ModeList, "__init")
-	}
-	{
-		MOVINGMODE := make([]*common.AnimationFrame, 60)
-		for idx := 0; idx != 15; idx++ {
-			MOVINGMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, -float32(idx)*4, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-		}
-		for idx := 15; idx != 30; idx++ {
-			MOVINGMODE[idx] = MOVINGMODE[30-idx-1]
-		}
-		for idx := 30; idx != 45; idx++ {
-			MOVINGMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, -float32(idx-30)*4, 0, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, float32(idx-30)*4, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-		}
-		for idx := 45; idx != 60; idx++ {
-			MOVINGMODE[idx] = MOVINGMODE[60-idx-1+30]
-		}
-		blockMan.AnimationCtl.AddMode("MOVING", MOVINGMODE)
-		blockMan.AnimationCtl.CurMode = "MOVING"
-		blockMan.AnimationCtl.ModeList = append(blockMan.AnimationCtl.ModeList, "MOVING")
-
-	}
-	{
-		MOVINGMODE := make([]*common.AnimationFrame, 15)
-		for idx := 0; idx != 15; idx++ {
-			MOVINGMODE[idx] = &common.AnimationFrame{
-				HeadStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus: common.NewBoneSatus(0, float32(idx)*0.05, 0, 0, 0, 0),
-				// HandLeftStatus:  common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				// HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-
-				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-		}
-		blockMan.AnimationCtl.AddMode("JUMPING", MOVINGMODE)
-		blockMan.AnimationCtl.CurMode = "JUMPING"
-		blockMan.AnimationCtl.ModeList = append(blockMan.AnimationCtl.ModeList, "JUMPING")
-
-	}
-	{
-		FIREMODE := make([]*common.AnimationFrame, 60)
-		for idx := 0; idx != 20; idx++ {
-			FIREMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 6.5, 0),
-				BodyStatus:      common.NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(idx)*5.5, 0),
-				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, -float32(idx)*4.5, 0, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-		}
-		for idx := 20; idx != 40; idx++ {
-			FIREMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      common.NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(20)*5.5, 0),
-				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, -float32(20)*4.5, 0, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-		}
-		for idx := 40; idx != 60; idx++ {
-			FIREMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      common.NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(20)*5.5, 0),
-				HandLeftStatus:  common.NewBoneSatus(rand.Float32()/2-0.25, 0, float32(idx-40), -float32(20)*4.5, float32(idx-40)*20, 0),
-				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-			}
-		}
-		blockMan.AnimationCtl.AddMode("FIREMODE", FIREMODE)
-		blockMan.AnimationCtl.CurMode = "FIREMODE"
-		blockMan.AnimationCtl.ModeList = append(blockMan.AnimationCtl.ModeList, "FIREMODE")
-
-	}
+	blockMan.AnimationCtl.LoadFromFile("blockman.dong")
+	fmt.Println(blockMan.AnimationCtl.ModeList)
+	return
 }
