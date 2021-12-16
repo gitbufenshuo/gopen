@@ -5,60 +5,9 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
-	"github.com/gitbufenshuo/gopen/matmath"
 )
-
-type BoneSatus struct {
-	Position *matmath.VECX
-	Rotation *matmath.VECX
-}
-
-func NewBoneSatus(px, py, pz, rx, ry, rz float32) *BoneSatus {
-	var pos matmath.VECX
-	pos.Init3()
-	pos.SetValue3(px, py, pz)
-	var rot matmath.VECX
-	rot.Init3()
-	rot.SetValue3(rx, ry, rz)
-	return &BoneSatus{
-		Position: &pos,
-		Rotation: &rot,
-	}
-}
-
-type BlockManAnimationFrame struct {
-	HeadStatus      *BoneSatus
-	BodyStatus      *BoneSatus
-	HandLeftStatus  *BoneSatus
-	HandRightStatus *BoneSatus
-	WheelStatus     *BoneSatus
-}
-
-type BlockManAnimation struct {
-	InitFrame *BlockManAnimationFrame
-	AniMode   map[string][]*BlockManAnimationFrame
-	ModeList  []string
-	CurMode   string
-	CurIndex  int
-	CurDir    int
-}
-
-func NewBlockManAnimation() *BlockManAnimation {
-	res := new(BlockManAnimation)
-	res.AniMode = make(map[string][]*BlockManAnimationFrame)
-	res.CurDir = 1
-	return res
-}
-
-func (bma *BlockManAnimation) AddMode(mode string, frameList []*BlockManAnimationFrame) {
-	bma.AniMode[mode] = frameList
-}
-
-func (bma *BlockManAnimation) ChangeMode(mode string) {
-	bma.CurMode = mode
-	bma.CurIndex = 0
-}
 
 type BlockManWheel struct {
 	*gameobjects.BlockObject
@@ -192,7 +141,7 @@ type BlockMan struct {
 	HandRight *BlockManHand
 	Wheel     *BlockManWheel
 	//
-	AnimationCtl *BlockManAnimation
+	AnimationCtl *common.AnimationController
 }
 
 func (bm *BlockMan) Start() {
@@ -213,28 +162,7 @@ func (bm *BlockMan) AnimationRun() {
 		return
 	}
 	//
-	initFrame := bm.AnimationCtl.InitFrame
-	list := bm.AnimationCtl.AniMode[bm.AnimationCtl.CurMode]
-	if len(list) == 0 {
-		return
-	}
-	curFrame := list[bm.AnimationCtl.CurIndex]
-	bm.Head.Transform.Postion.Add2_InPlace(initFrame.HeadStatus.Position, curFrame.HeadStatus.Position)
-	bm.Head.Transform.Rotation.Add2_InPlace(initFrame.HeadStatus.Rotation, curFrame.HeadStatus.Rotation)
-	//
-	bm.Body.Transform.Postion.Add2_InPlace(initFrame.BodyStatus.Position, curFrame.BodyStatus.Position)
-	bm.Body.Transform.Rotation.Add2_InPlace(initFrame.BodyStatus.Rotation, curFrame.BodyStatus.Rotation)
-	//
-	bm.HandLeft.Transform.Postion.Add2_InPlace(initFrame.HandLeftStatus.Position, curFrame.HandLeftStatus.Position)
-	bm.HandLeft.Transform.Rotation.Add2_InPlace(initFrame.HandLeftStatus.Rotation, curFrame.HandLeftStatus.Rotation)
-	//
-	bm.HandRight.Transform.Postion.Add2_InPlace(initFrame.HandRightStatus.Position, curFrame.HandRightStatus.Position)
-	bm.HandRight.Transform.Rotation.Add2_InPlace(initFrame.HandRightStatus.Rotation, curFrame.HandRightStatus.Rotation)
-	//
-	bm.Wheel.Transform.Postion.Add2_InPlace(initFrame.WheelStatus.Position, curFrame.WheelStatus.Position)
-	bm.Wheel.Transform.Rotation.Add2_InPlace(initFrame.WheelStatus.Rotation, curFrame.WheelStatus.Rotation)
-	bm.AnimationCtl.CurIndex++
-	bm.AnimationCtl.CurIndex %= len(list)
+	bm.AnimationCtl.Update()
 }
 
 func (bm *BlockMan) ID_sg(_id ...int) int {
@@ -276,73 +204,32 @@ func NewBlockMan(gi *game.GlobalInfo) *BlockMan {
 	blockMan.CreateAnimation()
 	return blockMan
 }
-func (blockMan *BlockMan) RecordInitFrame() *BlockManAnimationFrame {
-	initFrame := new(BlockManAnimationFrame)
-	{
-		position := blockMan.Head.Transform.Postion.Clone()
-		rotation := blockMan.Head.Transform.Rotation.Clone()
-		initFrame.HeadStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := blockMan.Body.Transform.Postion.Clone()
-		rotation := blockMan.Body.Transform.Rotation.Clone()
-		initFrame.BodyStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := blockMan.HandLeft.Transform.Postion.Clone()
-		rotation := blockMan.HandLeft.Transform.Rotation.Clone()
-		initFrame.HandLeftStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := blockMan.HandRight.Transform.Postion.Clone()
-		rotation := blockMan.HandRight.Transform.Rotation.Clone()
-		initFrame.HandRightStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := blockMan.Wheel.Transform.Postion.Clone()
-		rotation := blockMan.Wheel.Transform.Rotation.Clone()
-		initFrame.WheelStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	return initFrame
-}
 
 func (blockMan *BlockMan) CreateAnimation() {
-	blockMan.AnimationCtl = NewBlockManAnimation()
-	initFrame := blockMan.RecordInitFrame()
-	blockMan.AnimationCtl.InitFrame = initFrame
-
+	blockMan.AnimationCtl = common.NewAnimationController()
+	blockMan.AnimationCtl.BindBoneNode(
+		blockMan.Head.Transform,
+		blockMan.Body.Transform,
+		blockMan.HandLeft.Transform,
+		blockMan.HandRight.Transform,
+		blockMan.Wheel.Transform)
 	{
-		STOPMODE := make([]*BlockManAnimationFrame, 80)
+		STOPMODE := make([]*common.AnimationFrame, 80)
 		for idx := 0; idx != 80; idx++ {
-			STOPMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, float32(idx)*2, 0),
-				BodyStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandLeftStatus:  NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			STOPMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, float32(idx)*2, 0),
+				BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 			if idx > 60 {
-				STOPMODE[idx] = &BlockManAnimationFrame{
-					HeadStatus:      NewBoneSatus(0, 0, 0, 0, float32(60)*0.5, 0),
-					BodyStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-					HandLeftStatus:  NewBoneSatus(0, 0, 0, 0, 0, 0),
-					HandRightStatus: NewBoneSatus(0, 0, 0, 0, 0, 0),
-					WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+				STOPMODE[idx] = &common.AnimationFrame{
+					HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, float32(60)*0.5, 0),
+					BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+					HandLeftStatus:  common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+					HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+					WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 				}
 			}
 		}
@@ -352,26 +239,26 @@ func (blockMan *BlockMan) CreateAnimation() {
 		blockMan.AnimationCtl.ModeList = append(blockMan.AnimationCtl.ModeList, "__init")
 	}
 	{
-		MOVINGMODE := make([]*BlockManAnimationFrame, 60)
+		MOVINGMODE := make([]*common.AnimationFrame, 60)
 		for idx := 0; idx != 15; idx++ {
-			MOVINGMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandLeftStatus:  NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, -float32(idx)*4, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			MOVINGMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, -float32(idx)*4, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 		}
 		for idx := 15; idx != 30; idx++ {
 			MOVINGMODE[idx] = MOVINGMODE[30-idx-1]
 		}
 		for idx := 30; idx != 45; idx++ {
-			MOVINGMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				HandLeftStatus:  NewBoneSatus(0, 0, 0, -float32(idx-30)*4, 0, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, float32(idx-30)*4, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			MOVINGMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				BodyStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, -float32(idx-30)*4, 0, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, float32(idx-30)*4, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 		}
 		for idx := 45; idx != 60; idx++ {
@@ -383,14 +270,14 @@ func (blockMan *BlockMan) CreateAnimation() {
 
 	}
 	{
-		MOVINGMODE := make([]*BlockManAnimationFrame, 15)
+		MOVINGMODE := make([]*common.AnimationFrame, 15)
 		for idx := 0; idx != 15; idx++ {
-			MOVINGMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      NewBoneSatus(0, float32(idx)*0.05, 0, 0, 0, 0),
-				HandLeftStatus:  NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			MOVINGMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				BodyStatus:      common.NewBoneSatus(0, float32(idx)*0.05, 0, 0, 0, 0),
+				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 		}
 		blockMan.AnimationCtl.AddMode("JUMPING", MOVINGMODE)
@@ -399,32 +286,32 @@ func (blockMan *BlockMan) CreateAnimation() {
 
 	}
 	{
-		FIREMODE := make([]*BlockManAnimationFrame, 60)
+		FIREMODE := make([]*common.AnimationFrame, 60)
 		for idx := 0; idx != 20; idx++ {
-			FIREMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, 6.5, 0),
-				BodyStatus:      NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(idx)*5.5, 0),
-				HandLeftStatus:  NewBoneSatus(0, 0, 0, -float32(idx)*4.5, 0, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			FIREMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 6.5, 0),
+				BodyStatus:      common.NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(idx)*5.5, 0),
+				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, -float32(idx)*4.5, 0, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 		}
 		for idx := 20; idx != 40; idx++ {
-			FIREMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(20)*5.5, 0),
-				HandLeftStatus:  NewBoneSatus(0, 0, 0, -float32(20)*4.5, 0, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			FIREMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				BodyStatus:      common.NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(20)*5.5, 0),
+				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, -float32(20)*4.5, 0, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 		}
 		for idx := 40; idx != 60; idx++ {
-			FIREMODE[idx] = &BlockManAnimationFrame{
-				HeadStatus:      NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(20)*5.5, 0),
-				HandLeftStatus:  NewBoneSatus(rand.Float32()/2-0.25, 0, float32(idx-40), -float32(20)*4.5, float32(idx-40)*20, 0),
-				HandRightStatus: NewBoneSatus(0, 0, 0, 0, 0, 0),
-				WheelStatus:     NewBoneSatus(0, 0, 0, 0, 0, 0),
+			FIREMODE[idx] = &common.AnimationFrame{
+				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				BodyStatus:      common.NewBoneSatus(rand.Float32()/10-0.05, rand.Float32()/10-0.05, rand.Float32()/10-0.05, 0, float32(20)*5.5, 0),
+				HandLeftStatus:  common.NewBoneSatus(rand.Float32()/2-0.25, 0, float32(idx-40), -float32(20)*4.5, float32(idx-40)*20, 0),
+				HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
 			}
 		}
 		blockMan.AnimationCtl.AddMode("FIREMODE", FIREMODE)
