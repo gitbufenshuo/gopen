@@ -102,7 +102,6 @@ func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
 			}
 			customModel.Vertices[idx*8+1] -= 0.5
 			customModel.Vertices[idx*8+2] *= 0.2
-
 		}
 		gi.AssetManager.CreateModel("blockmanhand.model", customModel)
 	}
@@ -118,9 +117,6 @@ func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
 type BlockManBody struct {
 	*gameobjects.BlockObject
 	InnerModel *resource.Model
-}
-
-func (bmb *BlockManBody) Update() {
 }
 
 func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
