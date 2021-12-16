@@ -273,8 +273,11 @@ func (blockMan *BlockMan) CreateAnimation() {
 		MOVINGMODE := make([]*common.AnimationFrame, 15)
 		for idx := 0; idx != 15; idx++ {
 			MOVINGMODE[idx] = &common.AnimationFrame{
-				HeadStatus:      common.NewBoneSatus(0, 0, 0, 0, 0, 0),
-				BodyStatus:      common.NewBoneSatus(0, float32(idx)*0.05, 0, 0, 0, 0),
+				HeadStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				BodyStatus: common.NewBoneSatus(0, float32(idx)*0.05, 0, 0, 0, 0),
+				// HandLeftStatus:  common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+				// HandRightStatus: common.NewBoneSatus(0, 0, 0, 0, 0, 0),
+
 				HandLeftStatus:  common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
 				HandRightStatus: common.NewBoneSatus(0, 0, 0, float32(idx)*4, 0, 0),
 				WheelStatus:     common.NewBoneSatus(0, 0, 0, 0, 0, 0),
