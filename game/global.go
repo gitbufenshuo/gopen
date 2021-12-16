@@ -293,6 +293,7 @@ func (gi *GlobalInfo) AddManageObject(mb ManageObjectI) {
 // init assetmanager and some default assets
 func (gi *GlobalInfo) initAssetManager() {
 	gi.AssetManager = asset_manager.NewAsssetManager()
+	return
 	// default model
 	gi.initDefaultModel_Triangle()
 	// default shader program
