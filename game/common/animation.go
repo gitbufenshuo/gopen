@@ -161,8 +161,10 @@ func (ac *AnimationController) LoadFromData(data []byte) {
 			af := NewAnimationFrameFromData(content)
 			aflist = append(aflist, af)
 		}
-		ac.ModeList = append(ac.ModeList, mode)
-		ac.AniMode[mode] = aflist
+		if !strings.HasPrefix(mode, "//") {
+			ac.ModeList = append(ac.ModeList, mode)
+			ac.AniMode[mode] = aflist
+		}
 	}
 	ac.CurMode = ac.ModeList[0]
 }
