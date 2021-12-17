@@ -103,6 +103,10 @@ func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
 			customModel.Vertices[idx*8] *= 0.8
 			customModel.Vertices[idx*8+1] *= 0.8
 			customModel.Vertices[idx*8+2] *= 0.8
+			if idx >= 4 {
+				customModel.Vertices[idx*8+3] = 0.8
+				customModel.Vertices[idx*8+4] = 0.8
+			}
 		}
 		gi.AssetManager.CreateModelSilent("blockmanhead.model", customModel)
 	}

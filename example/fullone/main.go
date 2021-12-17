@@ -33,8 +33,10 @@ func myInit(gi *game.GlobalInfo) {
 	for idx := -5; idx <= 5; idx += 2 {
 		for zdx := 0; zdx >= -20; zdx -= 2 {
 			blockMan := stblockman.NewBlockMan(gi)
-			blockMan.Core.Transform.Postion.SetValue1(float32(idx))
-			blockMan.Core.Transform.Postion.SetIndexValue(2, float32(zdx))
+			// blockMan.Core.Transform.Postion.SetValue1(float32(idx))
+			// blockMan.Core.Transform.Postion.SetIndexValue(2, float32(zdx))
+			// blockMan.Core.Transform.Rotation.SetValue3(60, 60, 0)
+
 			gi.AddManageObject(blockMan)
 			break
 		}
