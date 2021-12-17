@@ -23,7 +23,7 @@ func NewBlockManWheel(gi *game.GlobalInfo) *BlockManWheel {
 			customModel.Vertices[idx*8] *= 0.3
 			customModel.Vertices[idx*8+2] *= 0.9
 		}
-		gi.AssetManager.CreateModel("blockmanwheel.model", customModel)
+		gi.AssetManager.CreateModelSilent("blockmanwheel.model", customModel)
 	}
 	block := gameobjects.NewBlock(gi, "blockmanwheel.model", "grid.png.texuture")
 	block.Color = []float32{1, 1, 1}
@@ -41,8 +41,7 @@ type BlockManHand struct {
 }
 
 func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
-	if res := gi.AssetManager.FindByName("blockmanhand.model"); res == nil {
-
+	{
 		customModel := resource.NewBlockModel()
 		for idx := 0; idx != 24; idx++ {
 			if customModel.Vertices[idx*8] < 0 {
@@ -53,7 +52,7 @@ func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
 			customModel.Vertices[idx*8+1] -= 0.5
 			customModel.Vertices[idx*8+2] *= 0.2
 		}
-		gi.AssetManager.CreateModel("blockmanhand.model", customModel)
+		gi.AssetManager.CreateModelSilent("blockmanhand.model", customModel)
 	}
 	block := gameobjects.NewBlock(gi, "blockmanhand.model", "hand.png.texuture")
 	block.Color = []float32{1, 1, 1}
@@ -80,7 +79,7 @@ func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
 				customModel.Vertices[idx*8+1] = 1
 			}
 		}
-		gi.AssetManager.CreateModel("blockmanbody.model", customModel)
+		gi.AssetManager.CreateModelSilent("blockmanbody.model", customModel)
 	}
 	block := gameobjects.NewBlock(gi, "blockmanbody.model", "body.png.texuture")
 	block.Color = []float32{1, 1, 1}
@@ -105,7 +104,7 @@ func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
 			customModel.Vertices[idx*8+1] *= 0.8
 			customModel.Vertices[idx*8+2] *= 0.8
 		}
-		gi.AssetManager.CreateModel("blockmanhead.model", customModel)
+		gi.AssetManager.CreateModelSilent("blockmanhead.model", customModel)
 	}
 	block := gameobjects.NewBlock(gi, "blockmanhead.model", "head.png.texuture")
 	block.Color = []float32{1, 1, 1}

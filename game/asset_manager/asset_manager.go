@@ -68,6 +68,17 @@ func (am *AsssetManager) CreateModel(assetname string, modelResource *resource.M
 	as.Resource.Upload()
 }
 
+func (am *AsssetManager) CreateModelSilent(assetname string, modelResource *resource.Model) {
+	as := NewAsset(assetname, AssetTypeModel, nil)
+	err := am.Register(as.Name, as)
+	if err != nil {
+		return
+	}
+	as.Resource = modelResource
+	am.Load(as)
+	as.Resource.Upload()
+}
+
 func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
 	var data TextureDataType
 	data.FilePath = filepath

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/example/fullone/stblockman"
@@ -31,9 +30,17 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	blockMan := stblockman.NewBlockMan(gi)
-	fmt.Println(blockMan)
-	gi.AddManageObject(blockMan)
+	for idx := -5; idx <= 5; idx += 2 {
+		for zdx := 0; zdx >= -20; zdx -= 2 {
+			blockMan := stblockman.NewBlockMan(gi)
+			blockMan.Core.Transform.Postion.SetValue1(float32(idx))
+			blockMan.Core.Transform.Postion.SetIndexValue(2, float32(zdx))
+			gi.AddManageObject(blockMan)
+			break
+		}
+		break
+	}
+
 	//
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)
