@@ -233,6 +233,8 @@ func (gi *GlobalInfo) draw() {
 	for _, gb := range gi.gameobjects {
 		gi.drawGameobject(gb)
 	}
+	// draw the skybox
+
 }
 
 func (gi *GlobalInfo) prepareMVP(co GameObjectI) {

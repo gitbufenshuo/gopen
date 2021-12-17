@@ -11,6 +11,7 @@ var (
 	AssetTypeTexture AssetType = "texture"
 	AssetTypeShader  AssetType = "shaderprogram"
 	AssetTypeModel   AssetType = "model"
+	AssetTypeCubeMap AssetType = "cubemap"
 )
 
 type Resource interface {
@@ -45,6 +46,9 @@ type ShaderDataType struct {
 type ModelDataType struct {
 	FilePath string
 }
+type CubeMapDataType struct {
+	PattList []string
+}
 
 func NewAsset(name string, Type AssetType, data interface{}) *Asset {
 	var as Asset
@@ -77,6 +81,13 @@ func (as *Asset) Load() error {
 			_data := as.Data.(*ModelDataType)
 			_t := resource.NewModel()
 			_t.ReadFromFile(_data.FilePath)
+			as.Resource = _t
+		}
+	case AssetTypeCubeMap:
+		if as.Resource == nil {
+			_data := as.Data.(*CubeMapDataType)
+			_t := resource.NewCubeMap()
+			_t.ReadFromFile(_data.PattList)
 			as.Resource = _t
 		}
 	default:
