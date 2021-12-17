@@ -3,21 +3,40 @@ package game
 import (
 	"math"
 
+	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
+type CubeMapObject struct {
+	shaderCtl    *ShaderCtl
+	modelAsset   *asset_manager.Asset
+	shaderAsset  *asset_manager.Asset
+	cubemapAsset *asset_manager.Asset
+}
+
+// func NewCubeMapObject() *CubeMapObject {
+// 	{
+// 		// model : just a cube
+// 		customModel := resource.NewBlockModel()
+// 		for idx := 0; idx != 24; idx++ {
+
+// 		}
+// 	}
+// }
+
 type Camera struct {
-	Transform    *common.Transform
-	Pos          matmath.VECX
-	Front        matmath.VECX
-	UP           matmath.VECX
-	Target       matmath.VECX
-	NearDistance float32
-	FarDistance  float32
-	FOV          float32
-	ViewT        matmath.MATX
-	ProjectionT  matmath.MATX
+	Transform     *common.Transform
+	Pos           matmath.VECX
+	Front         matmath.VECX
+	UP            matmath.VECX
+	Target        matmath.VECX
+	NearDistance  float32
+	FarDistance   float32
+	FOV           float32
+	ViewT         matmath.MATX
+	ProjectionT   matmath.MATX
+	CubeMapObject *CubeMapObject
 }
 
 func NewDefaultCamera() *Camera {
