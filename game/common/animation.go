@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/gitbufenshuo/gopen/help"
@@ -28,6 +29,9 @@ func (bs *BoneSatus) ToByte() []byte {
 
 // 0|1|2|3|4|5
 func NewBoneStatusFromData(data string) *BoneSatus {
+	if data == "NONE" {
+		data = "0.000000|0.000000|0.000000|0.000000|0.000000|0.000000"
+	}
 	segs := strings.Split(data, "|")
 	px, py, pz, rx, ry, rz := help.Str2Float32(segs[0]), help.Str2Float32(segs[1]), help.Str2Float32(segs[2]), help.Str2Float32(segs[3]), help.Str2Float32(segs[4]), help.Str2Float32(segs[5])
 	return NewBoneSatus(px, py, pz, rx, ry, rz)
@@ -51,7 +55,8 @@ type AnimationFrame struct {
 	BodyStatus      *BoneSatus
 	HandLeftStatus  *BoneSatus
 	HandRightStatus *BoneSatus
-	WheelStatus     *BoneSatus
+	LegLeftStatus   *BoneSatus
+	LegRightStatus  *BoneSatus
 }
 
 func (af *AnimationFrame) ToByte() []byte {
@@ -60,7 +65,8 @@ func (af *AnimationFrame) ToByte() []byte {
 		af.BodyStatus.ToByte(),
 		af.HandLeftStatus.ToByte(),
 		af.HandRightStatus.ToByte(),
-		af.WheelStatus.ToByte(),
+		af.LegLeftStatus.ToByte(),
+		af.LegRightStatus.ToByte(),
 	}
 	return bytes.Join(list, []byte(","))
 }
@@ -70,11 +76,16 @@ func NewAnimationFrameFromData(data string) *AnimationFrame {
 	af := new(AnimationFrame)
 	//
 	segs := strings.Split(data, ",")
+	if len(segs) != 6 {
+		fmt.Println(segs)
+		os.Exit(1)
+	}
 	af.HeadStatus = NewBoneStatusFromData(segs[0])
 	af.BodyStatus = NewBoneStatusFromData(segs[1])
 	af.HandLeftStatus = NewBoneStatusFromData(segs[2])
 	af.HandRightStatus = NewBoneStatusFromData(segs[3])
-	af.WheelStatus = NewBoneStatusFromData(segs[4])
+	af.LegLeftStatus = NewBoneStatusFromData(segs[4])
+	af.LegRightStatus = NewBoneStatusFromData(segs[5])
 	return af
 }
 
@@ -90,7 +101,8 @@ type AnimationController struct {
 	bodyNode      *Transform
 	handLeftNode  *Transform
 	handRightNode *Transform
-	wheelNode     *Transform
+	legLeftNode   *Transform
+	legRightNode  *Transform
 }
 
 func NewAnimationController() *AnimationController {
@@ -200,12 +212,13 @@ func (ac *AnimationController) ChangeMode(mode string) {
 }
 
 // generate the init frame
-func (ac *AnimationController) BindBoneNode(head, body, handLeft, handRight, wheel *Transform) {
+func (ac *AnimationController) BindBoneNode(head, body, handLeft, handRight, legLeft, legRight *Transform) {
 	ac.headNode = head
 	ac.bodyNode = body
 	ac.handLeftNode = handLeft
 	ac.handRightNode = handRight
-	ac.wheelNode = wheel
+	ac.legLeftNode = legLeft
+	ac.legRightNode = legRight
 	ac.RecordInitFrame()
 }
 func (ac *AnimationController) RecordInitFrame() {
@@ -243,9 +256,17 @@ func (ac *AnimationController) RecordInitFrame() {
 		}
 	}
 	{
-		position := ac.wheelNode.Postion.Clone()
-		rotation := ac.wheelNode.Rotation.Clone()
-		initFrame.WheelStatus = &BoneSatus{
+		position := ac.legLeftNode.Postion.Clone()
+		rotation := ac.legLeftNode.Rotation.Clone()
+		initFrame.LegLeftStatus = &BoneSatus{
+			Position: &position,
+			Rotation: &rotation,
+		}
+	}
+	{
+		position := ac.legRightNode.Postion.Clone()
+		rotation := ac.legRightNode.Rotation.Clone()
+		initFrame.LegRightStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
 		}
@@ -277,9 +298,13 @@ func (ac *AnimationController) Update() {
 		ac.handRightNode.Postion.Add2_InPlace(initFrame.HandRightStatus.Position, curFrame.HandRightStatus.Position)
 		ac.handRightNode.Rotation.Add2_InPlace(initFrame.HandRightStatus.Rotation, curFrame.HandRightStatus.Rotation)
 	}
-	if ac.wheelNode != nil {
-		ac.wheelNode.Postion.Add2_InPlace(initFrame.WheelStatus.Position, curFrame.WheelStatus.Position)
-		ac.wheelNode.Rotation.Add2_InPlace(initFrame.WheelStatus.Rotation, curFrame.WheelStatus.Rotation)
+	if ac.legLeftNode != nil {
+		ac.legLeftNode.Postion.Add2_InPlace(initFrame.LegLeftStatus.Position, curFrame.LegLeftStatus.Position)
+		ac.legLeftNode.Rotation.Add2_InPlace(initFrame.LegLeftStatus.Rotation, curFrame.LegLeftStatus.Rotation)
+	}
+	if ac.legRightNode != nil {
+		ac.legRightNode.Postion.Add2_InPlace(initFrame.LegRightStatus.Position, curFrame.LegRightStatus.Position)
+		ac.legRightNode.Rotation.Add2_InPlace(initFrame.LegRightStatus.Rotation, curFrame.LegRightStatus.Rotation)
 	}
 	//
 	ac.CurIndex++

@@ -10,28 +10,31 @@ import (
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 )
 
-type BlockManWheel struct {
+type BlockManLeg struct {
 	*gameobjects.BlockObject
 	InnerModel *resource.Model
 }
 
-func NewBlockManWheel(gi *game.GlobalInfo) *BlockManWheel {
+func NewBlockManLeg(gi *game.GlobalInfo) *BlockManLeg {
 	{
 		customModel := resource.NewBlockModel()
-
 		for idx := 0; idx != 24; idx++ {
-			customModel.Vertices[idx*8] *= 0.3
-			customModel.Vertices[idx*8+2] *= 0.9
+			if customModel.Vertices[idx*8] < 0 {
+				customModel.Vertices[idx*8] = -0.1
+			} else {
+				customModel.Vertices[idx*8] = 0.1
+			}
+			customModel.Vertices[idx*8+1] -= 0.5
+			customModel.Vertices[idx*8+2] *= 0.2
 		}
-		gi.AssetManager.CreateModelSilent("blockmanwheel.model", customModel)
+		gi.AssetManager.CreateModelSilent("blockmanleg.model", customModel)
 	}
-	block := gameobjects.NewBlock(gi, "blockmanwheel.model", "grid.png.texuture")
+	block := gameobjects.NewBlock(gi, "blockmanleg.model", "grid.png.texuture")
 	block.Color = []float32{1, 1, 1}
-	wheel := new(BlockManWheel)
+	wheel := new(BlockManLeg)
 	///
 	wheel.BlockObject = block
 	wheel.InnerModel = wheel.ModelAsset_sg().Resource.(*resource.Model)
-	wheel.Transform.Postion.SetIndexValue(1, -1)
 	return wheel
 }
 
@@ -143,7 +146,8 @@ type BlockMan struct {
 	Head      *BlockManHead
 	HandLeft  *BlockManHand
 	HandRight *BlockManHand
-	Wheel     *BlockManWheel
+	LegLeft   *BlockManLeg
+	LegRight  *BlockManLeg
 	//
 	AnimationCtl *common.AnimationController
 }
@@ -190,20 +194,24 @@ func NewBlockMan(gi *game.GlobalInfo) *BlockMan {
 	blockMan.HandLeft.Transform.Postion.SetValue2(-0.7, 1)
 	blockMan.HandRight = NewBlockManHand(gi)
 	blockMan.HandRight.Transform.Postion.SetValue2(0.7, 1)
-	blockMan.Wheel = NewBlockManWheel(gi)
-
+	blockMan.LegLeft = NewBlockManLeg(gi)
+	blockMan.LegLeft.Transform.Postion.SetValue2(0.3, -1)
+	blockMan.LegRight = NewBlockManLeg(gi)
+	blockMan.LegRight.Transform.Postion.SetValue2(-0.3, -1)
 	gi.AddGameObject(blockMan.Core)
 	gi.AddGameObject(blockMan.Body)
 	gi.AddGameObject(blockMan.Head)
 	gi.AddGameObject(blockMan.HandLeft)
 	gi.AddGameObject(blockMan.HandRight)
-	gi.AddGameObject(blockMan.Wheel)
+	gi.AddGameObject(blockMan.LegLeft)
+	gi.AddGameObject(blockMan.LegRight)
 	//
 	blockMan.Body.Transform.SetParent(blockMan.Core.Transform)
 	blockMan.Head.Transform.SetParent(blockMan.Body.Transform)
 	blockMan.HandLeft.Transform.SetParent(blockMan.Body.Transform)
 	blockMan.HandRight.Transform.SetParent(blockMan.Body.Transform)
-	blockMan.Wheel.Transform.SetParent(blockMan.Body.Transform)
+	blockMan.LegLeft.Transform.SetParent(blockMan.Body.Transform)
+	blockMan.LegRight.Transform.SetParent(blockMan.Body.Transform)
 	//
 	blockMan.CreateAnimation()
 	return blockMan
@@ -216,7 +224,9 @@ func (blockMan *BlockMan) CreateAnimation() {
 		blockMan.Body.Transform,
 		blockMan.HandLeft.Transform,
 		blockMan.HandRight.Transform,
-		blockMan.Wheel.Transform)
+		blockMan.LegLeft.Transform,
+		blockMan.LegRight.Transform,
+	)
 
 	blockMan.AnimationCtl.LoadFromFile("blockman.dong")
 	fmt.Println(blockMan.AnimationCtl.ModeList)
