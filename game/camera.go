@@ -3,27 +3,58 @@ package game
 import (
 	"math"
 
-	"github.com/gitbufenshuo/gopen/game/asset_manager"
+	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type CubeMapObject struct {
-	shaderCtl    *ShaderCtl
-	modelAsset   *asset_manager.Asset
-	shaderAsset  *asset_manager.Asset
-	cubemapAsset *asset_manager.Asset
+	modelResource    *resource.Model
+	shaderResource   *resource.ShaderProgram
+	cubemapResource  *resource.CubeMap
+	RotationLocation int32
 }
 
-// func NewCubeMapObject() *CubeMapObject {
-// 	{
-// 		// model : just a cube
-// 		customModel := resource.NewBlockModel()
-// 		for idx := 0; idx != 24; idx++ {
+func NewCubeMapObject(cubemapTexture *resource.CubeMap) *CubeMapObject {
+	cmo := new(CubeMapObject)
+	cubemapTexture.Upload()
+	cmo.cubemapResource = cubemapTexture
+	{
+		// model : just a cube
+		rawModel := resource.NewBlockModel()
+		cubemapModel := resource.NewModel()
+		cubemapModel.Vertices = make([]float32, 24*6)
+		cubemapModel.Indices = make([]uint32, len(rawModel.Indices))
+		copy(cubemapModel.Indices, rawModel.Indices)
+		for idx := 0; idx != 12; idx++ {
+			cubemapModel.Indices[idx*3+0], cubemapModel.Indices[idx*3+2] = cubemapModel.Indices[idx*3+2], cubemapModel.Indices[idx*3+0]
+		}
+		cubemapModel.Stripes = []int{3}
+		for idx := 0; idx != 24; idx++ {
+			// change the normal
+			// x y z u v nx ny nz
+			// target:
+			// xyz nx ny nz
+			cubemapModel.Vertices[idx*3+0] = rawModel.Vertices[idx*8+0] * 2
+			cubemapModel.Vertices[idx*3+1] = rawModel.Vertices[idx*8+1] * 2
+			cubemapModel.Vertices[idx*3+2] = rawModel.Vertices[idx*8+2] * 2
+		}
 
-// 		}
-// 	}
-// }
+		cubemapModel.Upload()
+		cmo.modelResource = cubemapModel
+	}
+	{
+		// shader
+		cubemapShader := resource.NewShaderProgram()
+		cubemapShader.ReadFromText(resource.ShaderCubeMapText.Vertex, resource.ShaderCubeMapText.Fragment)
+		cubemapShader.Upload()
+		cmo.shaderResource = cubemapShader
+		//
+		cmo.RotationLocation = gl.GetUniformLocation(cubemapShader.ShaderProgram(), gl.Str("rotation"+"\x00"))
+	}
+	return cmo
+}
 
 type Camera struct {
 	Transform     *common.Transform
@@ -54,6 +85,11 @@ func NewDefaultCamera() *Camera {
 	c.Target.Init3()
 	c.Transform = common.NewTransform()
 	return c
+}
+
+func (camera *Camera) AddSkyBox(cubemap *resource.CubeMap) {
+	cmo := NewCubeMapObject(cubemap)
+	camera.CubeMapObject = cmo
 }
 
 // set the camera so that it looks at the target

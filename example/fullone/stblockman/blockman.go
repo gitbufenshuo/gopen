@@ -135,11 +135,13 @@ func NewBlockManCore(gi *game.GlobalInfo) *BlockManCore {
 }
 
 func (bmc *BlockManCore) Update() {
+	return
 	v := float32(bmc.GI().CurFrame) * 1.2
 	bmc.Transform.Rotation.SetIndexValue(1, v)
 }
 
 type BlockMan struct {
+	gi        *game.GlobalInfo
 	ID        int
 	Core      *BlockManCore
 	Body      *BlockManBody
@@ -157,6 +159,9 @@ func (bm *BlockMan) Start() {
 }
 
 func (bm *BlockMan) Update() {
+	gi := bm.gi
+	gi.MainCamera.Transform.Rotation.SetValue3(-float32(gi.CurFrame), float32(gi.CurFrame), 0)
+	return
 	bm.AnimationRun()
 	if bm.Body.GI().CurFrame%111 == 0 {
 		rint := rand.Int()
@@ -186,6 +191,8 @@ func (bm *BlockMan) ID_sg(_id ...int) int {
 
 func NewBlockMan(gi *game.GlobalInfo) *BlockMan {
 	blockMan := new(BlockMan)
+	blockMan.gi = gi
+	// return blockMan
 	//
 	blockMan.Core = NewBlockManCore(gi)
 	blockMan.Body = NewBlockManBody(gi)

@@ -5,6 +5,7 @@ import (
 	"image/draw"
 	"os"
 
+	_ "image/jpeg"
 	_ "image/png"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -110,7 +111,7 @@ func (cm *CubeMap) Upload() {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, cm.tbo)
 	for idx := 0; idx != 6; idx++ {
 		gl.TexImage2D(
-			gl.TEXTURE_2D,
+			gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(idx),
 			0,
 			gl.RGBA,
 			cm.width,
@@ -120,14 +121,13 @@ func (cm *CubeMap) Upload() {
 			gl.UNSIGNED_BYTE,
 			gl.Ptr(cm.PixelsList[idx]))
 	}
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	// gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 }
 func (cm *CubeMap) Active() {
 	// gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindTexture(gl.TEXTURE_2D, cm.tbo)
+	gl.BindTexture(gl.TEXTURE_CUBE_MAP, cm.tbo)
 }
