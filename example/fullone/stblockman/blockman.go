@@ -160,8 +160,8 @@ func (bm *BlockMan) Start() {
 
 func (bm *BlockMan) Update() {
 	gi := bm.gi
-	gi.MainCamera.Transform.Rotation.SetValue3(-float32(gi.CurFrame), float32(gi.CurFrame), 0)
-	return
+	gi.MainCamera.Transform.Rotation.SetValue3(0, float32(gi.CurFrame), 0)
+
 	bm.AnimationRun()
 	if bm.Body.GI().CurFrame%111 == 0 {
 		rint := rand.Int()

@@ -287,7 +287,6 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 }
 func (gi *GlobalInfo) drawSkyBox() {
 	var rotation = gi.MainCamera.Transform.RotationMAT4()
-	rotation.PrettyShow()
 	gi.MainCamera.CubeMapObject.shaderResource.Active()
 	gl.UniformMatrix4fv(gi.MainCamera.CubeMapObject.RotationLocation, 1, false, rotation.Address())
 	// change context
