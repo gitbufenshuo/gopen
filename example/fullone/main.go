@@ -54,7 +54,8 @@ func myInit(gi *game.GlobalInfo) {
 	// particle system
 	{
 		texture := resource.NewTexture()
-		texture.ReadFromFile("./particle.png")
+		// texture.ReadFromFile("./particle.png")
+		texture.GenDefault(16, 16)
 		gi.ParticalSystem = game.NewParticle(gi, texture)
 		{
 			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())

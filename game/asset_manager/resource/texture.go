@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"fmt"
 	"image"
 	"image/draw"
 	"os"
@@ -62,6 +63,22 @@ func (t *Texture) ReadFromFile(path string) {
 				downIndex := int(t.width*4)*(int(t.height)-1-row) + col
 				t.Pixels[upIndex], t.Pixels[downIndex] = t.Pixels[downIndex], t.Pixels[upIndex]
 			}
+		}
+	}
+}
+
+func (t *Texture) GenDefault(width, height int32) {
+
+	t.width = width
+	t.height = height
+	t.Pixels = make([]uint8, width*height*4)
+	for widx := int32(0); widx != width; widx++ {
+		for hidx := int32(0); hidx != height; hidx++ {
+			t.Pixels[((hidx*width)+widx*4)+0] = 255
+			t.Pixels[((hidx*width)+widx*4)+1] = 255
+			t.Pixels[((hidx*width)+widx*4)+2] = 255
+			t.Pixels[((hidx*width)+widx*4)+3] = 255
+			fmt.Println("pixels:", ((hidx * width) + widx*4))
 		}
 	}
 }
