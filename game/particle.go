@@ -86,7 +86,7 @@ func (pe *ParticleEntity) UpdateTargetTransform() {
 	targetpos.RightMul_InPlace(&modelmat)
 	for idx, onecore := range pe.CoreList {
 		if idx <= 10 {
-			onecore.Transform.Postion.InterpolationInplaceUnsafe(&targetpos, float32(idx+1)/10)
+			onecore.Transform.Postion.InterpolationInplaceUnsafe(&targetpos, float32(idx+1)/30)
 		} else {
 			onecore.Transform.Postion.InterpolationInplaceUnsafe(
 				&pe.CoreList[idx-1].Transform.Postion, float32(idx+1)/10)
