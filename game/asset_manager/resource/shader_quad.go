@@ -19,6 +19,7 @@ var ShaderQuadText ShaderText = ShaderText{
 	Fragment: `#version 330
 
 	uniform sampler2D tex;
+	uniform float light;
 	
 	in vec2 fragTexCoord;
 	
@@ -26,5 +27,6 @@ var ShaderQuadText ShaderText = ShaderText{
 	
 	void main() {
 		outputColor = texture(tex, fragTexCoord);
+		outputColor.xyz *= light;
 	}`,
 }

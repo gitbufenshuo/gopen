@@ -209,6 +209,31 @@ func (self *VECX) Interpolation(other *VECX, t float32) VECX {
 	return res
 }
 
+// two vec interpolation
+// t should be [0,1], but any other real number is supported
+func (self *VECX) InterpolationInplace(other *VECX, t float32) {
+	if !self.checkHomotype(other) {
+		panic("Interpolation")
+	}
+	var res VECX
+	res.InitDimension(other.Di())
+	for i := 0; i != self.dimension; i++ {
+		res.data[i] = (1-t)*self.data[i] + t*other.data[i]
+		self.data[i] = res.data[i]
+	}
+}
+
+// two vec interpolation unsafe
+// t should be [0,1], but any other real number is supported
+func (self *VECX) InterpolationInplaceUnsafe(other *VECX, t float32) {
+	var res VECX
+	res.InitDimension(other.Di())
+	for i := 0; i != self.dimension; i++ {
+		res.data[i] = (1-t)*self.data[i] + t*other.data[i]
+		self.data[i] = res.data[i]
+	}
+}
+
 // grab one col from matx to store in self
 func (self *VECX) GrabColToVec(other *MATX, col int) {
 	if !other.checkHomotype_vec(self) {

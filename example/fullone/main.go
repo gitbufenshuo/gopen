@@ -43,23 +43,34 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-	for idx := -5; idx <= 5; idx += 2 {
-		for zdx := 0; zdx >= -20; zdx -= 2 {
-			blockMan := stblockman.NewBlockMan(gi)
-			// blockMan.Core.Transform.Postion.SetValue1(float32(idx))
-			// blockMan.Core.Transform.Postion.SetIndexValue(2, float32(zdx))
-			// blockMan.Core.Transform.Rotation.SetValue3(60, 60, 0)
 
-			gi.AddManageObject(blockMan)
-			break
-		}
-		break
-	}
+	blockMan := stblockman.NewBlockMan(gi)
+	// blockMan.Core.Transform.Postion.SetValue1(float32(idx))
+	// blockMan.Core.Transform.Postion.SetIndexValue(2, float32(zdx))
+	// blockMan.Core.Transform.Rotation.SetValue3(60, 60, 0)
+
+	gi.AddManageObject(blockMan)
+
 	// particle system
 	{
 		texture := resource.NewTexture()
 		texture.ReadFromFile("./particle.png")
 		gi.ParticalSystem = game.NewParticle(gi, texture)
+		{
+			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
+			gi.ParticalSystem.EntityList[0].TargetTransform = blockMan.HandLeft.Transform
+			for idx := 0; idx != 50; idx++ {
+				gi.ParticalSystem.EntityList[0].CoreList = append(gi.ParticalSystem.EntityList[0].CoreList, game.NewParticleCore())
+			}
+			gi.ParticalSystem.EntityList[0].Light = 1
+		}
+		{
+			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
+			gi.ParticalSystem.EntityList[1].TargetTransform = blockMan.HandRight.Transform
+			for idx := 0; idx != 50; idx++ {
+				gi.ParticalSystem.EntityList[1].CoreList = append(gi.ParticalSystem.EntityList[1].CoreList, game.NewParticleCore())
+			}
+		}
 	}
 	//
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}

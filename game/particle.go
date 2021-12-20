@@ -6,6 +6,7 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
+	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -19,6 +20,10 @@ func NewParticleCore() *ParticleCore {
 	{
 		// model : just a quad
 		quadModel := resource.NewQuadModel()
+		for idx := 0; idx != 4; idx++ {
+			quadModel.Vertices[5*idx+0] *= 2
+			quadModel.Vertices[5*idx+1] *= 2
+		}
 		quadModel.Upload()
 		pc.modelResource = quadModel
 	}
@@ -27,17 +32,76 @@ func NewParticleCore() *ParticleCore {
 }
 
 func (pc *ParticleCore) UploadUniforms(ml int32) {
-	m := pc.Transform.Model()
+	m := pc.Transform.WorldModel()
 	gl.UniformMatrix4fv(ml, 1, false, m.Address())
+}
+
+type ParticleEntity struct {
+	CoreList        []*ParticleCore
+	TargetTransform *common.Transform
+	Light           float32
+}
+
+func NewParticleEntity() *ParticleEntity {
+	return new(ParticleEntity)
+}
+
+func (pe *ParticleEntity) Draw(mloc, lightloc int32) {
+	gl.Uniform1f(lightloc, float32(pe.Light)+(rand.Float32()-0.5)/5)
+	for _, onecore := range pe.CoreList {
+		// prepare the uniforms
+		onecore.UploadUniforms(mloc)
+		// change context
+		onecore.modelResource.Active() // model
+		// draw
+		vertexNum := len(onecore.modelResource.Indices)
+		gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+	}
+}
+
+func (pe *ParticleEntity) Update() {
+	pe.CalcLight()
+	pe.UpdateRotation()
+	pe.UpdateTargetTransform()
+}
+
+func (pe *ParticleEntity) CalcLight() {
+
+}
+
+func (pe *ParticleEntity) UpdateRotation() {
+	for idx, onecore := range pe.CoreList {
+		onecore.Transform.Rotation.AddIndexValue(2, float32(idx))
+	}
+}
+func (pe *ParticleEntity) UpdateTargetTransform() {
+	if pe.TargetTransform == nil {
+		return
+	}
+	//
+	modelmat := pe.TargetTransform.WorldModel()
+	var targetpos matmath.VECX
+	targetpos.Init4()
+	targetpos.SetValue4(0, -1.2, 0, 1)
+	targetpos.RightMul_InPlace(&modelmat)
+	for idx, onecore := range pe.CoreList {
+		if idx <= 10 {
+			onecore.Transform.Postion.InterpolationInplaceUnsafe(&targetpos, float32(idx+1)/10)
+		} else {
+			onecore.Transform.Postion.InterpolationInplaceUnsafe(
+				&pe.CoreList[idx-1].Transform.Postion, float32(idx+1)/10)
+		}
+	}
 }
 
 type Particle struct {
 	gi                              *GlobalInfo
 	ID                              int
-	CoreList                        []*ParticleCore
+	EntityList                      []*ParticleEntity
 	ShaderResource                  *resource.ShaderProgram
 	TextureResource                 *resource.Texture
 	MLocation, VLocation, PLocation int32
+	LightLocation                   int32
 }
 
 func (parti *Particle) Start() {
@@ -45,14 +109,13 @@ func (parti *Particle) Start() {
 }
 
 func (parti *Particle) Update() {
-	randint := rand.Int()
-	//
-	randint %= len(parti.CoreList)
-	//
-	gi := parti.gi
-	parti.CoreList[randint].Transform.Postion.SetIndexValue(1, 3)
-	parti.CoreList[randint].Transform.Rotation.SetIndexValue(1, float32(gi.CurFrame))
+	parti.CalcLight()
+	for _, oneentity := range parti.EntityList {
+		oneentity.Update()
+	}
+}
 
+func (parti *Particle) CalcLight() {
 }
 
 func (parti *Particle) Draw() {
@@ -60,14 +123,9 @@ func (parti *Particle) Draw() {
 	parti.ShaderResource.Active() // shader
 	parti.TextureResource.Active()
 	parti.UploadUniforms(parti.VLocation, parti.PLocation)
-	for _, onecore := range parti.CoreList {
-		// prepare the uniforms
-		onecore.UploadUniforms(parti.MLocation)
-		// change context
-		onecore.modelResource.Active() // model
-		// draw
-		vertexNum := len(onecore.modelResource.Indices)
-		gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+
+	for _, oneentity := range parti.EntityList {
+		oneentity.Draw(parti.MLocation, parti.LightLocation)
 	}
 }
 
@@ -109,12 +167,11 @@ func NewParticle(gi *GlobalInfo, texture *resource.Texture) *Particle {
 		parti.MLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("model"+"\x00"))
 		parti.VLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("view"+"\x00"))
 		parti.PLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("projection"+"\x00"))
+		parti.LightLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("light"+"\x00"))
 	}
 	{
 		// model list
-		for idx := 0; idx != 10; idx++ {
-			parti.CoreList = append(parti.CoreList, NewParticleCore())
-		}
+
 	}
 	return parti
 }

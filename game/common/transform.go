@@ -1,6 +1,8 @@
 package common
 
-import "github.com/gitbufenshuo/gopen/matmath"
+import (
+	"github.com/gitbufenshuo/gopen/matmath"
+)
 
 type Transform struct {
 	Postion  matmath.VECX
@@ -56,6 +58,24 @@ func (transform *Transform) Model() matmath.MATX {
 
 	return matRes
 }
+
+func (transform *Transform) WorldModel() matmath.MATX {
+	m := transform.Model()
+	//
+	var curTransform *Transform
+	curTransform = transform
+	for {
+		if curTransform.Parent != nil { // not root
+			parentM := curTransform.Parent.Model()
+			m.RightMul_InPlace(&parentM)
+		} else {
+			break
+		}
+		curTransform = curTransform.Parent
+	}
+	return m
+}
+
 func (transform *Transform) RotationMAT4() matmath.MATX {
 	var matRes matmath.MATX
 	matRes.Init4()
