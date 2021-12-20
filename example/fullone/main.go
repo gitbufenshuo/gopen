@@ -55,7 +55,12 @@ func myInit(gi *game.GlobalInfo) {
 		}
 		break
 	}
-
+	// particle system
+	{
+		texture := resource.NewTexture()
+		texture.ReadFromFile("./particle.png")
+		gi.ParticalSystem = game.NewParticle(gi, texture)
+	}
 	//
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)

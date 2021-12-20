@@ -39,6 +39,7 @@ type GlobalInfo struct {
 	title                 string
 	CustomInit            func(*GlobalInfo)
 	MainCamera            *Camera
+	ParticalSystem        *Particle
 	window                *glfw.Window
 	InputSystemKeyPress   []bool
 	InputSystemKeyRelease []bool
@@ -241,6 +242,10 @@ func (gi *GlobalInfo) draw() {
 	}
 	gl.DepthFunc(gl.LESS)
 	// time.Sleep(time.Second)
+	if gi.ParticalSystem != nil {
+		gi.ParticalSystem.Update()
+		gi.ParticalSystem.Draw()
+	}
 }
 
 func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
