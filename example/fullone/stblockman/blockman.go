@@ -81,6 +81,7 @@ func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
 			} else {
 				customModel.Vertices[idx*8+1] = 1
 			}
+			customModel.Vertices[idx*8+2] *= 0.3
 		}
 		gi.AssetManager.CreateModelSilent("blockmanbody.model", customModel)
 	}
@@ -135,7 +136,7 @@ func NewBlockManCore(gi *game.GlobalInfo) *BlockManCore {
 }
 
 func (bmc *BlockManCore) Update() {
-	return
+	// return
 	v := float32(bmc.GI().CurFrame) * 1.2
 	bmc.Transform.Rotation.SetIndexValue(1, v)
 }
@@ -160,10 +161,10 @@ func (bm *BlockMan) Start() {
 
 func (bm *BlockMan) Update() {
 	gi := bm.gi
-	gi.MainCamera.Transform.Rotation.SetValue3(0, float32(gi.CurFrame), 0)
+	// gi.MainCamera.Transform.Rotation.SetValue3(0, float32(gi.CurFrame), 0)
 
 	bm.AnimationRun()
-	if bm.Body.GI().CurFrame%111 == 0 {
+	if gi.CurFrame%111 == 0 {
 		rint := rand.Int()
 		rint %= len(bm.AnimationCtl.ModeList)
 		bm.AnimationCtl.ChangeMode(bm.AnimationCtl.ModeList[rint])
