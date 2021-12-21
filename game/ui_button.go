@@ -97,6 +97,7 @@ func (uibutton *UIButton) OnDraw() {
 	//
 	modelt := uibutton.transform.Model()
 	gl.UniformMatrix4fv(uibutton.a_model_loc, 1, false, modelt.Address())
+	gl.Uniform1f(uibutton.u_light_loc, 1)
 }
 
 func (uibutton *UIButton) OnDrawFinish() {

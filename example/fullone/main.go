@@ -1,12 +1,15 @@
 package main
 
 import (
+	"io/ioutil"
+	"log"
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/example/fullone/stblockman"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/go-gl/glfw/v3.1/glfw"
+	"github.com/golang/freetype"
 )
 
 func init() {
@@ -50,12 +53,23 @@ func myInit(gi *game.GlobalInfo) {
 	// blockMan.Core.Transform.Rotation.SetValue3(60, 60, 0)
 
 	gi.AddManageObject(blockMan)
+	fontBytes, err := ioutil.ReadFile("fonts/1620207082885638.ttf")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	font, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	// particle system
 	{
 		texture := resource.NewTexture()
 		// texture.ReadFromFile("./particle.png")
-		texture.GenDefault(16, 16)
+		// texture.GenFont(256, 256, "a", font)
+		texture.GenRandom(16, 16)
 		gi.ParticalSystem = game.NewParticle(gi, texture)
 		{
 			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
@@ -76,7 +90,8 @@ func myInit(gi *game.GlobalInfo) {
 	{
 		// ui system
 		tr := resource.NewTexture()
-		tr.ReadFromFile("ui/go.png")
+		// tr.ReadFromFile("ui/go.png")
+		tr.GenFont(256, 256, "龟派气功", font)
 		tr.Upload()
 		for idx := 0; idx != 2; idx++ {
 			button := game.NewDefaultUIButton(gi)

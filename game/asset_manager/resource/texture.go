@@ -9,6 +9,8 @@ import (
 	_ "image/png"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
 )
 
 type Texture struct {
@@ -83,6 +85,51 @@ func (t *Texture) GenDefault(width, height int32) {
 			fmt.Println("pixels:", ((hidx * width) + widx*4))
 		}
 	}
+}
+func (t *Texture) GenRandom(width, height int32) {
+
+	t.width = width
+	t.height = height
+	t.Pixels = make([]uint8, width*height*4)
+	for widx := int32(0); widx != width; widx++ {
+		for hidx := int32(0); hidx != height; hidx++ {
+			t.Pixels[((hidx*width*4)+widx*4)+0] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+1] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+2] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+3] = 255
+		}
+	}
+}
+
+func (t *Texture) GenFont(width, height int32, content string, font *truetype.Font) {
+	img := image.NewRGBA(image.Rect(0, 0, int(width), int(height)))
+	for idx := range img.Pix {
+		img.Pix[idx] = 100
+	}
+	t.width = width
+	t.height = height
+
+	c := freetype.NewContext()
+	c.SetDPI(2)
+	c.SetFont(font)
+	c.SetFontSize(2500)
+	c.SetClip(img.Bounds())
+	c.SetDst(img)
+	c.SetSrc(image.White)
+
+	pt := freetype.Pt(10, 70+10+int(c.PointToFixed(20)>>8)) // 字出现的位置
+
+	c.DrawString(content, pt)
+
+	t.Pixels = img.Pix
+	for row := 0; row != int(t.height/2); row++ {
+		for col := 0; col != int(t.width*4); col++ {
+			upIndex := int(t.width*4)*row + col
+			downIndex := int(t.width*4)*(int(t.height)-1-row) + col
+			t.Pixels[upIndex], t.Pixels[downIndex] = t.Pixels[downIndex], t.Pixels[upIndex]
+		}
+	}
+
 }
 
 // to gpu
