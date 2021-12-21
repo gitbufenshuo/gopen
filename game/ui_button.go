@@ -58,7 +58,9 @@ func (uibutton *UIButton) ChangeTexture(textureR *resource.Texture) {
 	uibutton.renderComponent.TextureR = textureR
 	return
 }
-
+func (uibutton *UIButton) GetTransform() *common.Transform {
+	return uibutton.transform
+}
 func (uibutton *UIButton) ID_sg(_id ...int) int {
 	if len(_id) == 0 {
 		return uibutton.id
@@ -78,13 +80,9 @@ func (uibutton *UIButton) Enabled() bool {
 }
 
 func (uibutton *UIButton) Start() {
-	uibutton.transform.Postion.SetIndexValue(1, 0.5)
 }
 
 func (uibutton *UIButton) Update() {
-	// 	v := math.Sin(float64(uibutton.gi.CurFrame) / 3.14 / 5)
-	// 	uibutton.transform.Postion.SetIndexValue(1, float32(v))
-	// 	fmt.Println(v)
 }
 
 func (uibutton *UIButton) OnDraw() {

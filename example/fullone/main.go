@@ -78,9 +78,13 @@ func myInit(gi *game.GlobalInfo) {
 		tr := resource.NewTexture()
 		tr.ReadFromFile("ui/go.png")
 		tr.Upload()
-		button := game.NewDefaultUIButton(gi)
-		button.ChangeTexture(tr)
-		gi.AddUIObject(button)
+		for idx := 0; idx != 2; idx++ {
+			button := game.NewDefaultUIButton(gi)
+			button.ChangeTexture(tr)
+			bt := button.GetTransform()
+			bt.Postion.SetIndexValue(0, float32(idx-1)/2)
+			gi.AddUIObject(button)
+		}
 	}
 	//
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
