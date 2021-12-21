@@ -32,7 +32,7 @@ func (sp *ShaderProgram) ReadFromFile(vPath, fPath string) {
 	}
 	sp.VertexCode = string(vByte)
 	sp.VertexCode += "\x00"
-	fmt.Println("--- reading from file vertexcode", sp.VertexCode)
+	// fmt.Println("--- reading from file vertexcode", sp.VertexCode)
 	/// /// ///
 	fFile, err := os.Open(fPath)
 	defer fFile.Close()
@@ -45,16 +45,16 @@ func (sp *ShaderProgram) ReadFromFile(vPath, fPath string) {
 	}
 	sp.FragmentCode = string(fByte)
 	sp.FragmentCode += "\x00"
-	fmt.Println("--- reading from file fragmentcode", sp.FragmentCode)
+	// fmt.Println("--- reading from file fragmentcode", sp.FragmentCode)
 }
 func (sp *ShaderProgram) ReadFromText(vtext, ftext string) {
 	sp.VertexCode = vtext
 	sp.VertexCode += "\x00"
-	fmt.Println("--- reading from file vertexcode", sp.VertexCode)
+	// fmt.Println("--- reading from file vertexcode", sp.VertexCode)
 	/// /// ///
 	sp.FragmentCode = ftext
 	sp.FragmentCode += "\x00"
-	fmt.Println("--- reading from file fragmentcode", sp.FragmentCode)
+	// fmt.Println("--- reading from file fragmentcode", sp.FragmentCode)
 }
 
 func compileShader(source string, shaderType uint32) (uint32, error) {

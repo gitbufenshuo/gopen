@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
+	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
 )
 
@@ -25,4 +26,13 @@ type ManageObjectI interface {
 	ID_sg(...int) int
 	Start()
 	Update()
+}
+type UIObjectI interface {
+	ID_sg(...int) int
+	GetRenderComponent() *resource.RenderComponent
+	Enabled() bool
+	Start()
+	Update()
+	OnDraw()
+	OnDrawFinish()
 }

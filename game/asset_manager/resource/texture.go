@@ -26,6 +26,7 @@ type Texture struct {
 
 func NewTexture() *Texture {
 	var t Texture
+	t.FlipY = true
 	return &t
 }
 func (t *Texture) SetWidth(w int32) {
@@ -55,6 +56,7 @@ func (t *Texture) ReadFromFile(path string) {
 	t.height = int32(rgba.Rect.Size().Y)
 	draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
 	t.Pixels = rgba.Pix
+	fmt.Printf("width:%d height:%d lenpix:%d\n", t.width, t.height, len(t.Pixels))
 	if t.FlipY {
 		// swap rows of the pixels
 		for row := 0; row != int(t.height/2); row++ {
@@ -74,10 +76,10 @@ func (t *Texture) GenDefault(width, height int32) {
 	t.Pixels = make([]uint8, width*height*4)
 	for widx := int32(0); widx != width; widx++ {
 		for hidx := int32(0); hidx != height; hidx++ {
-			t.Pixels[((hidx*width)+widx*4)+0] = 255
-			t.Pixels[((hidx*width)+widx*4)+1] = 255
-			t.Pixels[((hidx*width)+widx*4)+2] = 255
-			t.Pixels[((hidx*width)+widx*4)+3] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+0] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+1] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+2] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+3] = 255
 			fmt.Println("pixels:", ((hidx * width) + widx*4))
 		}
 	}

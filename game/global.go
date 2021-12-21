@@ -32,8 +32,10 @@ type GlobalInfo struct {
 	AssetManager          *asset_manager.AsssetManager
 	gameobjects           map[int]GameObjectI
 	manageobjects         map[int]ManageObjectI
+	uiobjects             map[int]UIObjectI
 	nowID                 int
 	nowMD                 int
+	nowUD                 int
 	width                 int
 	height                int
 	title                 string
@@ -58,6 +60,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.title = title
 	globalInfo.gameobjects = make(map[int]GameObjectI)
 	globalInfo.manageobjects = make(map[int]ManageObjectI)
+	globalInfo.uiobjects = make(map[int]UIObjectI)
 	globalInfo.InputSystemKeyPress = make([]bool, 300)
 	globalInfo.InputSystemKeyRelease = make([]bool, 300)
 	globalInfo.CursorMode = glfw.CursorNormal
@@ -105,6 +108,10 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		if gi.cursorPosCallback != nil {
 			window.SetCursorPosCallback(gi.cursorPosCallback)
 		}
+	}
+	// start hook
+	for _, ub := range gi.uiobjects {
+		ub.Start()
 	}
 	for !window.ShouldClose() {
 		// time.Sleep(time.Millisecond * 10)
@@ -228,6 +235,9 @@ func (gi *GlobalInfo) update() {
 	for _, mb := range gi.manageobjects {
 		mb.Update() // call the manageobjects' Update function
 	}
+	for _, ub := range gi.uiobjects {
+		ub.Update()
+	}
 	gi.dealWithTime(2)
 }
 func (gi *GlobalInfo) draw() {
@@ -241,10 +251,17 @@ func (gi *GlobalInfo) draw() {
 		gi.drawSkyBox()
 	}
 	gl.DepthFunc(gl.LESS)
-	// time.Sleep(time.Second)
+	// particle system
 	if gi.ParticalSystem != nil {
 		gi.ParticalSystem.Update()
 		gi.ParticalSystem.Draw()
+	}
+	// ui system
+	for _, ub := range gi.uiobjects {
+		ub.OnDraw()
+		rc := ub.GetRenderComponent()
+		vertexNum := len(rc.ModelR.Indices)
+		gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 	}
 }
 
@@ -313,6 +330,12 @@ func (gi *GlobalInfo) AddManageObject(mb ManageObjectI) {
 
 	gi.nowMD++
 	gi.manageobjects[mb.ID_sg()] = mb
+}
+func (gi *GlobalInfo) AddUIObject(ub UIObjectI) {
+	ub.ID_sg(gi.nowUD + 1)
+
+	gi.nowUD++
+	gi.uiobjects[ub.ID_sg()] = ub
 }
 
 // init assetmanager and some default assets
