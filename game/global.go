@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -10,6 +11,8 @@ import (
 	"time"
 
 	"github.com/gitbufenshuo/gopen/matmath"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
@@ -39,6 +42,7 @@ type GlobalInfo struct {
 	width                 int
 	height                int
 	title                 string
+	TextFont              *truetype.Font
 	CustomInit            func(*GlobalInfo)
 	MainCamera            *Camera
 	ParticalSystem        *Particle
@@ -65,6 +69,19 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.InputSystemKeyRelease = make([]bool, 300)
 	globalInfo.CursorMode = glfw.CursorNormal
 	return globalInfo
+}
+func (gi *GlobalInfo) LoadFont(fontpath string) {
+	fontBytes, err := ioutil.ReadFile(fontpath)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	font, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	gi.TextFont = font
 }
 func (gi *GlobalInfo) StartGame(mode string) {
 	if err := glfw.Init(); err != nil {
