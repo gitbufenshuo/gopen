@@ -79,13 +79,14 @@ func myInit(gi *game.GlobalInfo) {
 		// ui system
 		tr := resource.NewTexture()
 		// tr.ReadFromFile("ui/go.png")
-		tr.GenFont(256, 256, "龟派气功", gi.TextFont)
+		tr.GenFont(32, 16, "火水", gi.TextFont)
 		tr.Upload()
-		for idx := 0; idx != 2; idx++ {
+		for idx := 0; idx != 1; idx++ {
 			button := game.NewDefaultUIButton(gi)
 			button.ChangeTexture(tr)
 			bt := button.GetTransform()
 			bt.Postion.SetIndexValue(0, float32(idx-1)/2)
+			bt.Postion.SetIndexValue(1, float32(idx-1)/2)
 			gi.AddUIObject(button)
 		}
 	}

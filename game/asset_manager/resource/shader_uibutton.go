@@ -6,13 +6,14 @@ var ShaderUIButtonText ShaderText = ShaderText{
 	layout (location = 0) in vec3 vert;
 	layout (location = 1) in vec2 vertTexCoord;
 	uniform mat4 model;
+	uniform float sortz;
 
 	out vec2 fragTexCoord;
 	
 	void main() {
 		fragTexCoord = vertTexCoord;
 		gl_Position = model * vec4(vert, 1);
-		gl_Position.z = 0;
+		gl_Position.z = sortz;
 	}
 	`,
 	Fragment: `#version 330

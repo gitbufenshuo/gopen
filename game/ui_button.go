@@ -19,8 +19,14 @@ func InitDefaultButton() {
 		return
 	}
 	InitDefaultButtonOK = true
-	buttonModelDefault = resource.NewQuadModel()
-	buttonModelDefault.Upload()
+	{
+		buttonModelDefault = resource.NewQuadModel()
+		for idx := 0; idx != 4; idx++ {
+			// buttonModelDefault.Vertices[idx*5+0] *= 2
+			// buttonModelDefault.Vertices[idx*5+1] *= 1
+		}
+		buttonModelDefault.Upload()
+	}
 	//
 	buttonTextureDefault = resource.NewTexture()
 	buttonTextureDefault.GenDefault(1, 1)
@@ -39,11 +45,16 @@ type UIButton struct {
 	transform       *common.Transform
 	a_model_loc     int32
 	u_light_loc     int32
+	u_sortz_loc     int32
+	sortz           float32
+	//
+	uitext *UIText
 }
 
 func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 	InitDefaultButton()
 	uibutton := new(UIButton)
+	uibutton.sortz = 0.001
 	uibutton.gi = gi
 	/////////////////////////
 	uibutton.renderComponent = new(resource.RenderComponent)
@@ -52,6 +63,10 @@ func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 	uibutton.renderComponent.ShaderR = buttonShaderDefault
 	//
 	uibutton.transform = common.NewTransform()
+	//
+	uibutton.uitext = NewUIText(gi)
+	gi.AddUIObject(uibutton.uitext)
+	uibutton.uitext.SetText("Hello Golang")
 	return uibutton
 }
 func (uibutton *UIButton) ChangeTexture(textureR *resource.Texture) {
@@ -93,13 +108,18 @@ func (uibutton *UIButton) OnDraw() {
 	if uibutton.a_model_loc == 0 {
 		uibutton.a_model_loc = gl.GetUniformLocation(uibutton.renderComponent.ShaderR.ShaderProgram(), gl.Str("model"+"\x00"))
 		uibutton.u_light_loc = gl.GetUniformLocation(uibutton.renderComponent.ShaderR.ShaderProgram(), gl.Str("light"+"\x00"))
+		uibutton.u_sortz_loc = gl.GetUniformLocation(uibutton.renderComponent.ShaderR.ShaderProgram(), gl.Str("sortz"+"\x00"))
 	}
 	//
 	modelt := uibutton.transform.Model()
 	gl.UniformMatrix4fv(uibutton.a_model_loc, 1, false, modelt.Address())
 	gl.Uniform1f(uibutton.u_light_loc, 1)
+	gl.Uniform1f(uibutton.u_sortz_loc, uibutton.sortz)
 }
 
+func (uibutton *UIButton) SortZ() float32 {
+	return uibutton.sortz
+}
 func (uibutton *UIButton) OnDrawFinish() {
 
 }

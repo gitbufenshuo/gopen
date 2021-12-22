@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -274,11 +275,22 @@ func (gi *GlobalInfo) draw() {
 		gi.ParticalSystem.Draw()
 	}
 	// ui system
-	for _, ub := range gi.uiobjects {
-		ub.OnDraw()
-		rc := ub.GetRenderComponent()
-		vertexNum := len(rc.ModelR.Indices)
-		gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+	{
+		var aluiob []UIObjectI = make([]UIObjectI, len(gi.uiobjects))
+		var appendidx int
+		for _, ub := range gi.uiobjects {
+			aluiob[appendidx] = ub
+			appendidx++
+		}
+		sort.Slice(aluiob, func(i, j int) bool {
+			return aluiob[i].SortZ() > aluiob[j].SortZ()
+		})
+		for _, ub := range aluiob {
+			ub.OnDraw()
+			rc := ub.GetRenderComponent()
+			vertexNum := len(rc.ModelR.Indices)
+			gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+		}
 	}
 }
 

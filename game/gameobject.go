@@ -35,4 +35,5 @@ type UIObjectI interface {
 	Update()
 	OnDraw()
 	OnDrawFinish()
+	SortZ() float32
 }

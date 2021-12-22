@@ -110,23 +110,25 @@ func (t *Texture) GenFont(width, height int32, content string, font *truetype.Fo
 	t.height = height
 
 	c := freetype.NewContext()
-	c.SetDPI(2)
 	c.SetFont(font)
-	c.SetFontSize(2500)
 	c.SetClip(img.Bounds())
 	c.SetDst(img)
 	c.SetSrc(image.White)
 
-	pt := freetype.Pt(10, 70+10+int(c.PointToFixed(20)>>8)) // 字出现的位置
+	pt := freetype.Pt(0, 13) // 字出现的位置
 
-	c.DrawString(content, pt)
+	pt, _ = c.DrawString(content, pt)
+	fmt.Println(pt.X.Floor(), pt.Y.Floor())
 
 	t.Pixels = img.Pix
-	for row := 0; row != int(t.height/2); row++ {
-		for col := 0; col != int(t.width*4); col++ {
-			upIndex := int(t.width*4)*row + col
-			downIndex := int(t.width*4)*(int(t.height)-1-row) + col
-			t.Pixels[upIndex], t.Pixels[downIndex] = t.Pixels[downIndex], t.Pixels[upIndex]
+	if true {
+
+		for row := 0; row != int(t.height/2); row++ {
+			for col := 0; col != int(t.width*4); col++ {
+				upIndex := int(t.width*4)*row + col
+				downIndex := int(t.width*4)*(int(t.height)-1-row) + col
+				t.Pixels[upIndex], t.Pixels[downIndex] = t.Pixels[downIndex], t.Pixels[upIndex]
+			}
 		}
 	}
 
@@ -161,4 +163,13 @@ func (t *Texture) Upload() {
 func (t *Texture) Active() {
 	// gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, t.tbo)
+}
+
+// clear the gpu buffers
+func (t *Texture) Clear() {
+	if t.tbo > 0 {
+		gl.DeleteBuffers(1, &t.tbo)
+	}
+
+	t.uploaded = false
 }
