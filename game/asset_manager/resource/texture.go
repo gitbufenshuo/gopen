@@ -3,8 +3,8 @@ package resource
 import (
 	"fmt"
 	"image"
-	"image/color"
 	"image/draw"
+	"math/rand"
 	"os"
 
 	_ "image/png"
@@ -94,10 +94,10 @@ func (t *Texture) GenRandom(width, height int32) {
 	t.Pixels = make([]uint8, width*height*4)
 	for widx := int32(0); widx != width; widx++ {
 		for hidx := int32(0); hidx != height; hidx++ {
-			t.Pixels[((hidx*width*4)+widx*4)+0] = 255
-			t.Pixels[((hidx*width*4)+widx*4)+1] = 255
-			t.Pixels[((hidx*width*4)+widx*4)+2] = 255
-			t.Pixels[((hidx*width*4)+widx*4)+3] = 255
+			t.Pixels[((hidx*width*4)+widx*4)+0] = uint8(rand.Uint32())
+			t.Pixels[((hidx*width*4)+widx*4)+1] = uint8(rand.Uint32())
+			t.Pixels[((hidx*width*4)+widx*4)+2] = uint8(rand.Uint32())
+			t.Pixels[((hidx*width*4)+widx*4)+3] = 200
 		}
 	}
 }
@@ -111,21 +111,21 @@ func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
 
 	fmt.Printf("newTextWidth:%d\n", t.width)
 
-	textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x22}
+	// textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x}
 	img := image.NewRGBA(image.Rect(0, 0, int(t.width), int(t.height)))
-	for widx := 0; widx < int(t.width); widx++ {
-		for hidx := 0; hidx < int(t.height); hidx++ {
-			img.Set(widx, hidx, textBg)
-		}
-	}
+	// for widx := 0; widx < int(t.width); widx++ {
+	// 	for hidx := 0; hidx < int(t.height); hidx++ {
+	// 		img.Set(widx, hidx, textBg)
+	// 	}
+	// }
 
 	c := freetype.NewContext()
 	c.SetFont(fontconfig.TextFont)
 	c.SetClip(img.Bounds())
 	c.SetDst(img)
-	c.SetSrc(image.White)
+	c.SetSrc(image.Black)
 
-	pt := freetype.Pt(1, 16) // 字出现的位置
+	pt := freetype.Pt(1, 12) // 字出现的位置
 	for _, contD := range content {
 		if string(contD) == " " {
 			pt.X += 5 << 6

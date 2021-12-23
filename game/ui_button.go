@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
@@ -22,8 +23,11 @@ func InitDefaultButton() {
 	{
 		buttonModelDefault = resource.NewQuadModel()
 		for idx := 0; idx != 4; idx++ {
-			// buttonModelDefault.Vertices[idx*5+0] *= 2
-			// buttonModelDefault.Vertices[idx*5+1] *= 1
+			if buttonModelDefault.Vertices[idx*5+0] < 0 {
+				buttonModelDefault.Vertices[idx*5+0] = 0
+			} else {
+				buttonModelDefault.Vertices[idx*5+0] *= 2
+			}
 		}
 		buttonModelDefault.Upload()
 	}
@@ -37,6 +41,22 @@ func InitDefaultButton() {
 	fmt.Println("InitDefaultButton", buttonShaderDefault.ShaderProgram())
 }
 
+type ButtonConfig struct {
+	Width      float32
+	Height     float32
+	Content    string
+	ShaderText resource.ShaderText
+	TextureR   *resource.Texture
+	Bling      bool
+	CustomDraw func(shaderOP *ShaderOP)
+}
+
+var DefaultButtonConfig = ButtonConfig{
+	Width:   1,
+	Height:  1,
+	Content: "按钮",
+}
+
 type UIButton struct {
 	gi              *GlobalInfo
 	id              int
@@ -44,6 +64,9 @@ type UIButton struct {
 	enabled         bool
 	transform       *common.Transform
 	shaderOP        *ShaderOP
+	bling           bool
+	customDraw      func(shaderOP *ShaderOP)
+
 	// a_model_loc     int32
 	// u_light_loc     int32
 	// u_sortz_loc     int32
@@ -59,7 +82,9 @@ func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 	uibutton.gi = gi
 	/////////////////////////
 	uibutton.renderComponent = new(resource.RenderComponent)
-	uibutton.renderComponent.ModelR = buttonModelDefault
+	{
+		uibutton.renderComponent.ModelR = buttonModelDefault
+	}
 	uibutton.renderComponent.TextureR = buttonTextureDefault
 	{
 		uibutton.renderComponent.ShaderR = buttonShaderDefault
@@ -72,7 +97,62 @@ func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 	//
 	uibutton.uitext = NewUIText(gi)
 	gi.AddUIObject(uibutton.uitext)
-	uibutton.uitext.SetText("Hello Golang")
+	uibutton.uitext.SetText(DefaultButtonConfig.Content)
+	uibutton.uitext.transform.SetParent(uibutton.transform)
+	return uibutton
+}
+func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
+	InitDefaultButton()
+	uibutton := new(UIButton)
+	uibutton.sortz = 0.001
+	uibutton.bling = buttonconfig.Bling
+	if buttonconfig.CustomDraw != nil {
+		uibutton.customDraw = buttonconfig.CustomDraw
+	}
+	uibutton.gi = gi
+	//
+	uibutton.renderComponent = new(resource.RenderComponent)
+	// model config
+	{
+		uibutton.renderComponent.ModelR = resource.NewQuadModel()
+		for idx := 0; idx != 4; idx++ {
+			uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= buttonconfig.Width
+			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Height
+			if uibutton.renderComponent.ModelR.Vertices[idx*5+0] < 0 {
+				uibutton.renderComponent.ModelR.Vertices[idx*5+0] = 0
+			} else {
+				uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= 2
+			}
+		}
+		uibutton.renderComponent.ModelR.Upload()
+	}
+	// texture config
+	if buttonconfig.TextureR == nil {
+		uibutton.renderComponent.TextureR = buttonTextureDefault
+	} else {
+		uibutton.renderComponent.TextureR = buttonconfig.TextureR
+	}
+	// shader config
+	{
+		if buttonconfig.ShaderText.Vertex == "" {
+			uibutton.renderComponent.ShaderR = buttonShaderDefault
+		} else {
+			newShaderR := resource.NewShaderProgram()
+			newShaderR.ReadFromText(buttonconfig.ShaderText.Vertex, buttonconfig.ShaderText.Fragment)
+			newShaderR.Upload()
+			uibutton.renderComponent.ShaderR = newShaderR
+		}
+		uibutton.shaderOP = NewShaderOP()
+		uibutton.shaderOP.SetProgram(uibutton.renderComponent.ShaderR.ShaderProgram())
+		uibutton.shaderOP.IfUI()
+	}
+	//
+	uibutton.transform = common.NewTransform()
+	//
+	uibutton.uitext = NewUIText(gi)
+	gi.AddUIObject(uibutton.uitext)
+	uibutton.uitext.SetText(buttonconfig.Content)
+	uibutton.uitext.transform.SetParent(uibutton.transform)
 	return uibutton
 }
 func (uibutton *UIButton) ChangeTexture(textureR *resource.Texture) {
@@ -105,7 +185,10 @@ func (uibutton *UIButton) Start() {
 
 func (uibutton *UIButton) Update() {
 }
-
+func (uibutton *UIButton) AddUniform(name string) {
+	// fmt.Println("uibutton,", uibutton.renderComponent.ShaderR)
+	uibutton.shaderOP.AddUniform(name)
+}
 func (uibutton *UIButton) OnDraw() {
 	// fmt.Println("uibutton,", uibutton.renderComponent.ShaderR)
 	uibutton.renderComponent.ShaderR.Active()
@@ -118,9 +201,19 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.shaderOP.UniformLoc("sortz"),
 		uibutton.shaderOP.UniformLoc("whr")
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
-	gl.Uniform1f(lightloc, 1)
+	if uibutton.bling {
+		v := math.Sin(float64(uibutton.gi.CurFrame)/0.001) + 1
+		v /= 20
+		v += 0.8
+		gl.Uniform1f(lightloc, float32(v))
+	}
 	gl.Uniform1f(sortzloc, uibutton.sortz)
 	gl.Uniform1f(whrloc, uibutton.gi.GetWHR())
+	return
+	//
+	if uibutton.customDraw != nil {
+		uibutton.customDraw(uibutton.shaderOP)
+	}
 }
 
 func (uibutton *UIButton) SortZ() float32 {

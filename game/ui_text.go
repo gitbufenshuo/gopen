@@ -1,12 +1,31 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
+
+var textModelDefault *resource.Model
+var InitDefaultTextOK bool
+
+func InitDefaultText() {
+	if InitDefaultTextOK {
+		return
+	}
+	InitDefaultTextOK = true
+	{
+		textModelDefault = resource.NewQuadModel()
+		for idx := 0; idx != 4; idx++ {
+			if textModelDefault.Vertices[idx*5+0] < 0 {
+				textModelDefault.Vertices[idx*5+0] = 0
+			} else {
+				textModelDefault.Vertices[idx*5+0] *= 2
+			}
+		}
+		textModelDefault.Upload()
+	}
+}
 
 type UIText struct {
 	gi              *GlobalInfo
@@ -23,13 +42,13 @@ type UIText struct {
 }
 
 func NewUIText(gi *GlobalInfo) *UIText {
-	InitDefaultButton()
+	InitDefaultText()
 	uitext := new(UIText)
 	uitext.gi = gi
 	uitext.sortz = 0.0005
 	/////////////////////////
 	uitext.renderComponent = new(resource.RenderComponent)
-	uitext.renderComponent.ModelR = buttonModelDefault
+	uitext.renderComponent.ModelR = textModelDefault
 	uitext.renderComponent.TextureR = resource.NewTexture()
 	uitext.renderComponent.ShaderR = buttonShaderDefault
 	//
@@ -59,14 +78,7 @@ func (uitext *UIText) Start() {
 }
 
 func (uitext *UIText) Update() {
-	if uitext.gi.CurFrame%100 == 0 {
-		fmt.Println("func (uitext *UIText) Update() {")
-		if len(uitext.content) <= 30 {
-			uitext.SetText(uitext.content + "0 ")
-		} else {
-			uitext.SetText("0")
-		}
-	}
+
 }
 
 func (uitext *UIText) OnDraw() {

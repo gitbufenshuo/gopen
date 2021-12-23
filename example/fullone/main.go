@@ -1,11 +1,13 @@
 package main
 
 import (
+	"math/rand"
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/example/fullone/stblockman"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -78,15 +80,27 @@ func myInit(gi *game.GlobalInfo) {
 	{
 		// ui system
 		tr := resource.NewTexture()
+		tr.GenRandom(2, 2)
 		// tr.ReadFromFile("ui/go.png")
-		tr.GenFont("火水", gi.FontConfig)
+		// tr.GenFont("火水", gi.FontConfig)
 		tr.Upload()
-		for idx := 0; idx != 1; idx++ {
-			button := game.NewDefaultUIButton(gi)
+		for idx := 0; idx != 5; idx++ {
+			button := game.NewCustomButton(gi, game.ButtonConfig{
+				Width:      1.9,
+				Height:     0.6,
+				Content:    "点击开始游玩吧",
+				Bling:      true,
+				ShaderText: resource.ShaderUIButton_Bling_Text,
+				CustomDraw: func(shaderOP *game.ShaderOP) {
+					blingxloc := shaderOP.UniformLoc("blingx")
+					gl.Uniform1f(blingxloc, rand.Float32())
+				},
+			})
+			button.AddUniform("blingx")
 			button.ChangeTexture(tr)
 			bt := button.GetTransform()
-			bt.Postion.SetIndexValue(0, float32(idx-1)/2)
-			bt.Postion.SetIndexValue(1, float32(idx-1)/2)
+			// bt.Postion.SetIndexValue(0, float32(idx-1)/2)
+			bt.Postion.SetIndexValue(1, float32(idx-1)/5)
 			gi.AddUIObject(button)
 		}
 	}
@@ -112,7 +126,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(1200, 800, "hello-fullone")
+	gi := game.NewGlobalInfo(900, 900, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

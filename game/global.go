@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"path"
 	"sort"
@@ -99,7 +100,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		log.Fatalln("failed to initialize glfw:", err)
 	}
 	defer glfw.Terminate()
-
+	rand.Seed(help.GetNowMS())
 	glfw.WindowHint(glfw.Resizable, glfw.False)
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
