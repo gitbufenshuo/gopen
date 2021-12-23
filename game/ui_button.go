@@ -190,7 +190,6 @@ func (uibutton *UIButton) AddUniform(name string) {
 	uibutton.shaderOP.AddUniform(name)
 }
 func (uibutton *UIButton) OnDraw() {
-	// fmt.Println("uibutton,", uibutton.renderComponent.ShaderR)
 	uibutton.renderComponent.ShaderR.Active()
 	uibutton.renderComponent.ModelR.Active()
 	uibutton.renderComponent.TextureR.Active()
@@ -202,15 +201,14 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.shaderOP.UniformLoc("whr")
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	if uibutton.bling {
-		v := math.Sin(float64(uibutton.gi.CurFrame)/0.001) + 1
+		v := math.Sin(float64(uibutton.gi.CurFrame)/0.0001) + 1
 		v /= 20
 		v += 0.8
 		gl.Uniform1f(lightloc, float32(v))
 	}
 	gl.Uniform1f(sortzloc, uibutton.sortz)
 	gl.Uniform1f(whrloc, uibutton.gi.GetWHR())
-	return
-	//
+
 	if uibutton.customDraw != nil {
 		uibutton.customDraw(uibutton.shaderOP)
 	}
