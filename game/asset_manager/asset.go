@@ -72,10 +72,12 @@ func (as *Asset) Load() error {
 		_t.ReadFromFile(_data.FilePath)
 		as.Resource = _t
 	case AssetTypeShader:
-		_data := as.Data.(*ShaderDataType)
-		_t := resource.NewShaderProgram()
-		_t.ReadFromFile(_data.VPath, _data.FPath)
-		as.Resource = _t
+		if as.Resource == nil {
+			_data := as.Data.(*ShaderDataType)
+			_t := resource.NewShaderProgram()
+			_t.ReadFromFile(_data.VPath, _data.FPath)
+			as.Resource = _t
+		}
 	case AssetTypeModel:
 		if as.Resource == nil {
 			_data := as.Data.(*ModelDataType)

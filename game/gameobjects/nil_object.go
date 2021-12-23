@@ -55,9 +55,10 @@ func (gb *NilObject) ReadyForDraw_sg(_bool ...bool) bool {
 func (gb *NilObject) GetTransform() *common.Transform {
 	return gb.Transform
 }
-func (gb *NilObject) ShaderCtl() *game.ShaderCtl {
-	return nil
+func (gb *NilObject) SetUniform() {
+
 }
+
 func (gb *NilObject) Start() {
 
 }

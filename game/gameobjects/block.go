@@ -2,6 +2,7 @@ package gameobjects
 
 import (
 	"github.com/gitbufenshuo/gopen/game"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type BlockObject struct {
@@ -25,6 +26,7 @@ func NewBlock(gi *game.GlobalInfo, modelname, texturename string) *BlockObject {
 }
 func (co *BlockObject) Start() {
 	co.GI().GlobalFrameInfo.Debug = true
+
 }
 func (co *BlockObject) Update() {
 	if co.Rotating {
@@ -32,8 +34,11 @@ func (co *BlockObject) Update() {
 	}
 }
 func (co *BlockObject) OnDraw() {
-	co.ShaderCtl().UniformU_Colur(co.Color[0], co.Color[1], co.Color[2])
+	sop := co.ShaderOP()
+	gl.Uniform3f(sop.UniformLoc("u_Color"), co.Color[0], co.Color[1], co.Color[2])
 }
 func (co *BlockObject) OnDrawFinish() {
-	co.ShaderCtl().UniformU_Colur(1, 1, 1)
+	sop := co.ShaderOP()
+	gl.Uniform3f(sop.UniformLoc("u_Color"), 1, 1, 1)
+
 }

@@ -43,10 +43,11 @@ type UIButton struct {
 	renderComponent *resource.RenderComponent
 	enabled         bool
 	transform       *common.Transform
-	a_model_loc     int32
-	u_light_loc     int32
-	u_sortz_loc     int32
-	sortz           float32
+	shaderOP        *ShaderOP
+	// a_model_loc     int32
+	// u_light_loc     int32
+	// u_sortz_loc     int32
+	sortz float32
 	//
 	uitext *UIText
 }
@@ -60,7 +61,12 @@ func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 	uibutton.renderComponent = new(resource.RenderComponent)
 	uibutton.renderComponent.ModelR = buttonModelDefault
 	uibutton.renderComponent.TextureR = buttonTextureDefault
-	uibutton.renderComponent.ShaderR = buttonShaderDefault
+	{
+		uibutton.renderComponent.ShaderR = buttonShaderDefault
+		uibutton.shaderOP = NewShaderOP()
+		uibutton.shaderOP.SetProgram(uibutton.renderComponent.ShaderR.ShaderProgram())
+		uibutton.shaderOP.IfUI()
+	}
 	//
 	uibutton.transform = common.NewTransform()
 	//
@@ -105,16 +111,16 @@ func (uibutton *UIButton) OnDraw() {
 	uibutton.renderComponent.ShaderR.Active()
 	uibutton.renderComponent.ModelR.Active()
 	uibutton.renderComponent.TextureR.Active()
-	if uibutton.a_model_loc == 0 {
-		uibutton.a_model_loc = gl.GetUniformLocation(uibutton.renderComponent.ShaderR.ShaderProgram(), gl.Str("model"+"\x00"))
-		uibutton.u_light_loc = gl.GetUniformLocation(uibutton.renderComponent.ShaderR.ShaderProgram(), gl.Str("light"+"\x00"))
-		uibutton.u_sortz_loc = gl.GetUniformLocation(uibutton.renderComponent.ShaderR.ShaderProgram(), gl.Str("sortz"+"\x00"))
-	}
 	//
-	modelt := uibutton.transform.Model()
-	gl.UniformMatrix4fv(uibutton.a_model_loc, 1, false, modelt.Address())
-	gl.Uniform1f(uibutton.u_light_loc, 1)
-	gl.Uniform1f(uibutton.u_sortz_loc, uibutton.sortz)
+	modelMAT := uibutton.transform.Model()
+	mloc, lightloc, sortzloc, whrloc := uibutton.shaderOP.UniformLoc("model"),
+		uibutton.shaderOP.UniformLoc("light"),
+		uibutton.shaderOP.UniformLoc("sortz"),
+		uibutton.shaderOP.UniformLoc("whr")
+	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
+	gl.Uniform1f(lightloc, 1)
+	gl.Uniform1f(sortzloc, uibutton.sortz)
+	gl.Uniform1f(whrloc, uibutton.gi.GetWHR())
 }
 
 func (uibutton *UIButton) SortZ() float32 {

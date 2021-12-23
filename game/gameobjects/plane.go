@@ -2,13 +2,11 @@ package gameobjects
 
 import (
 	"github.com/gitbufenshuo/gopen/game"
-	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 )
 
 type PlaneObject struct {
 	*BasicObject
 	shaderProgram uint32
-	shaderCtl     *game.ShaderCtl
 	Rotating      bool
 	////////////////////////
 	cameraCircleRad float64
@@ -25,7 +23,6 @@ func NewPlane(gi *game.GlobalInfo, modelname, texturename string) *PlaneObject {
 
 	one := new(PlaneObject)
 	one.BasicObject = innerBasic
-	one.shaderCtl = game.NewShaderCtl(one.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram())
 	one.cameraR = 20
 	return one
 }
@@ -41,11 +38,6 @@ func (co *PlaneObject) Update() {
 
 }
 func (co *PlaneObject) OnDraw() {
-	co.shaderCtl.M = co.Transform.Model()
-	co.shaderCtl.V = co.GI().View()
-	co.shaderCtl.P = co.GI().Projection()
-	co.shaderCtl.Rotation = co.Transform.RotationMAT4()
-	co.shaderCtl.Upload(co)
 }
 func (co *PlaneObject) OnDrawFinish() {
 }

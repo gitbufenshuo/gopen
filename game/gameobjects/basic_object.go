@@ -6,6 +6,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 // the common minimal internal implementation of the GameObjectI
@@ -18,7 +19,7 @@ type BasicObject struct {
 	drawEnable   bool // enable - disable drawing
 	readyForDraw bool
 	Transform    *common.Transform
-	shaderCtl    *game.ShaderCtl
+	shaderOP     *game.ShaderOP
 	gi           *game.GlobalInfo
 }
 
@@ -99,12 +100,42 @@ func (gb *BasicObject) ReadyForDraw_sg(_bool ...bool) bool {
 func (gb *BasicObject) GetTransform() *common.Transform {
 	return gb.Transform
 }
-func (gb *BasicObject) ShaderCtl() *game.ShaderCtl {
-	if gb.shaderCtl == nil {
-		gb.shaderCtl = game.NewShaderCtl(gb.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram())
+func (gb *BasicObject) ShaderOP() *game.ShaderOP {
+	if gb.shaderOP == nil {
+		gb.shaderOP = game.NewShaderOP()
+		gb.shaderOP.SetProgram(gb.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram())
+		gb.shaderOP.IfMVP()
 	}
-	return gb.shaderCtl
+	return gb.shaderOP
 }
+
+func (gb *BasicObject) SetUniform() {
+	var modelMAT = gb.GetTransform().Model()
+	var rotationMAT = gb.GetTransform().RotationMAT4()
+	var curTransform *common.Transform
+	curTransform = gb.GetTransform()
+	for {
+		if curTransform.Parent != nil { // not root
+			parentM := curTransform.Parent.Model()
+			modelMAT.RightMul_InPlace(&parentM)
+			parentR := curTransform.Parent.RotationMAT4()
+			rotationMAT.RightMul_InPlace(&parentR)
+		} else {
+			break
+		}
+		curTransform = curTransform.Parent
+	}
+	//
+	var viewMAT = gb.gi.View()
+	var projectionMAT = gb.gi.Projection()
+	sop := gb.ShaderOP()
+	gl.UniformMatrix4fv(sop.UniformLoc("model"), 1, false, modelMAT.Address())
+	gl.UniformMatrix4fv(sop.UniformLoc("view"), 1, false, viewMAT.Address())
+	gl.UniformMatrix4fv(sop.UniformLoc("projection"), 1, false, projectionMAT.Address())
+	gl.UniformMatrix4fv(sop.UniformLoc("rotation"), 1, false, rotationMAT.Address())
+	gl.Uniform1f(sop.UniformLoc("whr"), gb.gi.GetWHR())
+}
+
 func (gb *BasicObject) Start() {
 
 }

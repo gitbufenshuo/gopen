@@ -96,7 +96,7 @@ func myInit(gi *game.GlobalInfo) {
 }
 
 func initShader(gi *game.GlobalInfo) {
-	gi.AssetManager.LoadShaderFromFile("mvp_vertex.glsl", "mvp_fragment.glsl", "mvp_shader")
+	gi.AssetManager.LoadShaderFromText(resource.ShaderMVPText.Vertex, resource.ShaderMVPText.Fragment, "mvp_shader")
 }
 
 func initModel(gi *game.GlobalInfo) {
@@ -112,7 +112,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(800, 800, "hello-fullone")
+	gi := game.NewGlobalInfo(1200, 800, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

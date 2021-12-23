@@ -91,18 +91,6 @@ func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
 	am.Load(as)
 	as.Resource.Upload()
 }
-func (am *AsssetManager) LoadShaderFromFile(vetexPath, fragPath, assetname string) {
-	var data ShaderDataType
-	data.VPath = vetexPath
-	data.FPath = fragPath
-	as := NewAsset(assetname, AssetTypeShader, &data)
-	err := am.Register(as.Name, as)
-	if err != nil {
-		panic(err)
-	}
-	am.Load(as)
-	as.Resource.Upload()
-}
 
 // will assign id field
 func (am *AsssetManager) Load(as *Asset) {

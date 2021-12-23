@@ -16,7 +16,6 @@ func init() {
 type CustomObject struct {
 	*gameobjects.BasicObject
 	shaderProgram uint32
-	shaderCtl     *game.ShaderCtl
 }
 
 func NewCustomObject(gi *game.GlobalInfo, modelname, shadername, texturename string) *CustomObject {
@@ -28,7 +27,6 @@ func NewCustomObject(gi *game.GlobalInfo, modelname, shadername, texturename str
 
 	one := new(CustomObject)
 	one.BasicObject = innerBasic
-	one.shaderCtl = game.NewShaderCtl(one.ShaderAsset_sg().Resource.(*resource.ShaderProgram).ShaderProgram())
 	return one
 }
 func (co *CustomObject) Start() {
@@ -49,12 +47,6 @@ func (co *CustomObject) Update() {
 
 }
 func (co *CustomObject) OnDraw() {
-	co.shaderCtl.M = co.Transform.Model()
-	co.shaderCtl.V = co.GI().View()
-	co.shaderCtl.P = co.GI().Projection()
-	co.shaderCtl.Rotation = co.Transform.RotationMAT4()
-	co.shaderCtl.Upload(co)
-	co.shaderCtl.UniformU_Colur(1, 1, 1)
 }
 
 func myInit_Camera(gi *game.GlobalInfo) {

@@ -95,13 +95,12 @@ func (pe *ParticleEntity) UpdateTargetTransform() {
 }
 
 type Particle struct {
-	gi                              *GlobalInfo
-	ID                              int
-	EntityList                      []*ParticleEntity
-	ShaderResource                  *resource.ShaderProgram
-	TextureResource                 *resource.Texture
-	MLocation, VLocation, PLocation int32
-	LightLocation                   int32
+	gi              *GlobalInfo
+	ID              int
+	EntityList      []*ParticleEntity
+	ShaderResource  *resource.ShaderProgram
+	TextureResource *resource.Texture
+	shaderOP        *ShaderOP
 }
 
 func (parti *Particle) Start() {
@@ -122,10 +121,11 @@ func (parti *Particle) Draw() {
 
 	parti.ShaderResource.Active() // shader
 	parti.TextureResource.Active()
-	parti.UploadUniforms(parti.VLocation, parti.PLocation)
+	vloc, ploc, mloc, lightloc, whrloc := parti.shaderOP.UniformLoc("view"), parti.shaderOP.UniformLoc("projection"), parti.shaderOP.UniformLoc("model"), parti.shaderOP.UniformLoc("light"), parti.shaderOP.UniformLoc("whr")
+	parti.UploadUniforms(vloc, ploc, whrloc)
 
 	for _, oneentity := range parti.EntityList {
-		oneentity.Draw(parti.MLocation, parti.LightLocation)
+		oneentity.Draw(mloc, lightloc)
 	}
 }
 
@@ -139,12 +139,13 @@ func (parti *Particle) ID_sg(_id ...int) int {
 	parti.ID = _id[0]
 	return parti.ID
 }
-func (parti *Particle) UploadUniforms(vl, pl int32) {
+func (parti *Particle) UploadUniforms(vl, pl, wl int32) {
 	v := parti.gi.View()
 	p := parti.gi.Projection()
 	//////////////////////////////////////////////
 	gl.UniformMatrix4fv(vl, 1, false, v.Address())
 	gl.UniformMatrix4fv(pl, 1, false, p.Address())
+	gl.Uniform1f(wl, parti.gi.GetWHR())
 }
 
 func NewParticle(gi *GlobalInfo, texture *resource.Texture) *Particle {
@@ -164,10 +165,10 @@ func NewParticle(gi *GlobalInfo, texture *resource.Texture) *Particle {
 		parti.ShaderResource = quadShader
 		//
 		fmt.Println("quadShader.ShaderProgram()", quadShader.ShaderProgram())
-		parti.MLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("model"+"\x00"))
-		parti.VLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("view"+"\x00"))
-		parti.PLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("projection"+"\x00"))
-		parti.LightLocation = gl.GetUniformLocation(quadShader.ShaderProgram(), gl.Str("light"+"\x00"))
+		//
+		parti.shaderOP = NewShaderOP()
+		parti.shaderOP.SetProgram(quadShader.ShaderProgram())
+		parti.shaderOP.IfParticle()
 	}
 	{
 		// model list

@@ -18,7 +18,6 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
@@ -72,6 +71,11 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.CursorMode = glfw.CursorNormal
 	return globalInfo
 }
+
+func (gi *GlobalInfo) GetWHR() float32 {
+	return float32(gi.width) / float32(gi.height)
+}
+
 func (gi *GlobalInfo) LoadFont(fontpath string) {
 	fontBytes, err := ioutil.ReadFile(fontpath)
 	if err != nil {
@@ -301,24 +305,26 @@ func (gi *GlobalInfo) draw() {
 }
 
 func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
-	co.ShaderCtl().M = co.GetTransform().Model()
-	co.ShaderCtl().Rotation = co.GetTransform().RotationMAT4()
-	var curTransform *common.Transform
-	curTransform = co.GetTransform()
-	for {
-		if curTransform.Parent != nil { // not root
-			parentM := curTransform.Parent.Model()
-			co.ShaderCtl().M.RightMul_InPlace(&parentM)
-			parentR := curTransform.Parent.RotationMAT4()
-			co.ShaderCtl().Rotation.RightMul_InPlace(&parentR)
-		} else {
-			break
-		}
-		curTransform = curTransform.Parent
-	}
-	co.ShaderCtl().V = gi.View()
-	co.ShaderCtl().P = gi.Projection()
-	co.ShaderCtl().Upload(co)
+	co.SetUniform()
+	// co.ShaderCtl().M = co.GetTransform().Model()
+	// co.ShaderCtl().Rotation = co.GetTransform().RotationMAT4()
+	// var curTransform *common.Transform
+	// curTransform = co.GetTransform()
+	// for {
+	// 	if curTransform.Parent != nil { // not root
+	// 		parentM := curTransform.Parent.Model()
+	// 		co.ShaderCtl().M.RightMul_InPlace(&parentM)
+	// 		parentR := curTransform.Parent.RotationMAT4()
+	// 		co.ShaderCtl().Rotation.RightMul_InPlace(&parentR)
+	// 	} else {
+	// 		break
+	// 	}
+	// 	curTransform = curTransform.Parent
+	// }
+	// co.ShaderCtl().V = gi.View()
+	// co.ShaderCtl().P = gi.Projection()
+
+	// co.ShaderCtl().Upload(co)
 }
 
 func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
