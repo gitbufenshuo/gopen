@@ -3,14 +3,15 @@ package resource
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/draw"
 	"os"
 
 	_ "image/png"
 
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
 )
 
 type Texture struct {
@@ -101,23 +102,39 @@ func (t *Texture) GenRandom(width, height int32) {
 	}
 }
 
-func (t *Texture) GenFont(width, height int32, content string, font *truetype.Font) {
-	img := image.NewRGBA(image.Rect(0, 0, int(width), int(height)))
-	for idx := range img.Pix {
-		img.Pix[idx] = 100
+func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
+
+	rawwidth := fontconfig.CalcWidth(content)
+	modiWidth := help.Mi2(rawwidth)
+	t.width = int32(modiWidth)
+	t.height = 16
+
+	fmt.Printf("newTextWidth:%d\n", t.width)
+
+	textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x22}
+	img := image.NewRGBA(image.Rect(0, 0, int(t.width), int(t.height)))
+	for widx := 0; widx < int(t.width); widx++ {
+		for hidx := 0; hidx < int(t.height); hidx++ {
+			img.Set(widx, hidx, textBg)
+		}
 	}
-	t.width = width
-	t.height = height
 
 	c := freetype.NewContext()
-	c.SetFont(font)
+	c.SetFont(fontconfig.TextFont)
 	c.SetClip(img.Bounds())
 	c.SetDst(img)
 	c.SetSrc(image.White)
 
-	pt := freetype.Pt(0, 13) // 字出现的位置
+	pt := freetype.Pt(1, 16) // 字出现的位置
+	for _, contD := range content {
+		if string(contD) == " " {
+			pt.X += 5 << 6
 
-	pt, _ = c.DrawString(content, pt)
+			continue
+		}
+		pt, _ = c.DrawString(string(contD), pt)
+		pt.X += 2 << 6
+	}
 	fmt.Println(pt.X.Floor(), pt.Y.Floor())
 
 	t.Pixels = img.Pix
@@ -131,7 +148,7 @@ func (t *Texture) GenFont(width, height int32, content string, font *truetype.Fo
 			}
 		}
 	}
-
+	return float32(t.width)
 }
 
 // to gpu

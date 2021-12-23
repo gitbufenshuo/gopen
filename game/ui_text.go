@@ -61,8 +61,8 @@ func (uitext *UIText) Start() {
 func (uitext *UIText) Update() {
 	if uitext.gi.CurFrame%100 == 0 {
 		fmt.Println("func (uitext *UIText) Update() {")
-		if len(uitext.content) <= 10 {
-			uitext.SetText(uitext.content + "0")
+		if len(uitext.content) <= 30 {
+			uitext.SetText(uitext.content + "0 ")
 		} else {
 			uitext.SetText("0")
 		}
@@ -100,10 +100,11 @@ func (uitext *UIText) SetText(content string) {
 	// re - gen - texture
 	tr := uitext.renderComponent.TextureR
 	tr.Clear()
-	tr.GenFont(16*int32(len(content)), 16, content, uitext.gi.TextFont)
+	pixWidth := tr.GenFont(content, uitext.gi.FontConfig)
 	tr.Upload()
 	// re - scale - model
-	uitext.transform.Scale.SetIndexValue(0, float32(len(content))/3.9)
+	uitext.transform.Scale.SetIndexValue(0, float32(pixWidth/16)/3)
+	uitext.transform.Scale.SetIndexValue(1, 0.3)
 }
 
 func (uitext *UIText) SortZ() float32 {

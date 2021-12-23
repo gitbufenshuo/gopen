@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
@@ -43,7 +44,7 @@ type GlobalInfo struct {
 	width                 int
 	height                int
 	title                 string
-	TextFont              *truetype.Font
+	FontConfig            *help.FontConfig
 	CustomInit            func(*GlobalInfo)
 	MainCamera            *Camera
 	ParticalSystem        *Particle
@@ -82,7 +83,12 @@ func (gi *GlobalInfo) LoadFont(fontpath string) {
 		log.Println(err)
 		return
 	}
-	gi.TextFont = font
+
+	// Truetype stuff
+	opts := truetype.Options{}
+	opts.Size = 12
+	face := truetype.NewFace(font, &opts)
+	gi.FontConfig = help.NewFontConfig(font, face)
 }
 func (gi *GlobalInfo) StartGame(mode string) {
 	if err := glfw.Init(); err != nil {
