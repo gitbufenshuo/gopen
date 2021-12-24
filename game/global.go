@@ -69,7 +69,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	defer glfw.Terminate()
 
 	glfw.WindowHint(glfw.Resizable, glfw.False)
-	glfw.WindowHint(glfw.ContextVersionMajor, 3)
+	glfw.WindowHint(glfw.ContextVersionMajor, 4)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
@@ -320,6 +320,10 @@ func (gi *GlobalInfo) View() matmath.MATX {
 	// viewT := matmath.LookAtFrom4(&gi.MainCamera.Pos, &gi.MainCamera.Target, &gi.MainCamera.UP)
 	// gi.MainCamera.ViewT = viewT
 	// return viewT
+}
+
+func (gi *GlobalInfo) Window() *glfw.Window {
+	return gi.window
 }
 
 func (gi *GlobalInfo) Projection() matmath.MATX {

@@ -6,3 +6,7 @@ require (
 	github.com/go-gl/gl v0.0.0-20211025173605-bda47ffaa784
 	github.com/go-gl/glfw v0.0.0-20211024062804-40e447a793be
 )
+
+require (
+	github.com/google/uuid v1.3.0
+)
