@@ -21,8 +21,8 @@ func NewParticleCore() *ParticleCore {
 		// model : just a quad
 		quadModel := resource.NewQuadModel()
 		for idx := 0; idx != 4; idx++ {
-			quadModel.Vertices[5*idx+0] *= 2
-			quadModel.Vertices[5*idx+1] *= 2
+			quadModel.Vertices[5*idx+0] /= 3
+			quadModel.Vertices[5*idx+1] /= 3
 		}
 		quadModel.Upload()
 		pc.modelResource = quadModel

@@ -83,10 +83,10 @@ func initLogic(gi *game.GlobalInfo) {
 		// tr.ReadFromFile("ui/go.png")
 		// tr.GenFont("火水", gi.FontConfig)
 		tr.Upload()
-		for idx := 0; idx != 5; idx++ {
+		for idx := 0; idx != 1; idx++ {
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      1.9,
-				Height:     0.6,
+				Width:      0.2,
+				Height:     0.2,
 				Content:    "点击开始游玩吧",
 				Bling:      true,
 				ShaderText: resource.ShaderUIButton_Bling_Text,
@@ -99,7 +99,8 @@ func initLogic(gi *game.GlobalInfo) {
 			button.ChangeTexture(tr)
 			bt := button.GetTransform()
 			// bt.Postion.SetIndexValue(0, float32(idx-1)/2)
-			bt.Postion.SetIndexValue(1, float32(idx-1)/5)
+			bt.Postion.SetIndexValue(0, 0.1)
+			bt.Rotation.SetIndexValue(2, 0)
 			gi.AddUIObject(button)
 		}
 	}

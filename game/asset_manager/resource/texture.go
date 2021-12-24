@@ -97,7 +97,7 @@ func (t *Texture) GenRandom(width, height int32) {
 			t.Pixels[((hidx*width*4)+widx*4)+0] = uint8(rand.Uint32())
 			t.Pixels[((hidx*width*4)+widx*4)+1] = uint8(rand.Uint32())
 			t.Pixels[((hidx*width*4)+widx*4)+2] = uint8(rand.Uint32())
-			t.Pixels[((hidx*width*4)+widx*4)+3] = 200
+			t.Pixels[((hidx*width*4)+widx*4)+3] = 255
 		}
 	}
 }

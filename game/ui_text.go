@@ -9,6 +9,8 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
+const pixration float32 = 0.05
+
 var textModelDefault *resource.Model
 var InitDefaultTextOK bool
 
@@ -18,14 +20,7 @@ func InitDefaultText() {
 	}
 	InitDefaultTextOK = true
 	{
-		textModelDefault = resource.NewQuadModel()
-		for idx := 0; idx != 4; idx++ {
-			if textModelDefault.Vertices[idx*5+0] < 0 {
-				textModelDefault.Vertices[idx*5+0] = 0
-			} else {
-				textModelDefault.Vertices[idx*5+0] *= 2
-			}
-		}
+		textModelDefault = resource.NewQuadModel_LeftALign()
 		textModelDefault.Upload()
 	}
 }
@@ -125,8 +120,8 @@ func (uitext *UIText) SetText(content string) {
 	pixWidth := tr.GenFont(content, uitext.gi.FontConfig)
 	tr.Upload()
 	// re - scale - model
-	uitext.transform.Scale.SetIndexValue(0, float32(pixWidth/16)/3)
-	uitext.transform.Scale.SetIndexValue(1, 0.3)
+	uitext.transform.Scale.SetIndexValue(0, float32(pixWidth/16)*pixration)
+	uitext.transform.Scale.SetIndexValue(1, pixration)
 }
 
 func (uitext *UIText) SortZ() float32 {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
+	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -20,14 +21,7 @@ func InitDefaultButton() {
 	}
 	InitDefaultButtonOK = true
 	{
-		buttonModelDefault = resource.NewQuadModel()
-		for idx := 0; idx != 4; idx++ {
-			if buttonModelDefault.Vertices[idx*5+0] < 0 {
-				buttonModelDefault.Vertices[idx*5+0] = 0
-			} else {
-				buttonModelDefault.Vertices[idx*5+0] *= 2
-			}
-		}
+		buttonModelDefault = resource.NewQuadModel_LeftALign()
 		buttonModelDefault.Upload()
 	}
 	//
@@ -113,15 +107,10 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	uibutton.renderComponent = new(resource.RenderComponent)
 	// model config
 	{
-		uibutton.renderComponent.ModelR = resource.NewQuadModel()
+		uibutton.renderComponent.ModelR = resource.NewQuadModel_LeftALign()
 		for idx := 0; idx != 4; idx++ {
 			uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= buttonconfig.Width
 			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Height
-			if uibutton.renderComponent.ModelR.Vertices[idx*5+0] < 0 {
-				uibutton.renderComponent.ModelR.Vertices[idx*5+0] = 0
-			} else {
-				uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= 2
-			}
 		}
 		uibutton.renderComponent.ModelR.Upload()
 	}
@@ -161,6 +150,25 @@ func (uibutton *UIButton) ChangeTexture(textureR *resource.Texture) {
 func (uibutton *UIButton) GetTransform() *common.Transform {
 	return uibutton.transform
 }
+
+func (uibutton *UIButton) Bounds() []matmath.Vec4 {
+	modelMAT := uibutton.transform.WorldModel()
+
+	vertices := uibutton.renderComponent.ModelR.Vertices
+	return []matmath.Vec4{
+		matmath.CreateVec4(vertices[0], vertices[1], vertices[2], 1).LeftMulMAT(modelMAT),
+		matmath.CreateVec4(vertices[5], vertices[6], vertices[7], 1).LeftMulMAT(modelMAT),
+		matmath.CreateVec4(vertices[10], vertices[11], vertices[12], 1).LeftMulMAT(modelMAT),
+		matmath.CreateVec4(vertices[15], vertices[16], vertices[17], 1).LeftMulMAT(modelMAT),
+	}
+}
+
+func (uibutton *UIButton) CheckPoint(x, y float32) bool {
+	// bounds := uibutton.Bounds()
+	//
+	return false
+}
+
 func (uibutton *UIButton) ID_sg(_id ...int) int {
 	if len(_id) == 0 {
 		return uibutton.id
@@ -180,6 +188,10 @@ func (uibutton *UIButton) Enabled() bool {
 }
 
 func (uibutton *UIButton) Start() {
+	bound := uibutton.Bounds()
+	for idx := range bound {
+		bound[idx].PrettyShow()
+	}
 }
 
 func (uibutton *UIButton) Update() {
