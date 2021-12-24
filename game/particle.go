@@ -72,6 +72,8 @@ func (pe *ParticleEntity) CalcLight() {
 func (pe *ParticleEntity) UpdateRotation() {
 	for idx, onecore := range pe.CoreList {
 		onecore.Transform.Rotation.AddIndexValue(2, float32(idx))
+		onecore.Transform.Scale.SetIndexValue(0, float32(idx%10)/5)
+		onecore.Transform.Scale.SetIndexValue(1, float32(idx%10)/5)
 	}
 }
 func (pe *ParticleEntity) UpdateTargetTransform() {

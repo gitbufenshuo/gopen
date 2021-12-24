@@ -52,7 +52,7 @@ type GlobalInfo struct {
 	InputSystemKeyPress   []bool
 	InputSystemKeyRelease []bool
 	keyCallback           func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
-	cursorPosCallback     func(win *glfw.Window, xpos float64, ypos float64)
+	InputMouseCtl         *InputMouse
 	CursorMode            int
 	//
 	MouseXDiff, MouseYDiff float64
@@ -134,9 +134,9 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		if gi.keyCallback != nil {
 			window.SetKeyCallback(gi.keyCallback)
 		}
-		if gi.cursorPosCallback != nil {
-			window.SetCursorPosCallback(gi.cursorPosCallback)
-		}
+		gi.InputMouseCtl = NewInputMouse()
+		window.SetCursorPosCallback(gi.InputMouseCtl.CursorCallback)
+		window.SetMouseButtonCallback(gi.InputMouseCtl.MouseButtonCallback)
 	}
 	// start hook
 	for _, ub := range gi.uiobjects {
@@ -215,9 +215,6 @@ func (gi *GlobalInfo) InputSystemReleased(whickKey glfw.Key) bool {
 
 func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)) {
 	gi.keyCallback = callback
-}
-func (gi *GlobalInfo) SetCursorPosCallback(callback func(win *glfw.Window, xpos float64, ypos float64)) {
-	gi.cursorPosCallback = callback
 }
 func (gi *GlobalInfo) Boot() {
 	gi.initAssetManager()

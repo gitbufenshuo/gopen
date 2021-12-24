@@ -6,7 +6,6 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
-	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 func init() {
@@ -56,8 +55,6 @@ func myInit(gi *game.GlobalInfo) {
 	block4.Transform.SetParent(block3.Transform)
 	gi.AddGameObject(block4)
 
-	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
-	gi.SetCursorPosCallback(cursorPosUpdateFunc)
 }
 
 func initShader(gi *game.GlobalInfo) {

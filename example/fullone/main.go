@@ -8,7 +8,6 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 func init() {
@@ -45,22 +44,22 @@ func myInit(gi *game.GlobalInfo) {
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
 	//
-
-	blockMan := stblockman.NewBlockMan(gi)
-	// blockMan.Core.Transform.Postion.SetValue1(float32(idx))
-	// blockMan.Core.Transform.Postion.SetIndexValue(2, float32(zdx))
-	// blockMan.Core.Transform.Rotation.SetValue3(60, 60, 0)
-
-	gi.AddManageObject(blockMan)
 	gi.LoadFont("fonts/1620207082885638.ttf")
+	{
+		texture := resource.NewTexture()
+		texture.ReadFromFile("./particle.png")
+		gi.ParticalSystem = game.NewParticle(gi, texture)
+	}
+	//
+	initLogic(gi)
+}
+
+func initLogic(gi *game.GlobalInfo) {
+	blockMan := stblockman.NewBlockMan(gi)
+	gi.AddManageObject(blockMan)
 
 	// particle system
 	{
-		texture := resource.NewTexture()
-		// texture.ReadFromFile("./particle.png")
-		// texture.GenFont(256, 256, "a", font)
-		texture.GenRandom(16, 16)
-		gi.ParticalSystem = game.NewParticle(gi, texture)
 		{
 			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
 			gi.ParticalSystem.EntityList[0].TargetTransform = blockMan.HandLeft.Transform
@@ -104,9 +103,6 @@ func myInit(gi *game.GlobalInfo) {
 			gi.AddUIObject(button)
 		}
 	}
-	//
-	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
-	gi.SetCursorPosCallback(cursorPosUpdateFunc)
 }
 
 func initShader(gi *game.GlobalInfo) {
@@ -126,7 +122,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(900, 900, "hello-fullone")
+	gi := game.NewGlobalInfo(900, 800, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

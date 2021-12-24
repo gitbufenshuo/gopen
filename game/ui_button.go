@@ -2,7 +2,6 @@ package game
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
@@ -201,9 +200,8 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.shaderOP.UniformLoc("whr")
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	if uibutton.bling {
-		v := math.Sin(float64(uibutton.gi.CurFrame)/0.0001) + 1
-		v /= 20
-		v += 0.8
+		v := float32(uibutton.gi.CurFrame % 100)
+		v /= 100
 		gl.Uniform1f(lightloc, float32(v))
 	}
 	gl.Uniform1f(sortzloc, uibutton.sortz)
