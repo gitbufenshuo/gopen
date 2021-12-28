@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"runtime"
-	"strconv"
 
 	"github.com/gitbufenshuo/gopen/example/inputControl/stblockman"
 	"github.com/gitbufenshuo/gopen/game"
@@ -45,25 +44,14 @@ func myInit(gi *game.GlobalInfo) {
 	inputsystem.InitInputSystem(gi)
 	inputsystem.GetInputSystem().TestId()
 	onKeyCallback := func(action *inputsystem.InputAction) {
-		fmt.Println(action)
+		var CheckKeyJustPress = inputsystem.GetInputSystem().KeyDown(int(glfw.KeyS))
+		var CheckKeyJustRelease = inputsystem.GetInputSystem().KeyUp(int(glfw.KeyS))
+		var CheckKeyJustDBClick = inputsystem.GetInputSystem().KeyDoubleClick(int(glfw.KeyS))
+		var HoldCheck = inputsystem.GetInputSystem().KeyHoldRelease(int(glfw.KeyS))
+		fmt.Printf("[第%d帧] [S键] [刚按上:%v] [刚释放:%v] [刚刚双击:%v] [长按释放:%f]\n", gi.CurFrame,
+			CheckKeyJustPress, CheckKeyJustRelease, CheckKeyJustDBClick, HoldCheck)
 	}
 	inputsystem.GetInputSystem().AddKeyListener(inputsystem.KeyStatus, int(glfw.KeyS), onKeyCallback)
-
-	onKeyCallback2 := func(action *inputsystem.InputAction) {
-		fmt.Println(action)
-		fmt.Println(strconv.FormatFloat(action.GetValue(), 'f', -1, 64))
-	}
-	inputsystem.GetInputSystem().AddKeyListener(inputsystem.KeyValue, int(glfw.KeyF), onKeyCallback2)
-
-	onKeyCallback3 := func(action *inputsystem.InputAction) {
-		fmt.Println(action)
-		fmt.Println(strconv.FormatFloat(action.GetValue(), 'f', -1, 64))
-	}
-	inputsystem.GetInputSystem().DoubleClick(int(glfw.KeyJ), onKeyCallback3)
-	onKeyCallback4 := func(action *inputsystem.InputAction) {
-		fmt.Println("DoubleClick")
-	}
-	inputsystem.GetInputSystem().DoubleClick(int(glfw.KeyJ), onKeyCallback4)
 
 	var cursorPosUpdateFunc = func(win *glfw.Window, xpos float64, ypos float64) {}
 	gi.SetCursorPosCallback(cursorPosUpdateFunc)
