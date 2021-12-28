@@ -163,6 +163,11 @@ func (uibutton *UIButton) Bounds() []matmath.Vec4 {
 	}
 }
 
+func (uibutton *UIButton) SwitchBling() bool {
+	uibutton.bling = !uibutton.bling
+	return uibutton.bling
+}
+
 func (uibutton *UIButton) CheckPoint(x, y float32) bool {
 	// bounds := uibutton.Bounds()
 	//

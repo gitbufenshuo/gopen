@@ -7,7 +7,10 @@ import (
 	"github.com/gitbufenshuo/gopen/example/fullone/stblockman"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/game/gameobjects"
+	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 func init() {
@@ -50,14 +53,49 @@ func myInit(gi *game.GlobalInfo) {
 		texture.ReadFromFile("./particle.png")
 		gi.ParticalSystem = game.NewParticle(gi, texture)
 	}
-	//
+	// 业务逻辑
 	initLogic(gi)
+}
+
+type MyLogic struct {
+	gi *game.GlobalInfo
+	*gameobjects.NilManageObject
+	ClickButtonS *game.UIButton
+	ClickButtonD *game.UIButton
+}
+
+func (mylogic *MyLogic) Start() {
+	mylogic.gi.InputSystem.BeginWatchKey(int(glfw.KeyS))
+	mylogic.gi.InputSystem.BeginWatchKey(int(glfw.KeyD))
+}
+
+func (mylogic *MyLogic) Update() {
+	if mylogic.gi.InputSystem.KeyUp(int(glfw.KeyS)) {
+		mylogic.ClickButtonS.SwitchBling()
+	}
+	if mylogic.gi.InputSystem.KeyUp(int(glfw.KeyD)) {
+		mylogic.ClickButtonD.SwitchBling()
+	}
+}
+
+func NewMyLogic(gi *game.GlobalInfo) *MyLogic {
+	res := new(MyLogic)
+	res.NilManageObject = gameobjects.NewNilManageObject()
+	res.gi = gi
+	//
+
+	return res
 }
 
 func initLogic(gi *game.GlobalInfo) {
 	blockMan := stblockman.NewBlockMan(gi)
 	gi.AddManageObject(blockMan)
-
+	// input system
+	{
+		inputsystem.InitInputSystem(gi)
+		inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyS))
+		gi.SetInputSystem(inputsystem.GetInputSystem())
+	}
 	// particle system
 	{
 		{
@@ -76,6 +114,11 @@ func initLogic(gi *game.GlobalInfo) {
 			}
 		}
 	}
+
+	// mylogic begin
+	mylogic := NewMyLogic(gi)
+	gi.AddManageObject(mylogic)
+
 	{
 		// ui system
 		tr := resource.NewTexture()
@@ -83,11 +126,11 @@ func initLogic(gi *game.GlobalInfo) {
 		// tr.ReadFromFile("ui/go.png")
 		// tr.GenFont("火水", gi.FontConfig)
 		tr.Upload()
-		for idx := 0; idx != 1; idx++ {
+		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
 				Width:      0.2,
 				Height:     0.2,
-				Content:    "点击开始游玩吧",
+				Content:    "S键切换闪烁",
 				Bling:      true,
 				ShaderText: resource.ShaderUIButton_Bling_Text,
 				CustomDraw: func(shaderOP *game.ShaderOP) {
@@ -98,10 +141,31 @@ func initLogic(gi *game.GlobalInfo) {
 			button.AddUniform("blingx")
 			button.ChangeTexture(tr)
 			bt := button.GetTransform()
-			// bt.Postion.SetIndexValue(0, float32(idx-1)/2)
-			bt.Postion.SetIndexValue(0, 0.1)
+
 			bt.Rotation.SetIndexValue(2, 0)
 			gi.AddUIObject(button)
+			mylogic.ClickButtonS = button
+
+		}
+		{
+			button := game.NewCustomButton(gi, game.ButtonConfig{
+				Width:      0.2,
+				Height:     0.2,
+				Content:    "D键切换闪烁",
+				Bling:      true,
+				ShaderText: resource.ShaderUIButton_Bling_Text,
+				CustomDraw: func(shaderOP *game.ShaderOP) {
+					blingxloc := shaderOP.UniformLoc("blingx")
+					gl.Uniform1f(blingxloc, rand.Float32())
+				},
+			})
+			button.AddUniform("blingx")
+			button.ChangeTexture(tr)
+			bt := button.GetTransform()
+			bt.Postion.SetIndexValue(1, 0.5)
+			bt.Rotation.SetIndexValue(2, 0)
+			gi.AddUIObject(button)
+			mylogic.ClickButtonD = button
 		}
 	}
 }

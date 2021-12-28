@@ -54,6 +54,7 @@ type GlobalInfo struct {
 	keyCallback           func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
 	InputMouseCtl         *InputMouse
 	CursorMode            int
+	InputSystem           InputSystemI
 	//
 	MouseXDiff, MouseYDiff float64
 	*GlobalFrameInfo
@@ -67,8 +68,6 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.gameobjects = make(map[int]GameObjectI)
 	globalInfo.manageobjects = make(map[int]ManageObjectI)
 	globalInfo.uiobjects = make(map[int]UIObjectI)
-	globalInfo.InputSystemKeyPress = make([]bool, 300)
-	globalInfo.InputSystemKeyRelease = make([]bool, 300)
 	globalInfo.CursorMode = glfw.CursorNormal
 	return globalInfo
 }
@@ -154,7 +153,6 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		time.Sleep(time.Millisecond * 20)
 		///////////////////////////////////////////////////
 		// the very update every frame
-		gi.InputSystem()
 		gi.update()
 		gi.draw()
 		gi.OnFrameEnd()
@@ -168,6 +166,10 @@ func (gi *GlobalInfo) StartGame(mode string) {
 
 }
 
+func (gi *GlobalInfo) SetInputSystem(is InputSystemI) {
+	gi.InputSystem = is
+}
+
 func (gi *GlobalInfo) OnFrameEnd() {
 	gi.MouseXDiff = 0
 	gi.MouseYDiff = 0
@@ -177,44 +179,6 @@ func (gi *GlobalInfo) SetCursorMode(mode int) {
 	gi.CursorMode = mode
 	gi.window.SetInputMode(glfw.CursorMode, gi.CursorMode)
 	fmt.Println(":asdfasdfasdf")
-}
-func (gi *GlobalInfo) InputSystem() {
-	//
-	if gi.window.GetKey(glfw.KeyW) == glfw.Press {
-		gi.InputSystemKeyPress[glfw.KeyW] = true
-	} else {
-		gi.InputSystemKeyPress[glfw.KeyW] = false
-	}
-
-	if gi.window.GetKey(glfw.KeyS) == glfw.Press {
-		gi.InputSystemKeyPress[glfw.KeyS] = true
-	} else {
-		gi.InputSystemKeyPress[glfw.KeyS] = false
-	}
-
-	if gi.window.GetKey(glfw.KeyA) == glfw.Press {
-		gi.InputSystemKeyPress[glfw.KeyA] = true
-	} else {
-		gi.InputSystemKeyPress[glfw.KeyA] = false
-	}
-	if gi.window.GetKey(glfw.KeyD) == glfw.Press {
-		gi.InputSystemKeyPress[glfw.KeyD] = true
-	} else {
-		gi.InputSystemKeyPress[glfw.KeyD] = false
-	}
-	// release
-	if gi.window.GetKey(glfw.KeyEscape) == glfw.Release {
-		gi.InputSystemKeyRelease[glfw.KeyEscape] = true
-	} else {
-		gi.InputSystemKeyRelease[glfw.KeyEscape] = false
-	}
-}
-
-func (gi *GlobalInfo) InputSystemPressed(whickKey glfw.Key) bool {
-	return gi.InputSystemKeyPress[whickKey]
-}
-func (gi *GlobalInfo) InputSystemReleased(whickKey glfw.Key) bool {
-	return gi.InputSystemKeyRelease[whickKey]
 }
 
 func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)) {

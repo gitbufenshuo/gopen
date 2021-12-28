@@ -11,9 +11,10 @@ import (
 const doubleClickInterval float64 = 500
 
 type InputSystemManager struct {
-	ID      int
-	gi      *game.GlobalInfo
-	keyList map[int]*InputListenerQueue
+	ID       int
+	gi       *game.GlobalInfo
+	keyList  map[int]*InputListenerQueue
+	stopList []int
 }
 
 type InputListenerQueue struct {
@@ -236,6 +237,12 @@ func (ism *InputSystemManager) Start() {
 }
 
 func (ism *InputSystemManager) Update() {
+	for _, stopkey := range ism.stopList {
+		if _, found := ism.keyList[stopkey]; found {
+			delete(ism.keyList, stopkey)
+		}
+	}
+	ism.stopList = []int{}
 	for _, ilq := range ism.keyList {
 		ilq.CheckListener(ism)
 	}
@@ -263,6 +270,14 @@ func (ism *InputSystemManager) KeyDoubleClick(key int) bool {
 }
 func (ism *InputSystemManager) KeyHoldRelease(key int) float64 {
 	return ism.keyList[key].holdValue
+}
+
+func (ism *InputSystemManager) KeyListInWatching() []int {
+	var res []int
+	for key := range ism.keyList {
+		res = append(res, key)
+	}
+	return res
 }
 
 func GetInputSystem() *InputSystemManager {
@@ -302,4 +317,15 @@ func (ism *InputSystemManager) AddKeyListener(keyType KeyType, key int, callback
 	} else {
 		ilq.eeList = append(ilq.eeList, inputListener)
 	}
+}
+
+func (ism *InputSystemManager) BeginWatchKey(key int) {
+	if _, found := ism.keyList[key]; !found {
+		ilq := NewInputListenerQueue(key)
+		ism.keyList[key] = ilq
+	}
+}
+
+func (ism *InputSystemManager) StopWatchKey(key int) {
+	ism.stopList = append(ism.stopList, key)
 }
