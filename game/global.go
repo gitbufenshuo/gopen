@@ -73,6 +73,10 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	return globalInfo
 }
 
+func (gi *GlobalInfo) Window() *glfw.Window {
+	return gi.window
+}
+
 func (gi *GlobalInfo) GetWHR() float32 {
 	return float32(gi.width) / float32(gi.height)
 }
