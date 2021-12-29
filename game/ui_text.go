@@ -9,7 +9,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-const pixration float32 = 0.05
+const pixration float32 = 0.02
 
 var textModelDefault *resource.Model
 var InitDefaultTextOK bool
@@ -129,8 +129,8 @@ func (uitext *UIText) SetText(content string) {
 	pixWidth := tr.GenFont(content, uitext.gi.FontConfig)
 	tr.Upload()
 	// re - scale - model
-	uitext.transform.Scale.SetIndexValue(0, float32(pixWidth/16)*pixration)
-	uitext.transform.Scale.SetIndexValue(1, pixration)
+	uitext.transform.Scale.SetIndexValue(0, float32(pixWidth/30)*pixration) // 字图每16像素，是屏幕的1/20
+	uitext.transform.Scale.SetIndexValue(1, pixration*1.4)
 }
 
 func (uitext *UIText) SortZ() float32 {

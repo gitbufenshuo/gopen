@@ -108,9 +108,9 @@ func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
 	rawwidth := fontconfig.CalcWidth(content)
 	modiWidth := help.Mi2(rawwidth)
 	t.width = int32(modiWidth)
-	t.height = 16
+	t.height = 32
 
-	fmt.Printf("newTextWidth:%d\n", t.width)
+	fmt.Printf("TextWidth:%d TextHeight:%d\n", t.width, t.height)
 
 	textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x22}
 	img := image.NewRGBA(image.Rect(0, 0, int(t.width), int(t.height)))
@@ -121,12 +121,13 @@ func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
 	}
 
 	c := freetype.NewContext()
+	c.SetFontSize(30)
 	c.SetFont(fontconfig.TextFont)
 	c.SetClip(img.Bounds())
 	c.SetDst(img)
 	c.SetSrc(image.Black)
 
-	pt := freetype.Pt(1, 12) // 字出现的位置
+	pt := freetype.Pt(1, 29) // 字出现的位置
 	for _, contD := range content {
 		if string(contD) == " " {
 			pt.X += 5 << 6
@@ -136,7 +137,7 @@ func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
 		pt, _ = c.DrawString(string(contD), pt)
 		pt.X += 2 << 6
 	}
-	fmt.Println(pt.X.Floor(), pt.Y.Floor())
+	fmt.Println("realtext", pt.X.Floor(), pt.Y.Floor())
 
 	t.Pixels = img.Pix
 	if true {

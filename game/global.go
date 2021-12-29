@@ -94,7 +94,7 @@ func (gi *GlobalInfo) LoadFont(fontpath string) {
 
 	// Truetype stuff
 	opts := truetype.Options{}
-	opts.Size = 12
+	opts.Size = 30
 	face := truetype.NewFace(font, &opts)
 	gi.FontConfig = help.NewFontConfig(font, face)
 }

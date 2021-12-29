@@ -164,7 +164,8 @@ func initLogic(gi *game.GlobalInfo) {
 			button.AddUniform("blingx")
 			button.ChangeTexture(tr)
 			bt := button.GetTransform()
-			bt.Postion.SetIndexValue(1, 0.5)
+			bt.Postion.SetIndexValue(0, -0.5)
+			bt.Postion.SetIndexValue(1, -0.5)
 			gi.AddUIObject(button)
 			mylogic.ClickButtonD = button
 		}
