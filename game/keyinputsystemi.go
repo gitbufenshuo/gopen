@@ -1,7 +1,8 @@
 package game
 
 type InputSystemI interface {
-	ManageObjectI
+	Start()
+	Update()
 	BeginWatchKey(key int)
 	StopWatchKey(key int)
 	KeyListInWatching() []int

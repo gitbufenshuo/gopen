@@ -15,7 +15,7 @@ type MyPlane struct {
 }
 
 func (myplane *MyPlane) Update() {
-	if myplane.GI().InputSystemReleased(glfw.KeyEscape) {
+	if true {
 		if myplane.KeyEscapeMode == 1 {
 			myplane.KeyEscapeMode = 0
 			if myplane.GI().CursorMode == glfw.CursorNormal {

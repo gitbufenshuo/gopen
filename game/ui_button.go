@@ -217,9 +217,13 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.shaderOP.UniformLoc("whr")
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	if uibutton.bling {
-		v := float32(uibutton.gi.CurFrame % 100)
-		v /= 100
+		v := float32(uibutton.gi.CurFrame % 20)
+		v /= 20
+		v += 1
+		v /= 2
 		gl.Uniform1f(lightloc, float32(v))
+	} else {
+		gl.Uniform1f(lightloc, 1)
 	}
 	gl.Uniform1f(sortzloc, uibutton.sortz)
 	gl.Uniform1f(whrloc, uibutton.gi.GetWHR())

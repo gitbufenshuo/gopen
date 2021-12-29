@@ -2,7 +2,6 @@ package inputsystem
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/go-gl/glfw/v3.1/glfw"
@@ -292,12 +291,6 @@ func GetInputSystem() *InputSystemManager {
 
 func InitInputSystem(gi *game.GlobalInfo) {
 	GetInputSystem().gi = gi
-	gi.AddManageObject(ins)
-	ins.TestId()
-}
-
-func (ism *InputSystemManager) TestId() {
-	fmt.Println("InputSystem Test " + strconv.Itoa(ism.ID_sg()))
 }
 
 func (ism *InputSystemManager) AddKeyListener(keyType KeyType, key int, callback func(action *InputAction)) {

@@ -54,7 +54,7 @@ type GlobalInfo struct {
 	keyCallback           func(win *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
 	InputMouseCtl         *InputMouse
 	CursorMode            int
-	InputSystem           InputSystemI
+	InputSystemManager    InputSystemI
 	//
 	MouseXDiff, MouseYDiff float64
 	*GlobalFrameInfo
@@ -141,10 +141,8 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		window.SetCursorPosCallback(gi.InputMouseCtl.CursorCallback)
 		window.SetMouseButtonCallback(gi.InputMouseCtl.MouseButtonCallback)
 	}
+	gi.startlogic()
 	// start hook
-	for _, ub := range gi.uiobjects {
-		ub.Start()
-	}
 	for !window.ShouldClose() {
 		// time.Sleep(time.Millisecond * 10)
 		gl.ClearColor(0.5, 0.5, 0.5, 1)
@@ -166,8 +164,23 @@ func (gi *GlobalInfo) StartGame(mode string) {
 
 }
 
+func (gi *GlobalInfo) startlogic() {
+	if gi.InputSystemManager != nil {
+		gi.InputSystemManager.Start()
+	}
+	for _, mb := range gi.manageobjects {
+		mb.Start()
+	}
+	for _, gb := range gi.gameobjects {
+		gb.Start()
+	}
+	for _, ub := range gi.uiobjects {
+		ub.Start()
+	}
+}
+
 func (gi *GlobalInfo) SetInputSystem(is InputSystemI) {
-	gi.InputSystem = is
+	gi.InputSystemManager = is
 }
 
 func (gi *GlobalInfo) OnFrameEnd() {
@@ -195,12 +208,7 @@ func (gi *GlobalInfo) Boot() {
 	}
 	gi.GlobalFrameInfo = new(GlobalFrameInfo)
 	gi.StartMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
-	for _, gb := range gi.gameobjects {
-		gb.Start()
-	}
-	for _, mb := range gi.manageobjects {
-		mb.Start()
-	}
+
 }
 func (gi *GlobalInfo) dealWithTime(mode int) {
 	if mode == 1 { // new frame begins
@@ -223,6 +231,9 @@ func (gi *GlobalInfo) update() {
 	gi.CurFrame++
 	gi.dealWithTime(1)
 	// gi.dealWithTime(0)
+	if gi.InputSystemManager != nil {
+		gi.InputSystemManager.Update()
+	}
 	for _, gb := range gi.gameobjects {
 		gb.Update() // call the gameobjects' Update function
 	}

@@ -65,15 +65,15 @@ type MyLogic struct {
 }
 
 func (mylogic *MyLogic) Start() {
-	mylogic.gi.InputSystem.BeginWatchKey(int(glfw.KeyS))
-	mylogic.gi.InputSystem.BeginWatchKey(int(glfw.KeyD))
+	mylogic.gi.InputSystemManager.BeginWatchKey(int(glfw.KeyS))
+	mylogic.gi.InputSystemManager.BeginWatchKey(int(glfw.KeyD))
 }
 
 func (mylogic *MyLogic) Update() {
-	if mylogic.gi.InputSystem.KeyUp(int(glfw.KeyS)) {
+	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyS)) {
 		mylogic.ClickButtonS.SwitchBling()
 	}
-	if mylogic.gi.InputSystem.KeyUp(int(glfw.KeyD)) {
+	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyD)) {
 		mylogic.ClickButtonD.SwitchBling()
 	}
 }
