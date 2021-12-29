@@ -128,10 +128,11 @@ func initLogic(gi *game.GlobalInfo) {
 		tr.Upload()
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      0.2,
-				Height:     0.2,
+				Width:      0.1,
+				Height:     0.1,
 				Content:    "S键切换闪烁",
 				Bling:      true,
+				SortZ:      0.01,
 				ShaderText: resource.ShaderUIButton_Bling_Text,
 				CustomDraw: func(shaderOP *game.ShaderOP) {
 					blingxloc := shaderOP.UniformLoc("blingx")
@@ -153,6 +154,7 @@ func initLogic(gi *game.GlobalInfo) {
 				Height:     0.2,
 				Content:    "D键切换闪烁",
 				Bling:      true,
+				SortZ:      0.02,
 				ShaderText: resource.ShaderUIButton_Bling_Text,
 				CustomDraw: func(shaderOP *game.ShaderOP) {
 					blingxloc := shaderOP.UniformLoc("blingx")
@@ -187,7 +189,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(900, 800, "hello-fullone")
+	gi := game.NewGlobalInfo(1200, 800, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

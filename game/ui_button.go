@@ -41,6 +41,7 @@ type ButtonConfig struct {
 	ShaderText resource.ShaderText
 	TextureR   *resource.Texture
 	Bling      bool
+	SortZ      float32
 	CustomDraw func(shaderOP *ShaderOP)
 }
 
@@ -97,7 +98,9 @@ func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	InitDefaultButton()
 	uibutton := new(UIButton)
-	uibutton.sortz = 0.001
+	if buttonconfig.SortZ > 0 {
+		uibutton.sortz = buttonconfig.SortZ
+	}
 	uibutton.bling = buttonconfig.Bling
 	if buttonconfig.CustomDraw != nil {
 		uibutton.customDraw = buttonconfig.CustomDraw
