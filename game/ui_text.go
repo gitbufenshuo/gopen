@@ -40,6 +40,7 @@ type UIText struct {
 func NewUIText(gi *GlobalInfo) *UIText {
 	InitDefaultText()
 	uitext := new(UIText)
+	uitext.enabled = true
 	uitext.gi = gi
 	uitext.sortz = 0.0005
 	uitext.id = rand.Int()
@@ -74,6 +75,14 @@ func (uitext *UIText) GetRenderComponent() *resource.RenderComponent {
 }
 func (uitext *UIText) Enabled() bool {
 	return uitext.enabled
+}
+
+func (uitext *UIText) Enable() {
+	uitext.enabled = true
+}
+
+func (uitext *UIText) Disable() {
+	uitext.enabled = false
 }
 
 func (uitext *UIText) Start() {

@@ -273,6 +273,9 @@ func (gi *GlobalInfo) draw() {
 			return aluiob[i].SortZ() > aluiob[j].SortZ()
 		})
 		for _, ub := range aluiob {
+			if !ub.Enabled() {
+				continue
+			}
 			ub.OnDraw()
 			rc := ub.GetRenderComponent()
 			vertexNum := len(rc.ModelR.Indices)

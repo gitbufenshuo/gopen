@@ -3,6 +3,7 @@ package resource
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/draw"
 	"math/rand"
 	"os"
@@ -111,13 +112,13 @@ func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
 
 	fmt.Printf("newTextWidth:%d\n", t.width)
 
-	// textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x}
+	textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x22}
 	img := image.NewRGBA(image.Rect(0, 0, int(t.width), int(t.height)))
-	// for widx := 0; widx < int(t.width); widx++ {
-	// 	for hidx := 0; hidx < int(t.height); hidx++ {
-	// 		img.Set(widx, hidx, textBg)
-	// 	}
-	// }
+	for widx := 0; widx < int(t.width); widx++ {
+		for hidx := 0; hidx < int(t.height); hidx++ {
+			img.Set(widx, hidx, textBg)
+		}
+	}
 
 	c := freetype.NewContext()
 	c.SetFont(fontconfig.TextFont)

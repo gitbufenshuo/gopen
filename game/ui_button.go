@@ -72,6 +72,7 @@ type UIButton struct {
 func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 	InitDefaultButton()
 	uibutton := new(UIButton)
+	uibutton.enabled = true
 	uibutton.sortz = 0.001
 	uibutton.gi = gi
 	/////////////////////////
@@ -98,6 +99,7 @@ func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
 func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	InitDefaultButton()
 	uibutton := new(UIButton)
+	uibutton.enabled = true
 	if buttonconfig.SortZ > 0 {
 		uibutton.sortz = buttonconfig.SortZ
 	}
@@ -163,6 +165,20 @@ func (uibutton *UIButton) Bounds() []matmath.Vec4 {
 		matmath.CreateVec4(vertices[5], vertices[6], vertices[7], 1).LeftMulMAT(modelMAT),
 		matmath.CreateVec4(vertices[10], vertices[11], vertices[12], 1).LeftMulMAT(modelMAT),
 		matmath.CreateVec4(vertices[15], vertices[16], vertices[17], 1).LeftMulMAT(modelMAT),
+	}
+}
+
+func (uibutton *UIButton) Disable() {
+	uibutton.enabled = false
+	if uibutton.uitext != nil {
+		uibutton.uitext.Disable()
+	}
+}
+
+func (uibutton *UIButton) Enable() {
+	uibutton.enabled = true
+	if uibutton.uitext != nil {
+		uibutton.uitext.Enable()
 	}
 }
 

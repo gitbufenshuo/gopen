@@ -76,6 +76,9 @@ func (mylogic *MyLogic) Update() {
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyD)) {
 		mylogic.ClickButtonD.SwitchBling()
 	}
+	if mylogic.gi.CurFrame == 200 {
+		mylogic.ClickButtonS.Disable()
+	}
 }
 
 func NewMyLogic(gi *game.GlobalInfo) *MyLogic {
@@ -131,27 +134,24 @@ func initLogic(gi *game.GlobalInfo) {
 				Width:      0.1,
 				Height:     0.1,
 				Content:    "S键切换闪烁",
-				Bling:      true,
-				SortZ:      0.01,
-				ShaderText: resource.ShaderUIButton_Bling_Text,
-				CustomDraw: func(shaderOP *game.ShaderOP) {
+				Bling:      true,                               // 是否闪烁
+				SortZ:      0.01,                               // 渲染层级，越小的，越靠近人眼
+				ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader
+				CustomDraw: func(shaderOP *game.ShaderOP) { // 渲染钩子函数，做一些自己的处理
 					blingxloc := shaderOP.UniformLoc("blingx")
 					gl.Uniform1f(blingxloc, rand.Float32())
 				},
 			})
-			button.AddUniform("blingx")
-			button.ChangeTexture(tr)
-			bt := button.GetTransform()
-
-			bt.Rotation.SetIndexValue(2, 0)
+			button.AddUniform("blingx") // 自己提供的shader，需要自己增加uniform
+			button.ChangeTexture(tr)    // 运行时可以切换 texture
 			gi.AddUIObject(button)
 			mylogic.ClickButtonS = button
 
 		}
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      0.2,
-				Height:     0.2,
+				Width:      0.1,
+				Height:     0.1,
 				Content:    "D键切换闪烁",
 				Bling:      true,
 				SortZ:      0.02,
@@ -165,7 +165,6 @@ func initLogic(gi *game.GlobalInfo) {
 			button.ChangeTexture(tr)
 			bt := button.GetTransform()
 			bt.Postion.SetIndexValue(1, 0.5)
-			bt.Rotation.SetIndexValue(2, 0)
 			gi.AddUIObject(button)
 			mylogic.ClickButtonD = button
 		}
@@ -189,7 +188,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(1200, 800, "hello-fullone")
+	gi := game.NewGlobalInfo(800, 800, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }
