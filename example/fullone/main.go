@@ -76,8 +76,11 @@ func (mylogic *MyLogic) Update() {
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyD)) {
 		mylogic.ClickButtonD.SwitchBling()
 	}
-	if mylogic.gi.CurFrame == 200 {
+	if mylogic.gi.CurFrame == 100 {
 		mylogic.ClickButtonS.Disable()
+	}
+	if mylogic.gi.CurFrame == 200 {
+		mylogic.ClickButtonS.Enable()
 	}
 }
 
