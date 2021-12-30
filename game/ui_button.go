@@ -187,9 +187,28 @@ func (uibutton *UIButton) Enable() {
 	}
 }
 
+// 切换闪烁
 func (uibutton *UIButton) SwitchBling() bool {
 	uibutton.bling = !uibutton.bling
 	return uibutton.bling
+}
+
+func (uibutton *UIButton) GetPosX() float32 {
+	return uibutton.posx
+}
+func (uibutton *UIButton) GetPosY() float32 {
+	return uibutton.posy
+}
+
+func (uibutton *UIButton) SetPosX(v float32) float32 {
+	raw := uibutton.posx
+	uibutton.posx = v
+	return raw
+}
+func (uibutton *UIButton) SetPosY(v float32) float32 {
+	raw := uibutton.posy
+	uibutton.posy = v
+	return raw
 }
 
 func (uibutton *UIButton) CheckPoint(x, y float32) bool {

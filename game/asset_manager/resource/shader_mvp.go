@@ -20,7 +20,7 @@ var ShaderMVPText ShaderText = ShaderText{
 		fragTexCoord = vertTexCoord;
 		fragVertNormal = wNormal.xyz;
 		gl_Position = projection * view * model * vec4(vert, 1);
-		gl_Position.y *= whr;
+		// gl_Position.y *= whr;
 	}`,
 	Fragment: `#version 330
 

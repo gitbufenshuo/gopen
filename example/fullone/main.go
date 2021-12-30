@@ -9,6 +9,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
@@ -82,6 +83,7 @@ func (mylogic *MyLogic) Update() {
 	if mylogic.gi.CurFrame == 200 {
 		mylogic.ClickButtonS.Enable()
 	}
+	mylogic.ClickButtonS.SetPosY(help.Sin(float32(mylogic.gi.CurFrame) / 20))
 }
 
 func NewMyLogic(gi *game.GlobalInfo) *MyLogic {
@@ -196,7 +198,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(1000, 500, "hello-fullone")
+	gi := game.NewGlobalInfo(800, 800, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

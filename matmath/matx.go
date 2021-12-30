@@ -266,9 +266,9 @@ func Perspective(near, far, fov float32) MATX {
 	topdown := float32(math.Tan(float64(fov/2))) * near
 	leftright := topdown // cause aspect is always 1
 	res.SetEleByRowAndCol(1, 1, 2*near/(leftright))
-	res.SetEleByRowAndCol(2, 2, 2*near/(leftright))
+	res.SetEleByRowAndCol(2, 2, 2*near/(topdown))
 	res.SetEleByRowAndCol(3, 3, -(far+near)/(far-near))
 	res.SetEleByRowAndCol(3, 4, 2*far*near/(near-far))
-	res.SetEleByRowAndCol(4, 3, 2*far*near/(near-far))
+	res.SetEleByRowAndCol(4, 3, -1)
 	return res
 }
