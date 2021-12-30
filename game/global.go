@@ -98,17 +98,22 @@ func (gi *GlobalInfo) LoadFont(fontpath string) {
 	face := truetype.NewFace(font, &opts)
 	gi.FontConfig = help.NewFontConfig(font, face)
 }
+func (gi *GlobalInfo) FrameBufferSizeCallback(window *glfw.Window, width, height int) {
+	gi.width = width
+	gi.height = height
+}
 func (gi *GlobalInfo) StartGame(mode string) {
 	if err := glfw.Init(); err != nil {
 		log.Fatalln("failed to initialize glfw:", err)
 	}
 	defer glfw.Terminate()
 	rand.Seed(help.GetNowMS())
-	glfw.WindowHint(glfw.Resizable, glfw.False)
+	glfw.WindowHint(glfw.Resizable, glfw.True)
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+
 	window, err := glfw.CreateWindow(gi.width, gi.height, gi.title, nil, nil)
 	if err != nil {
 		panic(err)
@@ -140,6 +145,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		gi.InputMouseCtl = NewInputMouse()
 		window.SetCursorPosCallback(gi.InputMouseCtl.CursorCallback)
 		window.SetMouseButtonCallback(gi.InputMouseCtl.MouseButtonCallback)
+		window.SetFramebufferSizeCallback(gi.FrameBufferSizeCallback)
 	}
 	gi.startlogic()
 	// start hook

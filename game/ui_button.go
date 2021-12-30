@@ -36,7 +36,9 @@ func InitDefaultButton() {
 
 type ButtonConfig struct {
 	Width      float32
-	Height     float32
+	HWR        float32 // 高度:宽度 这样渲染时，此元素不会变形
+	PosX       float32
+	PoxY       float32 // 相对于屏幕
 	Content    string
 	ShaderText resource.ShaderText
 	TextureR   *resource.Texture
@@ -47,7 +49,7 @@ type ButtonConfig struct {
 
 var DefaultButtonConfig = ButtonConfig{
 	Width:   1,
-	Height:  1,
+	HWR:     1,
 	Content: "按钮",
 }
 
@@ -64,7 +66,8 @@ type UIButton struct {
 	// a_model_loc     int32
 	// u_light_loc     int32
 	// u_sortz_loc     int32
-	sortz float32
+	posx, posy float32
+	sortz      float32
 	//
 	uitext *UIText
 }
@@ -103,6 +106,8 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	if buttonconfig.SortZ > 0 {
 		uibutton.sortz = buttonconfig.SortZ
 	}
+	uibutton.posx = buttonconfig.PosX
+	uibutton.posy = buttonconfig.PoxY
 	uibutton.bling = buttonconfig.Bling
 	if buttonconfig.CustomDraw != nil {
 		uibutton.customDraw = buttonconfig.CustomDraw
@@ -115,7 +120,7 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 		uibutton.renderComponent.ModelR = resource.NewQuadModel_LeftALign()
 		for idx := 0; idx != 4; idx++ {
 			uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= buttonconfig.Width
-			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Height
+			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Width * buttonconfig.HWR
 		}
 		uibutton.renderComponent.ModelR.Upload()
 	}
@@ -229,6 +234,11 @@ func (uibutton *UIButton) OnDraw() {
 	uibutton.renderComponent.ModelR.Active()
 	uibutton.renderComponent.TextureR.Active()
 	//
+	{
+		//
+		uibutton.transform.Postion.SetIndexValue(0, uibutton.posx)
+		uibutton.transform.Postion.SetIndexValue(1, uibutton.posy/uibutton.gi.GetWHR())
+	}
 	modelMAT := uibutton.transform.Model()
 	mloc, lightloc, sortzloc, whrloc := uibutton.shaderOP.UniformLoc("model"),
 		uibutton.shaderOP.UniformLoc("light"),
