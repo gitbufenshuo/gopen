@@ -6,13 +6,14 @@ var ShaderUIButtonText ShaderText = ShaderText{
 	layout (location = 0) in vec3 vert;
 	layout (location = 1) in vec2 vertTexCoord;
 	uniform mat4 model;
+	uniform mat4 projection;
 	uniform float sortz;
 
 	out vec2 fragTexCoord;
 	
 	void main() {
 		fragTexCoord = vertTexCoord;
-		gl_Position = model * vec4(vert, 1);
+		gl_Position = projection * model * vec4(vert, 1);
 		gl_Position.z = sortz;
 	}
 	`,
@@ -37,13 +38,14 @@ var ShaderUIButton_Bling_Text ShaderText = ShaderText{
 	layout (location = 0) in vec3 vert;
 	layout (location = 1) in vec2 vertTexCoord;
 	uniform mat4 model;
+	uniform mat4 projection;
 	uniform float sortz;
 
 	out vec2 fragTexCoord;
 	
 	void main() {
 		fragTexCoord = vertTexCoord;
-		gl_Position = model * vec4(vert, 1);
+		gl_Position = projection * model * vec4(vert, 1);
 		gl_Position.z = sortz;
 	}
 	`,

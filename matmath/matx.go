@@ -272,3 +272,17 @@ func Perspective(near, far, fov float32, aspect float32) MATX {
 	res.SetEleByRowAndCol(4, 3, -1)
 	return res
 }
+
+func Orthographic(near, far float32, topdown, aspect float32) MATX {
+	var res MATX
+	p := &res
+	p.Init4()
+	p.ToIdentity()
+	//
+	leftright := topdown * aspect
+	res.SetEleByRowAndCol(1, 1, 2/(leftright))
+	res.SetEleByRowAndCol(2, 2, 2/(topdown))
+	res.SetEleByRowAndCol(3, 3, 2/(near-far))
+	res.SetEleByRowAndCol(3, 4, -(far+near)/(far-near))
+	return res
+}

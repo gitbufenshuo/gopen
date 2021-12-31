@@ -42,6 +42,7 @@ func (sop *ShaderOP) IfParticle() {
 
 func (sop *ShaderOP) IfUI() {
 	sop.AddUniform("model")
+	sop.AddUniform("projection")
 	sop.AddUniform("sortz")
 	sop.AddUniform("light")
 }
