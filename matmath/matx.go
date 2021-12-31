@@ -257,14 +257,14 @@ func (self *MATX) Translate4(translate *VECX) {
 // @param     near near plane
 // @param     far far plane
 // @param     fov
-func Perspective(near, far, fov float32) MATX {
+func Perspective(near, far, fov float32, aspect float32) MATX {
 	var res MATX
 	p := &res
 	p.Init4()
 	p.ToIdentity()
 	//
 	topdown := float32(math.Tan(float64(fov/2))) * near
-	leftright := topdown // cause aspect is always 1
+	leftright := topdown * aspect // cause aspect is always 1
 	res.SetEleByRowAndCol(1, 1, 2*near/(leftright))
 	res.SetEleByRowAndCol(2, 2, 2*near/(topdown))
 	res.SetEleByRowAndCol(3, 3, -(far+near)/(far-near))

@@ -133,7 +133,6 @@ func (gb *BasicObject) SetUniform() {
 	gl.UniformMatrix4fv(sop.UniformLoc("view"), 1, false, viewMAT.Address())
 	gl.UniformMatrix4fv(sop.UniformLoc("projection"), 1, false, projectionMAT.Address())
 	gl.UniformMatrix4fv(sop.UniformLoc("rotation"), 1, false, rotationMAT.Address())
-	gl.Uniform1f(sop.UniformLoc("whr"), gb.gi.GetWHR())
 }
 
 func (gb *BasicObject) Start() {

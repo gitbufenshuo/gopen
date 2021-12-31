@@ -396,7 +396,7 @@ func (gi *GlobalInfo) View() matmath.MATX {
 }
 
 func (gi *GlobalInfo) Projection() matmath.MATX {
-	projectionT := matmath.Perspective(gi.MainCamera.NearDistance, gi.MainCamera.FarDistance, gi.MainCamera.FOV)
+	projectionT := matmath.Perspective(gi.MainCamera.NearDistance, gi.MainCamera.FarDistance, gi.MainCamera.FOV, gi.GetWHR())
 	gi.MainCamera.ProjectionT = projectionT
 	return projectionT
 }

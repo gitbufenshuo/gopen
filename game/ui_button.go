@@ -259,10 +259,9 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.transform.Postion.SetIndexValue(1, uibutton.posy/uibutton.gi.GetWHR())
 	}
 	modelMAT := uibutton.transform.Model()
-	mloc, lightloc, sortzloc, whrloc := uibutton.shaderOP.UniformLoc("model"),
+	mloc, lightloc, sortzloc := uibutton.shaderOP.UniformLoc("model"),
 		uibutton.shaderOP.UniformLoc("light"),
-		uibutton.shaderOP.UniformLoc("sortz"),
-		uibutton.shaderOP.UniformLoc("whr")
+		uibutton.shaderOP.UniformLoc("sortz")
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	if uibutton.bling {
 		v := float32(uibutton.gi.CurFrame % 20)
@@ -274,7 +273,6 @@ func (uibutton *UIButton) OnDraw() {
 		gl.Uniform1f(lightloc, 1)
 	}
 	gl.Uniform1f(sortzloc, uibutton.sortz)
-	gl.Uniform1f(whrloc, uibutton.gi.GetWHR())
 
 	if uibutton.customDraw != nil {
 		uibutton.customDraw(uibutton.shaderOP)

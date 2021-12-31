@@ -97,17 +97,16 @@ func (uitext *UIText) OnDraw() {
 	uitext.renderComponent.ShaderR.Active()
 	uitext.renderComponent.ModelR.Active()
 	uitext.renderComponent.TextureR.Active()
-	mloc, lightloc, sortzloc, whrloc := uitext.shaderOP.UniformLoc("model"),
+	mloc, lightloc, sortzloc := uitext.shaderOP.UniformLoc("model"),
 		uitext.shaderOP.UniformLoc("light"),
-		uitext.shaderOP.UniformLoc("sortz"),
-		uitext.shaderOP.UniformLoc("whr")
+		uitext.shaderOP.UniformLoc("sortz")
 
 	//
 	modelt := uitext.transform.WorldModel()
 	gl.UniformMatrix4fv(mloc, 1, false, modelt.Address())
 	gl.Uniform1f(lightloc, 1)
 	gl.Uniform1f(sortzloc, 0.0005)
-	gl.Uniform1f(whrloc, uitext.gi.GetWHR())
+	// gl.Uniform1f(whrloc, uitext.gi.GetWHR())
 
 }
 

@@ -123,8 +123,8 @@ func (parti *Particle) Draw() {
 
 	parti.ShaderResource.Active() // shader
 	parti.TextureResource.Active()
-	vloc, ploc, mloc, lightloc, whrloc := parti.shaderOP.UniformLoc("view"), parti.shaderOP.UniformLoc("projection"), parti.shaderOP.UniformLoc("model"), parti.shaderOP.UniformLoc("light"), parti.shaderOP.UniformLoc("whr")
-	parti.UploadUniforms(vloc, ploc, whrloc)
+	vloc, ploc, mloc, lightloc := parti.shaderOP.UniformLoc("view"), parti.shaderOP.UniformLoc("projection"), parti.shaderOP.UniformLoc("model"), parti.shaderOP.UniformLoc("light")
+	parti.UploadUniforms(vloc, ploc)
 
 	for _, oneentity := range parti.EntityList {
 		oneentity.Draw(mloc, lightloc)
@@ -141,13 +141,12 @@ func (parti *Particle) ID_sg(_id ...int) int {
 	parti.ID = _id[0]
 	return parti.ID
 }
-func (parti *Particle) UploadUniforms(vl, pl, wl int32) {
+func (parti *Particle) UploadUniforms(vl, pl int32) {
 	v := parti.gi.View()
 	p := parti.gi.Projection()
 	//////////////////////////////////////////////
 	gl.UniformMatrix4fv(vl, 1, false, v.Address())
 	gl.UniformMatrix4fv(pl, 1, false, p.Address())
-	gl.Uniform1f(wl, parti.gi.GetWHR())
 }
 
 func NewParticle(gi *GlobalInfo, texture *resource.Texture) *Particle {

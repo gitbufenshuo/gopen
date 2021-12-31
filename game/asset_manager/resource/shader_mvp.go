@@ -6,7 +6,6 @@ var ShaderMVPText ShaderText = ShaderText{
 	layout (location = 0) in vec3 vert;
 	layout (location = 1) in vec2 vertTexCoord;
 	layout (location = 2) in vec3 vertNormal;
-	uniform float whr;
 	uniform mat4 rotation;
 	uniform mat4 model;
 	uniform mat4 view;
@@ -20,7 +19,6 @@ var ShaderMVPText ShaderText = ShaderText{
 		fragTexCoord = vertTexCoord;
 		fragVertNormal = wNormal.xyz;
 		gl_Position = projection * view * model * vec4(vert, 1);
-		// gl_Position.y *= whr;
 	}`,
 	Fragment: `#version 330
 

@@ -30,7 +30,6 @@ func (sop *ShaderOP) IfMVP() {
 	sop.AddUniform("projection")
 	sop.AddUniform("rotation")
 	sop.AddUniform("u_Color")
-	sop.AddUniform("whr")
 }
 
 func (sop *ShaderOP) IfParticle() {
@@ -38,14 +37,12 @@ func (sop *ShaderOP) IfParticle() {
 	sop.AddUniform("view")
 	sop.AddUniform("projection")
 	sop.AddUniform("rotation")
-	sop.AddUniform("whr")
 	sop.AddUniform("light")
 }
 
 func (sop *ShaderOP) IfUI() {
 	sop.AddUniform("model")
 	sop.AddUniform("sortz")
-	sop.AddUniform("whr")
 	sop.AddUniform("light")
 }
 
