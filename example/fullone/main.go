@@ -136,10 +136,10 @@ func initLogic(gi *game.GlobalInfo) {
 		tr.Upload()
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      0.1,
-				HWR:        1,
-				PosX:       0.5,
-				PoxY:       0.3,
+				Width:      800,
+				Height:     600,
+				PosX:       -400,
+				PoxY:       0,
 				Content:    "S键切换闪烁",
 				Bling:      true,                               // 是否闪烁
 				SortZ:      0.01,                               // 渲染层级，越小的，越靠近人眼
@@ -157,8 +157,8 @@ func initLogic(gi *game.GlobalInfo) {
 		}
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      0.1,
-				HWR:        1,
+				Width:      1,
+				Height:     1,
 				PosX:       -0.5,
 				PoxY:       0.3,
 				Content:    "D键切换闪烁",
@@ -198,7 +198,7 @@ func initTexture(gi *game.GlobalInfo) {
 }
 
 func main() {
-	gi := game.NewGlobalInfo(800, 800, "hello-fullone")
+	gi := game.NewGlobalInfo(800, 600, "hello-fullone")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

@@ -36,7 +36,7 @@ func InitDefaultButton() {
 
 type ButtonConfig struct {
 	Width      float32
-	HWR        float32 // 高度:宽度 这样渲染时，此元素不会变形
+	Height     float32 // 宽度:高度 这样渲染时，此元素不会变形
 	PosX       float32
 	PoxY       float32 // 相对于屏幕
 	Content    string
@@ -48,8 +48,8 @@ type ButtonConfig struct {
 }
 
 var DefaultButtonConfig = ButtonConfig{
-	Width:   1,
-	HWR:     1,
+	Width:   800,
+	Height:  600,
 	Content: "按钮",
 }
 
@@ -119,8 +119,8 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	{
 		uibutton.renderComponent.ModelR = resource.NewQuadModel_LeftALign()
 		for idx := 0; idx != 4; idx++ {
-			uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= buttonconfig.Width
-			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Width * buttonconfig.HWR
+			uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= buttonconfig.Width / 2
+			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Height / 2
 		}
 		uibutton.renderComponent.ModelR.Upload()
 	}
@@ -263,7 +263,7 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.shaderOP.UniformLoc("model"),
 		uibutton.shaderOP.UniformLoc("light"),
 		uibutton.shaderOP.UniformLoc("sortz")
-	orProjection := matmath.Orthographic(0, 100, 2, 1)
+	orProjection := matmath.Orthographic(0, 100, 600, uibutton.gi.GetWHR())
 	gl.UniformMatrix4fv(proloc, 1, false, orProjection.Address())
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	if uibutton.bling {
