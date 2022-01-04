@@ -58,15 +58,15 @@ func NewCubeMapObject(cubemapTexture *resource.CubeMap) *CubeMapObject {
 
 type Camera struct {
 	Transform     *common.Transform
-	Pos           matmath.VECX
-	Front         matmath.VECX
-	UP            matmath.VECX
-	Target        matmath.VECX
+	Pos           matmath.Vec4
+	Front         matmath.Vec4
+	UP            matmath.Vec4
+	Target        matmath.Vec4
 	NearDistance  float32
 	FarDistance   float32
 	FOV           float32
-	ViewT         matmath.MATX
-	ProjectionT   matmath.MATX
+	ViewT         matmath.MAT4
+	ProjectionT   matmath.MAT4
 	CubeMapObject *CubeMapObject
 }
 
@@ -76,13 +76,9 @@ func NewDefaultCamera() *Camera {
 	c.NearDistance = 0.1
 	c.FarDistance = 100
 	c.FOV = math.Pi / 2
-	c.Pos.Init3()
-	c.Front.Init4()
 	c.Front.SetValue4(0, 0, -1, 1)
-	c.UP.Init3()
 	c.UP.SetValue3(0, 1, 0)
 
-	c.Target.Init3()
 	c.Transform = common.NewTransform()
 	return c
 }
@@ -93,7 +89,7 @@ func (camera *Camera) AddSkyBox(cubemap *resource.CubeMap) {
 }
 
 // set the camera so that it looks at the target
-func (camera *Camera) UpdateTarget(target, front *matmath.VECX) {
+func (camera *Camera) UpdateTarget(target, front *matmath.Vec4) {
 	target.SetValue3(
 		camera.Pos.GetIndexValue(0)+front.GetIndexValue(0),
 		camera.Pos.GetIndexValue(1)+front.GetIndexValue(1),
@@ -109,14 +105,13 @@ func (camera *Camera) RotateLocalVertical(angle float32) {
 	camera.Transform.Rotation.AddIndexValue(0, angle)
 }
 
-func (camera *Camera) ViewMat() matmath.MATX {
-	fronttemp := camera.Front.Clone()
-	targettemp := camera.Target.Clone()
+func (camera *Camera) ViewMat() matmath.MAT4 {
+	fronttemp := camera.Front
+	targettemp := camera.Target
 	////////////////////////////////////
-	var matRes matmath.MATX
-	matRes.Init4()
+	var matRes matmath.MAT4
 	matRes.ToIdentity()
-	matRes.Rotate4(&camera.Transform.Rotation)
+	matRes.Rotate(&camera.Transform.Rotation)
 	fronttemp.RightMul_InPlace(&matRes)
 
 	camera.UpdateTarget(&targettemp, &fronttemp)

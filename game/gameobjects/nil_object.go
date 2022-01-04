@@ -63,25 +63,24 @@ func (gb *NilObject) Start() {
 
 }
 
-func (gb *NilObject) Model() matmath.MATX {
-	var transform matmath.MATX
-	transform.Init4()
+func (gb *NilObject) Model() matmath.MAT4 {
+	var transform matmath.MAT4
 	transform.ToIdentity()
 
-	transform.Scale4(&gb.Transform.Scale)
+	transform.Scale(&gb.Transform.Scale)
 
-	transform.Rotate4(&gb.Transform.Rotation)
+	transform.Rotate(&gb.Transform.Rotation)
 
 	transform.Translate4(&gb.Transform.Postion)
 
 	return transform
 }
 
-func (gb *NilObject) View() matmath.MATX {
+func (gb *NilObject) View() matmath.MAT4 {
 	return gb.GI().View()
 }
 
-func (gb *NilObject) Projection() matmath.MATX {
+func (gb *NilObject) Projection() matmath.MAT4 {
 	return gb.GI().Projection()
 }
 

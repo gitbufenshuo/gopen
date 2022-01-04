@@ -13,8 +13,8 @@ import (
 )
 
 type BoneSatus struct {
-	Position *matmath.VECX
-	Rotation *matmath.VECX
+	Position *matmath.Vec4
+	Rotation *matmath.Vec4
 }
 
 func (bs *BoneSatus) ToByte() []byte {
@@ -38,11 +38,9 @@ func NewBoneStatusFromData(data string) *BoneSatus {
 }
 
 func NewBoneSatus(px, py, pz, rx, ry, rz float32) *BoneSatus {
-	var pos matmath.VECX
-	pos.Init3()
+	var pos matmath.Vec4
 	pos.SetValue3(px, py, pz)
-	var rot matmath.VECX
-	rot.Init3()
+	var rot matmath.Vec4
 	rot.SetValue3(rx, ry, rz)
 	return &BoneSatus{
 		Position: &pos,
@@ -224,48 +222,48 @@ func (ac *AnimationController) BindBoneNode(head, body, handLeft, handRight, leg
 func (ac *AnimationController) RecordInitFrame() {
 	initFrame := new(AnimationFrame)
 	{
-		position := ac.headNode.Postion.Clone()
-		rotation := ac.headNode.Rotation.Clone()
+		position := ac.headNode.Postion
+		rotation := ac.headNode.Rotation
 		initFrame.HeadStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
 		}
 	}
 	{
-		position := ac.bodyNode.Postion.Clone()
-		rotation := ac.bodyNode.Rotation.Clone()
+		position := ac.bodyNode.Postion
+		rotation := ac.bodyNode.Rotation
 		initFrame.BodyStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
 		}
 	}
 	{
-		position := ac.handLeftNode.Postion.Clone()
-		rotation := ac.handLeftNode.Rotation.Clone()
+		position := ac.handLeftNode.Postion
+		rotation := ac.handLeftNode.Rotation
 		initFrame.HandLeftStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
 		}
 	}
 	{
-		position := ac.handRightNode.Postion.Clone()
-		rotation := ac.handRightNode.Rotation.Clone()
+		position := ac.handRightNode.Postion
+		rotation := ac.handRightNode.Rotation
 		initFrame.HandRightStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
 		}
 	}
 	{
-		position := ac.legLeftNode.Postion.Clone()
-		rotation := ac.legLeftNode.Rotation.Clone()
+		position := ac.legLeftNode.Postion
+		rotation := ac.legLeftNode.Rotation
 		initFrame.LegLeftStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
 		}
 	}
 	{
-		position := ac.legRightNode.Postion.Clone()
-		rotation := ac.legRightNode.Rotation.Clone()
+		position := ac.legRightNode.Postion
+		rotation := ac.legRightNode.Rotation
 		initFrame.LegRightStatus = &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,

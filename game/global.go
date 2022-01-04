@@ -392,15 +392,15 @@ func (gi *GlobalInfo) initDefaultTexture_logo() {
 	gi.AssetManager.LoadTextureFromFile(path.Join(os.Getenv("HOME"), ".gopen", "assets", "textures", "logo.png"), "logo_texture")
 }
 
-func (gi *GlobalInfo) View() matmath.MATX {
+func (gi *GlobalInfo) View() matmath.MAT4 {
 	return gi.MainCamera.ViewMat()
 	// viewT := matmath.LookAtFrom4(&gi.MainCamera.Pos, &gi.MainCamera.Target, &gi.MainCamera.UP)
 	// gi.MainCamera.ViewT = viewT
 	// return viewT
 }
 
-func (gi *GlobalInfo) Projection() matmath.MATX {
-	projectionT := matmath.Perspective(gi.MainCamera.NearDistance, gi.MainCamera.FarDistance, gi.MainCamera.FOV, gi.GetWHR())
+func (gi *GlobalInfo) Projection() matmath.MAT4 {
+	projectionT := matmath.GenPerspectiveMat4(gi.MainCamera.NearDistance, gi.MainCamera.FarDistance, gi.MainCamera.FOV, gi.GetWHR())
 	gi.MainCamera.ProjectionT = projectionT
 	return projectionT
 }

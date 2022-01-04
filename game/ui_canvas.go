@@ -34,11 +34,11 @@ func NewUICanvas(gi *GlobalInfo, mode CanvasMode, width, height float32) *UICanv
 	res.gi = gi
 	return res
 }
-func (uicanvas *UICanvas) Orthographic() matmath.MATX {
+func (uicanvas *UICanvas) Orthographic() matmath.MAT4 {
 	if uicanvas.Mode == CanvasMode_FixHeight {
-		return matmath.Orthographic(0, 100, uicanvas.DesignHeight, uicanvas.gi.GetWHR())
+		return matmath.GenOrthographicMat4(0, 100, uicanvas.DesignHeight, uicanvas.gi.GetWHR())
 	} else {
 		height := uicanvas.DesignWidth / uicanvas.gi.GetWHR()
-		return matmath.Orthographic(0, 100, height, uicanvas.gi.GetWHR())
+		return matmath.GenOrthographicMat4(0, 100, height, uicanvas.gi.GetWHR())
 	}
 }

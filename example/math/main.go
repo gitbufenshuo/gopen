@@ -7,21 +7,17 @@ import (
 )
 
 func TryLookAt() {
-	var pos matmath.VECX
-	pos.Init3()
+	var pos matmath.Vec4
 	pos.SetValue3(0, 0, 1)
 
-	var target matmath.VECX
-	target.Init3()
+	var target matmath.Vec4
 	target.SetValue3(1, 0, 0)
 
-	var up matmath.VECX
-	up.Init3()
+	var up matmath.Vec4
 	up.SetValue3(0, 1, 0)
 	viewMAT := matmath.LookAtFrom4(&pos, &target, &up)
 	//////
-	var objectPos matmath.VECX
-	objectPos.Init4()
+	var objectPos matmath.Vec4
 	objectPos.SetValue4(1, 0, 0, 1)
 	//////
 	objectPos.RightMul_InPlace(&viewMAT)

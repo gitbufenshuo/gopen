@@ -39,8 +39,8 @@ func (mat4 *MAT4) EqualsTo(other *MAT4) bool {
 
 // mat math add, the result will be stored int another new-matx;
 // mat3 and mat4 cannot add, so return nil on that condition;
-func (mat4 *MAT4) Add(other *MAT4) MATX {
-	var res MATX
+func (mat4 *MAT4) Add(other *MAT4) MAT4 {
+	var res MAT4
 	for i := 0; i != 4; i++ {
 		res.data[i] = mat4.data[i] + other.data[i]
 	}

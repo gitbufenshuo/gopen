@@ -139,25 +139,25 @@ func (gb *BasicObject) Start() {
 
 }
 
-func (gb *BasicObject) Model() matmath.MATX {
-	var transform matmath.MATX
-	transform.Init4()
+func (gb *BasicObject) Model() matmath.MAT4 {
+	var transform matmath.MAT4
+
 	transform.ToIdentity()
 
-	transform.Scale4(&gb.Transform.Scale)
+	transform.Scale(&gb.Transform.Scale)
 
-	transform.Rotate4(&gb.Transform.Rotation)
+	transform.Rotate(&gb.Transform.Rotation)
 
 	transform.Translate4(&gb.Transform.Postion)
 
 	return transform
 }
 
-func (gb *BasicObject) View() matmath.MATX {
+func (gb *BasicObject) View() matmath.MAT4 {
 	return gb.GI().View()
 }
 
-func (gb *BasicObject) Projection() matmath.MATX {
+func (gb *BasicObject) Projection() matmath.MAT4 {
 	return gb.GI().Projection()
 }
 

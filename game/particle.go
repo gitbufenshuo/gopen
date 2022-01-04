@@ -82,8 +82,7 @@ func (pe *ParticleEntity) UpdateTargetTransform() {
 	}
 	//
 	modelmat := pe.TargetTransform.WorldModel()
-	var targetpos matmath.VECX
-	targetpos.Init4()
+	var targetpos matmath.Vec4
 	targetpos.SetValue4(0, -1.2, 0, 1)
 	targetpos.RightMul_InPlace(&modelmat)
 	for idx, onecore := range pe.CoreList {

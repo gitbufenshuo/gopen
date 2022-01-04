@@ -5,9 +5,9 @@ import (
 )
 
 type Transform struct {
-	Postion  matmath.VECX
-	Rotation matmath.VECX
-	Scale    matmath.VECX
+	Postion  matmath.Vec4
+	Rotation matmath.Vec4
+	Scale    matmath.Vec4
 	Parent   *Transform // nil if root
 	Children []*Transform
 }
@@ -35,31 +35,23 @@ func TransformArrDelLast(arr []*Transform) []*Transform {
 
 func NewTransform() *Transform {
 	var transform Transform
-	transform.Postion.Init3()
-	transform.Postion.Clear()
-
-	transform.Rotation.Init3()
-	transform.Rotation.Clear()
-
-	transform.Scale.Init3()
 	transform.Scale.SetValue3(1, 1, 1)
 	return &transform
 }
-func (transform *Transform) Model() matmath.MATX {
-	var matRes matmath.MATX
-	matRes.Init4()
+func (transform *Transform) Model() matmath.MAT4 {
+	var matRes matmath.MAT4
 	matRes.ToIdentity()
 
-	matRes.Scale4(&transform.Scale)
+	matRes.Scale(&transform.Scale)
 
-	matRes.Rotate4(&transform.Rotation)
+	matRes.Rotate(&transform.Rotation)
 
 	matRes.Translate4(&transform.Postion)
 
 	return matRes
 }
 
-func (transform *Transform) WorldModel() matmath.MATX {
+func (transform *Transform) WorldModel() matmath.MAT4 {
 	m := transform.Model()
 	//
 	var curTransform *Transform
@@ -76,11 +68,10 @@ func (transform *Transform) WorldModel() matmath.MATX {
 	return m
 }
 
-func (transform *Transform) RotationMAT4() matmath.MATX {
-	var matRes matmath.MATX
-	matRes.Init4()
+func (transform *Transform) RotationMAT4() matmath.MAT4 {
+	var matRes matmath.MAT4
 	matRes.ToIdentity()
-	matRes.Rotate4(&transform.Rotation)
+	matRes.Rotate(&transform.Rotation)
 	return matRes
 }
 func (trans *Transform) SetParent(parent *Transform) {
