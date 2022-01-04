@@ -130,14 +130,14 @@ func initLogic(gi *game.GlobalInfo) {
 	{
 		// ui system
 		tr := resource.NewTexture()
-		tr.GenRandom(2, 2)
+		tr.GenRandom(8, 8)
 		// tr.ReadFromFile("ui/go.png")
 		// tr.GenFont("火水", gi.FontConfig)
 		tr.Upload()
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      800,
-				Height:     600,
+				Width:      100,
+				Height:     30,
 				PosX:       -400,
 				PoxY:       0,
 				Content:    "S键切换闪烁",

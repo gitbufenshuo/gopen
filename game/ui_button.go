@@ -263,7 +263,7 @@ func (uibutton *UIButton) OnDraw() {
 		uibutton.shaderOP.UniformLoc("model"),
 		uibutton.shaderOP.UniformLoc("light"),
 		uibutton.shaderOP.UniformLoc("sortz")
-	orProjection := matmath.Orthographic(0, 100, 600, uibutton.gi.GetWHR())
+	orProjection := uibutton.gi.UICanvas.Orthographic()
 	gl.UniformMatrix4fv(proloc, 1, false, orProjection.Address())
 	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	if uibutton.bling {

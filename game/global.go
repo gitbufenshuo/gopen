@@ -55,6 +55,7 @@ type GlobalInfo struct {
 	InputMouseCtl         *InputMouse
 	CursorMode            int
 	InputSystemManager    InputSystemI
+	UICanvas              *UICanvas
 	//
 	MouseXDiff, MouseYDiff float64
 	*GlobalFrameInfo
@@ -211,6 +212,9 @@ func (gi *GlobalInfo) Boot() {
 	gi.CustomInit(gi)
 	if gi.MainCamera == nil {
 		panic("MainCamera == nil")
+	}
+	if gi.UICanvas == nil {
+		gi.UICanvas = NewDefaultUICanvas(gi)
 	}
 	gi.GlobalFrameInfo = new(GlobalFrameInfo)
 	gi.StartMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
