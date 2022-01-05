@@ -52,6 +52,7 @@ var DefaultSpec UISpec = UISpec{
 }
 var DefaultButtonConfig = ButtonConfig{
 	UISpec:  DefaultSpec,
+	SortZ:   0.001,
 	Content: "按钮",
 }
 
@@ -60,6 +61,7 @@ type UIButton struct {
 	id              int
 	renderComponent *resource.RenderComponent
 	enabled         bool
+	UISpec          UISpec
 	transform       *common.Transform
 	shaderOP        *ShaderOP
 	bling           bool
@@ -68,43 +70,19 @@ type UIButton struct {
 	// a_model_loc     int32
 	// u_light_loc     int32
 	// u_sortz_loc     int32
-	posx, posy float32
-	sortz      float32
+	sortz float32
 	//
 	uitext *UIText
 }
 
 func NewDefaultUIButton(gi *GlobalInfo) *UIButton {
-	InitDefaultButton()
-	uibutton := new(UIButton)
-	uibutton.enabled = true
-	uibutton.sortz = 0.001
-	uibutton.gi = gi
-	/////////////////////////
-	uibutton.renderComponent = new(resource.RenderComponent)
-	{
-		uibutton.renderComponent.ModelR = buttonModelDefault
-	}
-	uibutton.renderComponent.TextureR = buttonTextureDefault
-	{
-		uibutton.renderComponent.ShaderR = buttonShaderDefault
-		uibutton.shaderOP = NewShaderOP()
-		uibutton.shaderOP.SetProgram(uibutton.renderComponent.ShaderR.ShaderProgram())
-		uibutton.shaderOP.IfUI()
-	}
-	//
-	uibutton.transform = common.NewTransform()
-	//
-	uibutton.uitext = NewUIText(gi)
-	gi.AddUIObject(uibutton.uitext)
-	uibutton.uitext.SetText(DefaultButtonConfig.Content)
-	uibutton.uitext.transform.SetParent(uibutton.transform)
-	return uibutton
+	return NewCustomButton(gi, DefaultButtonConfig)
 }
 func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	InitDefaultButton()
 	uibutton := new(UIButton)
 	uibutton.enabled = true
+	uibutton.UISpec = buttonconfig.UISpec
 	if buttonconfig.SortZ > 0 {
 		uibutton.sortz = buttonconfig.SortZ
 	}
@@ -117,7 +95,7 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	uibutton.renderComponent = new(resource.RenderComponent)
 	// model config
 	{
-		uibutton.renderComponent.ModelR = resource.NewQuadModel_BySpec(buttonconfig.UISpec.Pivot, buttonconfig.UISpec.Width, buttonconfig.UISpec.Height)
+		uibutton.renderComponent.ModelR = resource.NewQuadModel_BySpec(uibutton.UISpec.Pivot, uibutton.UISpec.Width, uibutton.UISpec.Height)
 		uibutton.renderComponent.ModelR.Upload()
 	}
 	// texture config
@@ -189,24 +167,6 @@ func (uibutton *UIButton) SwitchBling() bool {
 	return uibutton.bling
 }
 
-func (uibutton *UIButton) GetPosX() float32 {
-	return uibutton.posx
-}
-func (uibutton *UIButton) GetPosY() float32 {
-	return uibutton.posy
-}
-
-func (uibutton *UIButton) SetPosX(v float32) float32 {
-	raw := uibutton.posx
-	uibutton.posx = v
-	return raw
-}
-func (uibutton *UIButton) SetPosY(v float32) float32 {
-	raw := uibutton.posy
-	uibutton.posy = v
-	return raw
-}
-
 func (uibutton *UIButton) CheckPoint(x, y float32) bool {
 	// bounds := uibutton.Bounds()
 	//
@@ -250,9 +210,9 @@ func (uibutton *UIButton) OnDraw() {
 	uibutton.renderComponent.TextureR.Active()
 	//
 	{
-		//
-		uibutton.transform.Postion.SetIndexValue(0, uibutton.posx)
-		uibutton.transform.Postion.SetIndexValue(1, uibutton.posy/uibutton.gi.GetWHR())
+		// 根据 UISpec 得到真正要渲染的参数
+		uibutton.transform.Postion.SetIndexValue(0, uibutton.UISpec.LocalPos.GetIndexValue(0))
+		uibutton.transform.Postion.SetIndexValue(1, uibutton.UISpec.LocalPos.GetIndexValue(1))
 	}
 	modelMAT := uibutton.transform.Model()
 	proloc, mloc, lightloc, sortzloc := uibutton.shaderOP.UniformLoc("projection"),

@@ -9,7 +9,6 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
-	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
@@ -84,7 +83,6 @@ func (mylogic *MyLogic) Update() {
 	if mylogic.gi.CurFrame == 200 {
 		mylogic.ClickButtonS.Enable()
 	}
-	mylogic.ClickButtonS.SetPosY(help.Sin(float32(mylogic.gi.CurFrame) / 20))
 }
 
 func NewMyLogic(gi *game.GlobalInfo) *MyLogic {
@@ -139,11 +137,10 @@ func initLogic(gi *game.GlobalInfo) {
 			button := game.NewCustomButton(gi, game.ButtonConfig{
 				UISpec: game.UISpec{
 					Pivot:    matmath.CreateVec4(-1, -1, 0, 0),
-					LocalPos: matmath.CreateVec4(0, 0, 0, 0),
+					LocalPos: matmath.CreateVec4(30, 0, 0, 0),
 					Width:    100,
 					Height:   30,
 				},
-
 				Content:    "S键切换闪烁",
 				Bling:      true,                               // 是否闪烁
 				SortZ:      0.01,                               // 渲染层级，越小的，越靠近人眼
