@@ -7,6 +7,7 @@ type CanvasMode string
 const (
 	CanvasMode_FixWidth  CanvasMode = "FixWidth"  // 固定宽
 	CanvasMode_FixHeight CanvasMode = "FixHeight" // 固定高
+	CanvasMode_Screen    CanvasMode = "Screen"    // 根据屏幕
 )
 
 // UI canvas
@@ -21,7 +22,7 @@ func NewDefaultUICanvas(gi *GlobalInfo) *UICanvas {
 	res := new(UICanvas)
 	res.DesignWidth = 800
 	res.DesignHeight = 600
-	res.Mode = CanvasMode_FixWidth
+	res.Mode = CanvasMode_Screen
 	res.gi = gi
 	return res
 }
@@ -37,8 +38,10 @@ func NewUICanvas(gi *GlobalInfo, mode CanvasMode, width, height float32) *UICanv
 func (uicanvas *UICanvas) Orthographic() matmath.MAT4 {
 	if uicanvas.Mode == CanvasMode_FixHeight {
 		return matmath.GenOrthographicMat4(0, 100, uicanvas.DesignHeight, uicanvas.gi.GetWHR())
-	} else {
+	} else if uicanvas.Mode == CanvasMode_FixWidth {
 		height := uicanvas.DesignWidth / uicanvas.gi.GetWHR()
 		return matmath.GenOrthographicMat4(0, 100, height, uicanvas.gi.GetWHR())
+	} else {
+		return matmath.GenOrthographicMat4(0, 100, uicanvas.gi.GetWindowHeight()/2, uicanvas.gi.GetWHR())
 	}
 }
