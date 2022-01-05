@@ -35,10 +35,7 @@ func InitDefaultButton() {
 }
 
 type ButtonConfig struct {
-	Width      float32
-	Height     float32 // 宽度:高度 这样渲染时，此元素不会变形
-	PosX       float32
-	PoxY       float32 // 相对于屏幕
+	UISpec     UISpec
 	Content    string
 	ShaderText resource.ShaderText
 	TextureR   *resource.Texture
@@ -47,9 +44,14 @@ type ButtonConfig struct {
 	CustomDraw func(shaderOP *ShaderOP)
 }
 
+var DefaultSpec UISpec = UISpec{
+	Pivot:    matmath.CreateVec4(0, 0, 0, 0),
+	LocalPos: matmath.CreateVec4(0, 0, 0, 0),
+	Width:    100,
+	Height:   30,
+}
 var DefaultButtonConfig = ButtonConfig{
-	Width:   800,
-	Height:  600,
+	UISpec:  DefaultSpec,
 	Content: "按钮",
 }
 
@@ -106,8 +108,6 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	if buttonconfig.SortZ > 0 {
 		uibutton.sortz = buttonconfig.SortZ
 	}
-	uibutton.posx = buttonconfig.PosX
-	uibutton.posy = buttonconfig.PoxY
 	uibutton.bling = buttonconfig.Bling
 	if buttonconfig.CustomDraw != nil {
 		uibutton.customDraw = buttonconfig.CustomDraw
@@ -117,11 +117,7 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	uibutton.renderComponent = new(resource.RenderComponent)
 	// model config
 	{
-		uibutton.renderComponent.ModelR = resource.NewQuadModel_LeftALign()
-		for idx := 0; idx != 4; idx++ {
-			uibutton.renderComponent.ModelR.Vertices[idx*5+0] *= buttonconfig.Width / 2
-			uibutton.renderComponent.ModelR.Vertices[idx*5+1] *= buttonconfig.Height / 2
-		}
+		uibutton.renderComponent.ModelR = resource.NewQuadModel_BySpec(buttonconfig.UISpec.Pivot, buttonconfig.UISpec.Width, buttonconfig.UISpec.Height)
 		uibutton.renderComponent.ModelR.Upload()
 	}
 	// texture config

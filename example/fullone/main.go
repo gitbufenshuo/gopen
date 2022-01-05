@@ -10,6 +10,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
 	"github.com/gitbufenshuo/gopen/help"
+	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
@@ -136,10 +137,13 @@ func initLogic(gi *game.GlobalInfo) {
 		tr.Upload()
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      100,
-				Height:     30,
-				PosX:       -400,
-				PoxY:       0,
+				UISpec: game.UISpec{
+					Pivot:    matmath.CreateVec4(-1, -1, 0, 0),
+					LocalPos: matmath.CreateVec4(0, 0, 0, 0),
+					Width:    100,
+					Height:   30,
+				},
+
 				Content:    "S键切换闪烁",
 				Bling:      true,                               // 是否闪烁
 				SortZ:      0.01,                               // 渲染层级，越小的，越靠近人眼
@@ -157,10 +161,12 @@ func initLogic(gi *game.GlobalInfo) {
 		}
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				Width:      1,
-				Height:     1,
-				PosX:       -0.5,
-				PoxY:       0.3,
+				UISpec: game.UISpec{
+					Pivot:    matmath.CreateVec4(0, 0, 0, 0),
+					LocalPos: matmath.CreateVec4(0, 0, 0, 0),
+					Width:    30,
+					Height:   10,
+				},
 				Content:    "D键切换闪烁",
 				Bling:      true,
 				SortZ:      0.02,
