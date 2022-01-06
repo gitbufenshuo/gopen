@@ -211,8 +211,14 @@ func (uibutton *UIButton) OnDraw() {
 	//
 	{
 		// 根据 UISpec 得到真正要渲染的参数
+		// 1. pos
 		uibutton.transform.Postion.SetIndexValue(0, uibutton.UISpec.LocalPos.GetIndexValue(0))
 		uibutton.transform.Postion.SetIndexValue(1, uibutton.UISpec.LocalPos.GetIndexValue(1))
+		// 2. scale
+		uibutton.transform.Scale.SetValue2(
+			1+uibutton.UISpec.SizeRelativity.GetIndexValue(0)*(uibutton.gi.GetWindowWidth()/uibutton.gi.UICanvas.DesignWidth-1),
+			1+uibutton.UISpec.SizeRelativity.GetIndexValue(1)*(uibutton.gi.GetWindowHeight()/uibutton.gi.UICanvas.DesignHeight-1),
+		)
 	}
 	modelMAT := uibutton.transform.Model()
 	proloc, mloc, lightloc, sortzloc := uibutton.shaderOP.UniformLoc("projection"),

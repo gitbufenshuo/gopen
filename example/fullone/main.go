@@ -136,10 +136,11 @@ func initLogic(gi *game.GlobalInfo) {
 		{
 			button := game.NewCustomButton(gi, game.ButtonConfig{
 				UISpec: game.UISpec{
-					Pivot:    matmath.CreateVec4(-1, -1, 0, 0),
-					LocalPos: matmath.CreateVec4(30, 0, 0, 0),
-					Width:    100,
-					Height:   30,
+					Pivot:          matmath.CreateVec4(-1, -1, 0, 0),
+					LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
+					Width:          100,
+					Height:         30,
+					SizeRelativity: matmath.CreateVec4(1, 1, 0, 0),
 				},
 				Content:    "S键切换闪烁",
 				Bling:      true,                               // 是否闪烁

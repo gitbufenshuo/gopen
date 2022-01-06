@@ -22,7 +22,7 @@ func NewDefaultUICanvas(gi *GlobalInfo) *UICanvas {
 	res := new(UICanvas)
 	res.DesignWidth = 800
 	res.DesignHeight = 600
-	res.Mode = CanvasMode_Screen
+	res.Mode = CanvasMode_FixWidth
 	res.gi = gi
 	return res
 }
@@ -42,6 +42,6 @@ func (uicanvas *UICanvas) Orthographic() matmath.MAT4 {
 		height := uicanvas.DesignWidth / uicanvas.gi.GetWHR()
 		return matmath.GenOrthographicMat4(0, 100, height, uicanvas.gi.GetWHR())
 	} else {
-		return matmath.GenOrthographicMat4(0, 100, uicanvas.gi.GetWindowHeight()/2, uicanvas.gi.GetWHR())
+		return matmath.GenOrthographicMat4(0, 100, uicanvas.gi.GetWindowHeight(), uicanvas.gi.GetWHR())
 	}
 }

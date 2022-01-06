@@ -14,8 +14,9 @@ import "github.com/gitbufenshuo/gopen/matmath"
 // UI 描述 结构
 // UISpec功能可以尽量复杂
 type UISpec struct {
-	Pivot    matmath.Vec4 // 自身中心点 之所以是 vec4 而不是 vec2 是因为兼容后续的计算
-	LocalPos matmath.Vec4 // 自身中心点位置，相对于父级来说
-	Width    float32      // 模型的宽度
-	Height   float32      // 模型的高度
+	Pivot          matmath.Vec4 // 自身中心点 之所以是 vec4 而不是 vec2 是因为兼容后续的计算
+	LocalPos       matmath.Vec4 // 自身中心点位置，相对于父级来说
+	Width          float32      // 模型的宽度
+	Height         float32      // 模型的高度
+	SizeRelativity matmath.Vec4 // 尺寸相对性 默认是 0 ，就是没有相对性, 没有相对性就不会变形
 }

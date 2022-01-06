@@ -81,6 +81,10 @@ func (gi *GlobalInfo) GetWHR() float32 {
 	return float32(gi.width) / float32(gi.height)
 }
 
+func (gi *GlobalInfo) GetWindowWidth() float32 {
+	return float32(gi.width)
+}
+
 func (gi *GlobalInfo) GetWindowHeight() float32 {
 	return float32(gi.height)
 }
@@ -104,9 +108,7 @@ func (gi *GlobalInfo) LoadFont(fontpath string) {
 	gi.FontConfig = help.NewFontConfig(font, face)
 }
 func (gi *GlobalInfo) FrameBufferSizeCallback(window *glfw.Window, width, height int) {
-	gi.width = width
-	gi.height = height
-	fmt.Println(gi.width, gi.height)
+	gi.width, gi.height = window.GetSize()
 }
 func (gi *GlobalInfo) StartGame(mode string) {
 	if err := glfw.Init(); err != nil {
