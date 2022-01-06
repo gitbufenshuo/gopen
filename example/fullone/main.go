@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"runtime"
 
@@ -73,10 +74,7 @@ func (mylogic *MyLogic) Start() {
 func (mylogic *MyLogic) Update() {
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyS)) {
 		mylogic.ClickButtonS.SwitchBling()
-		bouldlist := mylogic.ClickButtonS.Bounds()
-		for _, onebound := range bouldlist {
-			onebound.PrettyShow("onebound")
-		}
+
 	}
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyD)) {
 		mylogic.ClickButtonD.SwitchBling()
@@ -86,6 +84,15 @@ func (mylogic *MyLogic) Update() {
 	}
 	if mylogic.gi.CurFrame == 100 {
 		mylogic.ClickButtonS.Enable()
+	}
+	if mylogic.gi.CurFrame%5 == 0 {
+		xr, yr := mylogic.gi.InputMouseCtl.MouseXR, mylogic.gi.InputMouseCtl.MouseYR
+		fmt.Printf("    mousexr:%f mouseyr:%f\n", xr, yr)
+		//
+		bouldlist := mylogic.ClickButtonS.Bounds()
+		target := matmath.CreateVec2(xr, yr)
+		angle := matmath.Vec2BoundCheck(bouldlist, &target)
+		fmt.Println("matmath.Vec2BoundCheck", angle)
 	}
 }
 

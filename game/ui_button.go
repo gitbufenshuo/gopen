@@ -135,17 +135,26 @@ func (uibutton *UIButton) GetTransform() *common.Transform {
 	return uibutton.transform
 }
 
-func (uibutton *UIButton) Bounds() []matmath.Vec4 {
+func (uibutton *UIButton) Bounds() []*matmath.Vec2 {
 	modelMAT := uibutton.transform.WorldModel()
 	projectionMAT := uibutton.gi.UICanvas.Orthographic()
 	modelMAT.RightMul_InPlace(&projectionMAT)
 	vertices := uibutton.renderComponent.ModelR.Vertices
-	return []matmath.Vec4{
+	bound1 := matmath.CreateVec2FromVec4(
 		matmath.CreateVec4(vertices[0], vertices[1], vertices[2], 1).LeftMulMAT(modelMAT),
+	)
+	bound2 := matmath.CreateVec2FromVec4(
 		matmath.CreateVec4(vertices[5], vertices[6], vertices[7], 1).LeftMulMAT(modelMAT),
+	)
+
+	bound3 := matmath.CreateVec2FromVec4(
 		matmath.CreateVec4(vertices[10], vertices[11], vertices[12], 1).LeftMulMAT(modelMAT),
+	)
+
+	bound4 := matmath.CreateVec2FromVec4(
 		matmath.CreateVec4(vertices[15], vertices[16], vertices[17], 1).LeftMulMAT(modelMAT),
-	}
+	)
+	return []*matmath.Vec2{&bound1, &bound2, &bound3, &bound4}
 }
 
 func (uibutton *UIButton) Disable() {

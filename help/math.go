@@ -1,6 +1,7 @@
 package help
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 )
@@ -25,4 +26,11 @@ func Sin(input float32) float32 {
 }
 func Cos(input float32) float32 {
 	return float32(math.Cos(float64(input)))
+}
+func ArcCos(input float32) float32 {
+	fmt.Println("ArcCos", input)
+	return float32(math.Acos(float64(input)))
+}
+func Sqrt(input float32) float32 {
+	return float32(math.Sqrt(float64(input)))
 }

@@ -22,7 +22,7 @@ func TryLookAt() {
 	//////
 	objectPos.RightMul_InPlace(&viewMAT)
 
-	objectPos.PrettyShow()
+	objectPos.PrettyShow("")
 }
 
 func main() {

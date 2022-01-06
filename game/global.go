@@ -57,7 +57,6 @@ type GlobalInfo struct {
 	InputSystemManager    InputSystemI
 	UICanvas              *UICanvas
 	//
-	MouseXDiff, MouseYDiff float64
 	*GlobalFrameInfo
 }
 
@@ -150,7 +149,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		if gi.keyCallback != nil {
 			window.SetKeyCallback(gi.keyCallback)
 		}
-		gi.InputMouseCtl = NewInputMouse()
+		gi.InputMouseCtl = NewInputMouse(gi)
 		window.SetCursorPosCallback(gi.InputMouseCtl.CursorCallback)
 		window.SetMouseButtonCallback(gi.InputMouseCtl.MouseButtonCallback)
 		window.SetFramebufferSizeCallback(gi.FrameBufferSizeCallback)
@@ -198,8 +197,6 @@ func (gi *GlobalInfo) SetInputSystem(is InputSystemI) {
 }
 
 func (gi *GlobalInfo) OnFrameEnd() {
-	gi.MouseXDiff = 0
-	gi.MouseYDiff = 0
 }
 
 func (gi *GlobalInfo) SetCursorMode(mode int) {
@@ -251,6 +248,7 @@ func (gi *GlobalInfo) update() {
 	if gi.InputSystemManager != nil {
 		gi.InputSystemManager.Update()
 	}
+	gi.InputMouseCtl.Update()
 	for _, gb := range gi.gameobjects {
 		gb.Update() // call the gameobjects' Update function
 	}
