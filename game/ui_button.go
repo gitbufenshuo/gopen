@@ -137,7 +137,8 @@ func (uibutton *UIButton) GetTransform() *common.Transform {
 
 func (uibutton *UIButton) Bounds() []matmath.Vec4 {
 	modelMAT := uibutton.transform.WorldModel()
-
+	projectionMAT := uibutton.gi.UICanvas.Orthographic()
+	modelMAT.RightMul_InPlace(&projectionMAT)
 	vertices := uibutton.renderComponent.ModelR.Vertices
 	return []matmath.Vec4{
 		matmath.CreateVec4(vertices[0], vertices[1], vertices[2], 1).LeftMulMAT(modelMAT),
@@ -192,10 +193,10 @@ func (uibutton *UIButton) Enabled() bool {
 }
 
 func (uibutton *UIButton) Start() {
-	bound := uibutton.Bounds()
-	for idx := range bound {
-		bound[idx].PrettyShow()
-	}
+	// bound := uibutton.Bounds()
+	// for idx := range bound {
+	// 	bound[idx].PrettyShow()
+	// }
 }
 
 func (uibutton *UIButton) Update() {
@@ -211,14 +212,27 @@ func (uibutton *UIButton) OnDraw() {
 	//
 	{
 		// 根据 UISpec 得到真正要渲染的参数
+		widthDeform := uibutton.gi.GetWindowWidth() / uibutton.gi.UICanvas.DesignWidth
+		heightDeform := uibutton.gi.GetWindowHeight() / uibutton.gi.UICanvas.DesignHeight
 		// 1. pos
-		uibutton.transform.Postion.SetIndexValue(0, uibutton.UISpec.LocalPos.GetIndexValue(0))
-		uibutton.transform.Postion.SetIndexValue(1, uibutton.UISpec.LocalPos.GetIndexValue(1))
+		{
+			posx, posy := uibutton.UISpec.LocalPos.GetValue2()
+			posrx, posry := uibutton.UISpec.PosRelativity.GetValue2()
+			// 根据真实分辨率，计算新的位置
+			posxNew := posx * widthDeform
+			posyNew := posy * heightDeform
+			posxNew = (1-posrx)*posx + posrx*posxNew
+			posyNew = (1-posry)*posy + posry*posyNew
+			uibutton.transform.Postion.SetIndexValue(0, posxNew)
+			uibutton.transform.Postion.SetIndexValue(1, posyNew)
+		}
 		// 2. scale
-		uibutton.transform.Scale.SetValue2(
-			1+uibutton.UISpec.SizeRelativity.GetIndexValue(0)*(uibutton.gi.GetWindowWidth()/uibutton.gi.UICanvas.DesignWidth-1),
-			1+uibutton.UISpec.SizeRelativity.GetIndexValue(1)*(uibutton.gi.GetWindowHeight()/uibutton.gi.UICanvas.DesignHeight-1),
-		)
+		{
+			uibutton.transform.Scale.SetValue2(
+				1+uibutton.UISpec.SizeRelativity.GetIndexValue(0)*(widthDeform-1),
+				1+uibutton.UISpec.SizeRelativity.GetIndexValue(1)*(heightDeform-1),
+			)
+		}
 	}
 	modelMAT := uibutton.transform.Model()
 	proloc, mloc, lightloc, sortzloc := uibutton.shaderOP.UniformLoc("projection"),

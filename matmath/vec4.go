@@ -14,8 +14,8 @@ func CreateVec4(x, y, z, w float32) Vec4 {
 		data: [4]float32{x, y, z, w},
 	}
 }
-func (vec4 *Vec4) PrettyShow() {
-	fmt.Printf("(")
+func (vec4 *Vec4) PrettyShow(reason string) {
+	fmt.Printf("%s:(", reason)
 	for i := 0; i != 4; i++ {
 		fmt.Printf(" %v ", vec4.data[i])
 	}
@@ -27,6 +27,10 @@ func (vec4 *Vec4) GetIndexValue(index int) float32 {
 func (vec4 *Vec4) SetIndexValue(index int, value float32) {
 	vec4.data[index] = value
 }
+func (vec4 *Vec4) GetValue2() (float32, float32) {
+	return vec4.data[0], vec4.data[1]
+}
+
 func (vec4 *Vec4) SetValue2(value1, value2 float32) {
 	vec4.data[0] = value1
 	vec4.data[1] = value2

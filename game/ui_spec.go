@@ -19,4 +19,5 @@ type UISpec struct {
 	Width          float32      // 模型的宽度
 	Height         float32      // 模型的高度
 	SizeRelativity matmath.Vec4 // 尺寸相对性 默认是 0 ，就是没有相对性, 没有相对性就不会变形
+	PosRelativity  matmath.Vec4 // 位置相对性 默认是 0 ，就是没有相对性, 没有相对性就不会改变组件的世界pos
 }

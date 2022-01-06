@@ -73,14 +73,18 @@ func (mylogic *MyLogic) Start() {
 func (mylogic *MyLogic) Update() {
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyS)) {
 		mylogic.ClickButtonS.SwitchBling()
+		bouldlist := mylogic.ClickButtonS.Bounds()
+		for _, onebound := range bouldlist {
+			onebound.PrettyShow("onebound")
+		}
 	}
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyD)) {
 		mylogic.ClickButtonD.SwitchBling()
 	}
-	if mylogic.gi.CurFrame == 100 {
+	if mylogic.gi.CurFrame == 50 {
 		mylogic.ClickButtonS.Disable()
 	}
-	if mylogic.gi.CurFrame == 200 {
+	if mylogic.gi.CurFrame == 100 {
 		mylogic.ClickButtonS.Enable()
 	}
 }
@@ -137,10 +141,11 @@ func initLogic(gi *game.GlobalInfo) {
 			button := game.NewCustomButton(gi, game.ButtonConfig{
 				UISpec: game.UISpec{
 					Pivot:          matmath.CreateVec4(-1, -1, 0, 0),
-					LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
+					LocalPos:       matmath.CreateVec4(20, 200, 0, 0),
 					Width:          100,
 					Height:         30,
-					SizeRelativity: matmath.CreateVec4(1, 1, 0, 0),
+					SizeRelativity: matmath.CreateVec4(0, 0, 0, 0),
+					PosRelativity:  matmath.CreateVec4(0, 1, 0, 0),
 				},
 				Content:    "S键切换闪烁",
 				Bling:      true,                               // 是否闪烁
