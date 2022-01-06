@@ -1,7 +1,6 @@
 package help
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 )
@@ -21,6 +20,11 @@ func Mi2(input int) int {
 	}
 }
 
+func TheSame(one, two float32) bool {
+	a := one - two
+	return math.Abs(float64(a)) < 0.0001
+}
+
 func Sin(input float32) float32 {
 	return float32(math.Sin(float64(input)))
 }
@@ -28,7 +32,6 @@ func Cos(input float32) float32 {
 	return float32(math.Cos(float64(input)))
 }
 func ArcCos(input float32) float32 {
-	fmt.Println("ArcCos", input)
 	return float32(math.Acos(float64(input)))
 }
 func Sqrt(input float32) float32 {

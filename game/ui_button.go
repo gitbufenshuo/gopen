@@ -66,7 +66,6 @@ type UIButton struct {
 	shaderOP        *ShaderOP
 	bling           bool
 	customDraw      func(shaderOP *ShaderOP)
-
 	// a_model_loc     int32
 	// u_light_loc     int32
 	// u_sortz_loc     int32
@@ -177,6 +176,16 @@ func (uibutton *UIButton) SwitchBling() bool {
 	return uibutton.bling
 }
 
+// 强制闪烁
+func (uibutton *UIButton) EnableBling() {
+	uibutton.bling = true
+}
+
+// 禁用闪烁
+func (uibutton *UIButton) DisableBling() {
+	uibutton.bling = false
+}
+
 func (uibutton *UIButton) CheckPoint(x, y float32) bool {
 	// bounds := uibutton.Bounds()
 	//
@@ -202,13 +211,10 @@ func (uibutton *UIButton) Enabled() bool {
 }
 
 func (uibutton *UIButton) Start() {
-	// bound := uibutton.Bounds()
-	// for idx := range bound {
-	// 	bound[idx].PrettyShow()
-	// }
 }
 
 func (uibutton *UIButton) Update() {
+
 }
 func (uibutton *UIButton) AddUniform(name string) {
 	// fmt.Println("uibutton,", uibutton.renderComponent.ShaderR)
@@ -240,6 +246,12 @@ func (uibutton *UIButton) OnDraw() {
 			uibutton.transform.Scale.SetValue2(
 				1+uibutton.UISpec.SizeRelativity.GetIndexValue(0)*(widthDeform-1),
 				1+uibutton.UISpec.SizeRelativity.GetIndexValue(1)*(heightDeform-1),
+			)
+		}
+		// 3. rotate
+		{
+			uibutton.transform.Rotation.SetZ(
+				float32(uibutton.gi.CurFrame) / 2,
 			)
 		}
 	}
