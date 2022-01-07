@@ -36,6 +36,7 @@ func InitDefaultButton() {
 
 type ButtonConfig struct {
 	UISpec     UISpec
+	RC         *resource.RenderComponent // 如果不为空则这个覆盖ShaderText 和 TextureR
 	Content    string
 	ShaderText resource.ShaderText
 	TextureR   *resource.Texture
@@ -91,32 +92,40 @@ func NewCustomButton(gi *GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	}
 	uibutton.gi = gi
 	//
-	uibutton.renderComponent = new(resource.RenderComponent)
-	// model config
-	{
-		uibutton.renderComponent.ModelR = resource.NewQuadModel_BySpec(uibutton.UISpec.Pivot, uibutton.UISpec.Width, uibutton.UISpec.Height)
-		uibutton.renderComponent.ModelR.Upload()
-	}
-	// texture config
-	if buttonconfig.TextureR == nil {
-		uibutton.renderComponent.TextureR = buttonTextureDefault
-	} else {
-		uibutton.renderComponent.TextureR = buttonconfig.TextureR
-	}
-	// shader config
-	{
-		if buttonconfig.ShaderText.Vertex == "" {
-			uibutton.renderComponent.ShaderR = buttonShaderDefault
-		} else {
-			newShaderR := resource.NewShaderProgram()
-			newShaderR.ReadFromText(buttonconfig.ShaderText.Vertex, buttonconfig.ShaderText.Fragment)
-			newShaderR.Upload()
-			uibutton.renderComponent.ShaderR = newShaderR
-		}
+	if buttonconfig.RC != nil {
+		uibutton.renderComponent = buttonconfig.RC
 		uibutton.shaderOP = NewShaderOP()
 		uibutton.shaderOP.SetProgram(uibutton.renderComponent.ShaderR.ShaderProgram())
 		uibutton.shaderOP.IfUI()
+	} else {
+		uibutton.renderComponent = new(resource.RenderComponent)
+		// model config
+		{
+			uibutton.renderComponent.ModelR = resource.NewQuadModel_BySpec(uibutton.UISpec.Pivot, uibutton.UISpec.Width, uibutton.UISpec.Height)
+			uibutton.renderComponent.ModelR.Upload()
+		}
+		// texture config
+		if buttonconfig.TextureR == nil {
+			uibutton.renderComponent.TextureR = buttonTextureDefault
+		} else {
+			uibutton.renderComponent.TextureR = buttonconfig.TextureR
+		}
+		// shader config
+		{
+			if buttonconfig.ShaderText.Vertex == "" {
+				uibutton.renderComponent.ShaderR = buttonShaderDefault
+			} else {
+				newShaderR := resource.NewShaderProgram()
+				newShaderR.ReadFromText(buttonconfig.ShaderText.Vertex, buttonconfig.ShaderText.Fragment)
+				newShaderR.Upload()
+				uibutton.renderComponent.ShaderR = newShaderR
+			}
+			uibutton.shaderOP = NewShaderOP()
+			uibutton.shaderOP.SetProgram(uibutton.renderComponent.ShaderR.ShaderProgram())
+			uibutton.shaderOP.IfUI()
+		}
 	}
+
 	//
 	uibutton.transform = common.NewTransform()
 	//
