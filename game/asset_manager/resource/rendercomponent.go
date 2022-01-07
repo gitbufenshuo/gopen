@@ -5,3 +5,12 @@ type RenderComponent struct {
 	TextureR *Texture
 	ShaderR  *ShaderProgram
 }
+
+func NewRenderComponent(model *Model, texture *Texture, shader *ShaderProgram) *RenderComponent {
+	res := new(RenderComponent)
+	//
+	res.ModelR = model
+	res.TextureR = texture
+	res.ShaderR = shader
+	return res
+}

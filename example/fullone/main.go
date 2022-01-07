@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	"math/rand"
 	"runtime"
 
@@ -74,9 +75,6 @@ func (mylogic *MyLogic) Update() {
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyS)) {
 		mylogic.ClickButtonS.SwitchBling()
 	}
-	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyD)) {
-		mylogic.ClickButtonD.SwitchBling()
-	}
 	if mylogic.gi.CurFrame%5 == 0 {
 		xr, yr := mylogic.gi.InputMouseCtl.MouseXR, mylogic.gi.InputMouseCtl.MouseYR
 		//
@@ -130,28 +128,44 @@ func initLogic(gi *game.GlobalInfo) {
 	// mylogic begin
 	mylogic := NewMyLogic(gi)
 	gi.AddManageObject(mylogic)
-
 	{
 		// ui system
-		tr := resource.NewTexture()
-		tr.GenRandom(8, 8)
-		// tr.ReadFromFile("ui/go.png")
-		// tr.GenFont("火水", gi.FontConfig)
-		tr.Upload()
-		{
+		rc := new(resource.RenderComponent)
+		buttonuispec := game.UISpec{
+			Pivot:          matmath.CreateVec4(-1, -1, 0, 0),
+			LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
+			Width:          100,
+			Height:         30,
+			SizeRelativity: matmath.CreateVec4(0, 0, 0, 0),
+			PosRelativity:  matmath.CreateVec4(0, 0, 0, 0),
+		}
+		rc.ModelR = resource.NewQuadModel_BySpec(buttonuispec.Pivot, buttonuispec.Width, buttonuispec.Height)
+		rc.ModelR.Upload()
+		// rc.TextureR = tr
+		newShaderR := resource.NewShaderProgram()
+		newShaderR.ReadFromText(resource.ShaderUIButton_Bling_Text.Vertex, resource.ShaderUIButton_Bling_Text.Fragment)
+		newShaderR.Upload()
+		rc.ShaderR = newShaderR
+		tableLayout := game.NewUILayoutTable(gi)
+		tableLayout.ElementWidth = 110
+		tableLayout.ElementHeight = 35
+		tableLayout.Rows = 3
+		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-100, 100, 0, 0)
+		var buttonlist []*game.UIButton
+		for idx := 0; idx != 10; idx++ {
+			tr := resource.NewTexture()
+			tr.GenPure(1, 1, color.RGBA{0xbb, 0xbb, 0xbb, 0xbb})
+			// tr.GenRandom(8, 8)
+			// tr.ReadFromFile("ui/go.png")
+			// tr.GenFont("火水", gi.FontConfig)
+			tr.Upload()
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				UISpec: game.UISpec{
-					Pivot:          matmath.CreateVec4(-1, -1, 0, 0),
-					LocalPos:       matmath.CreateVec4(20, 200, 0, 0),
-					Width:          100,
-					Height:         30,
-					SizeRelativity: matmath.CreateVec4(0, 0, 0, 0),
-					PosRelativity:  matmath.CreateVec4(0, 1, 0, 0),
-				},
-				Content:    "S键切换闪烁",
-				Bling:      true,                               // 是否闪烁
-				SortZ:      0.01,                               // 渲染层级，越小的，越靠近人眼
-				ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader
+				UISpec:  buttonuispec,
+				Content: "S键切换闪烁",
+				Bling:   false, // 是否闪烁
+				SortZ:   0.01,  // 渲染层级，越小的，越靠近人眼
+				// ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader
+				RC: resource.NewRenderComponent(rc.ModelR, tr, rc.ShaderR),
 				CustomDraw: func(shaderOP *game.ShaderOP) { // 渲染钩子函数，做一些自己的处理
 					blingxloc := shaderOP.UniformLoc("blingx")
 					gl.Uniform1f(blingxloc, rand.Float32())
@@ -160,34 +174,11 @@ func initLogic(gi *game.GlobalInfo) {
 			button.AddUniform("blingx") // 自己提供的shader，需要自己增加uniform
 			button.ChangeTexture(tr)    // 运行时可以切换 texture
 			gi.AddUIObject(button)
+			buttonlist = append(buttonlist, button)
 			mylogic.ClickButtonS = button
-
 		}
-		{
-			button := game.NewCustomButton(gi, game.ButtonConfig{
-				UISpec: game.UISpec{
-					Pivot:    matmath.CreateVec4(0, 0, 0, 0),
-					LocalPos: matmath.CreateVec4(0, 0, 0, 0),
-					Width:    30,
-					Height:   10,
-				},
-				Content:    "D键切换闪烁",
-				Bling:      true,
-				SortZ:      0.02,
-				ShaderText: resource.ShaderUIButton_Bling_Text,
-				CustomDraw: func(shaderOP *game.ShaderOP) {
-					blingxloc := shaderOP.UniformLoc("blingx")
-					gl.Uniform1f(blingxloc, rand.Float32())
-				},
-			})
-			button.AddUniform("blingx")
-			button.ChangeTexture(tr)
-			// bt := button.GetTransform()
-			// bt.Postion.SetIndexValue(0, -0.5)
-			// bt.Postion.SetIndexValue(1, -0.5)
-			gi.AddUIObject(button)
-			mylogic.ClickButtonD = button
-		}
+		tableLayout.Elements = buttonlist
+		tableLayout.Arrange()
 	}
 }
 

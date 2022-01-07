@@ -103,6 +103,21 @@ func (t *Texture) GenRandom(width, height int32) {
 	}
 }
 
+func (t *Texture) GenPure(width, height int32, color color.RGBA) {
+
+	t.width = width
+	t.height = height
+	t.Pixels = make([]uint8, width*height*4)
+	for widx := int32(0); widx != width; widx++ {
+		for hidx := int32(0); hidx != height; hidx++ {
+			t.Pixels[((hidx*width*4)+widx*4)+0] = color.R
+			t.Pixels[((hidx*width*4)+widx*4)+1] = color.G
+			t.Pixels[((hidx*width*4)+widx*4)+2] = color.B
+			t.Pixels[((hidx*width*4)+widx*4)+3] = color.A
+		}
+	}
+}
+
 func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
 
 	rawwidth := fontconfig.CalcWidth(content)

@@ -142,6 +142,9 @@ func (uibutton *UIButton) ChangeTexture(textureR *resource.Texture) {
 func (uibutton *UIButton) GetTransform() *common.Transform {
 	return uibutton.transform
 }
+func (uibutton *UIButton) SetParent(otherTrans *common.Transform) {
+	uibutton.transform.SetParent(otherTrans)
+}
 
 func (uibutton *UIButton) Bounds() []*matmath.Vec2 {
 	modelMAT := uibutton.transform.WorldModel()
@@ -162,6 +165,10 @@ func (uibutton *UIButton) Bounds() []*matmath.Vec2 {
 	bound4 := matmath.CreateVec2FromVec4(
 		matmath.CreateVec4(vertices[15], vertices[16], vertices[17], 1).LeftMulMAT(modelMAT),
 	)
+	// bound1.PrettyShow("1")
+	// bound2.PrettyShow(" 2")
+	// bound3.PrettyShow("  3")
+	// bound4.PrettyShow("   4")
 	return []*matmath.Vec2{&bound1, &bound2, &bound3, &bound4}
 }
 
@@ -252,19 +259,21 @@ func (uibutton *UIButton) OnDraw() {
 		}
 		// 2. scale
 		{
+			scalex := 1 + uibutton.UISpec.SizeRelativity.GetIndexValue(0)*(widthDeform-1)
+			scaley := 1 + uibutton.UISpec.SizeRelativity.GetIndexValue(1)*(heightDeform-1)
 			uibutton.transform.Scale.SetValue2(
-				1+uibutton.UISpec.SizeRelativity.GetIndexValue(0)*(widthDeform-1),
-				1+uibutton.UISpec.SizeRelativity.GetIndexValue(1)*(heightDeform-1),
+				scalex,
+				scaley,
 			)
 		}
 		// 3. rotate
 		{
-			uibutton.transform.Rotation.SetZ(
-				float32(uibutton.gi.CurFrame) / 2,
-			)
+			// uibutton.transform.Rotation.SetZ(
+			// 	float32(uibutton.gi.CurFrame) / 2,
+			// )
 		}
 	}
-	modelMAT := uibutton.transform.Model()
+	modelMAT := uibutton.transform.WorldModel()
 	proloc, mloc, lightloc, sortzloc := uibutton.shaderOP.UniformLoc("projection"),
 		uibutton.shaderOP.UniformLoc("model"),
 		uibutton.shaderOP.UniformLoc("light"),
