@@ -132,7 +132,7 @@ func initLogic(gi *game.GlobalInfo) {
 		// ui system
 		rc := new(resource.RenderComponent)
 		buttonuispec := game.UISpec{
-			Pivot:          matmath.CreateVec4(-1, -1, 0, 0),
+			Pivot:          matmath.CreateVec4(-1, 1, 0, 0),
 			LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
 			Width:          100,
 			Height:         30,
@@ -150,7 +150,8 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.ElementWidth = 110
 		tableLayout.ElementHeight = 35
 		tableLayout.Rows = 3
-		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-100, 100, 0, 0)
+		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-400, 300, 0, 0)
+		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(1, 1, 0, 0)
 		var buttonlist []*game.UIButton
 		for idx := 0; idx != 10; idx++ {
 			tr := resource.NewTexture()
@@ -177,8 +178,9 @@ func initLogic(gi *game.GlobalInfo) {
 			buttonlist = append(buttonlist, button)
 			mylogic.ClickButtonS = button
 		}
-		tableLayout.Elements = buttonlist
+		tableLayout.SetEles(buttonlist)
 		tableLayout.Arrange()
+		gi.AddManageObject(tableLayout)
 	}
 }
 
