@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"math/rand"
 	"runtime"
@@ -150,7 +151,7 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.ElementWidth = 110
 		tableLayout.ElementHeight = 35
 		tableLayout.Rows = 3
-		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-400, 300, 0, 0)
+		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-200, 150, 0, 0)
 		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(1, 1, 0, 0)
 		var buttonlist []*game.UIButton
 		for idx := 0; idx != 10; idx++ {
@@ -161,8 +162,9 @@ func initLogic(gi *game.GlobalInfo) {
 			// tr.GenFont("火水", gi.FontConfig)
 			tr.Upload()
 			button := game.NewCustomButton(gi, game.ButtonConfig{
-				UISpec:  buttonuispec,
-				Content: "S键切换闪烁",
+				UISpec: buttonuispec,
+
+				Content: fmt.Sprintf("S键切换闪烁%d", idx),
 				Bling:   false, // 是否闪烁
 				SortZ:   0.01,  // 渲染层级，越小的，越靠近人眼
 				// ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader

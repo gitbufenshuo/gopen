@@ -12,7 +12,6 @@ import (
 
 	"github.com/gitbufenshuo/gopen/help"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"github.com/golang/freetype"
 )
 
 type Texture struct {
@@ -118,54 +117,13 @@ func (t *Texture) GenPure(width, height int32, color color.RGBA) {
 	}
 }
 
-func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) float32 {
-
-	rawwidth := fontconfig.CalcWidth(content)
-	modiWidth := help.Mi2(rawwidth)
-	t.width = int32(modiWidth)
-	t.height = 32
-
-	fmt.Printf("TextWidth:%d TextHeight:%d\n", t.width, t.height)
-
-	textBg := color.RGBA{0xdd, 0xdd, 0xdd, 0x22}
-	img := image.NewRGBA(image.Rect(0, 0, int(t.width), int(t.height)))
-	for widx := 0; widx < int(t.width); widx++ {
-		for hidx := 0; hidx < int(t.height); hidx++ {
-			img.Set(widx, hidx, textBg)
-		}
-	}
-
-	c := freetype.NewContext()
-	c.SetFontSize(30)
-	c.SetFont(fontconfig.TextFont)
-	c.SetClip(img.Bounds())
-	c.SetDst(img)
-	c.SetSrc(image.Black)
-
-	pt := freetype.Pt(1, 29) // 字出现的位置
-	for _, contD := range content {
-		if string(contD) == " " {
-			pt.X += 5 << 6
-
-			continue
-		}
-		pt, _ = c.DrawString(string(contD), pt)
-		pt.X += 2 << 6
-	}
-	fmt.Println("realtext", pt.X.Floor(), pt.Y.Floor())
-
+func (t *Texture) GenFont(content string, fontconfig *help.FontConfig) (float32, float32, float32) {
+	img, rwidth := fontconfig.RenderText(content)
 	t.Pixels = img.Pix
-	if true {
-
-		for row := 0; row != int(t.height/2); row++ {
-			for col := 0; col != int(t.width*4); col++ {
-				upIndex := int(t.width*4)*row + col
-				downIndex := int(t.width*4)*(int(t.height)-1-row) + col
-				t.Pixels[upIndex], t.Pixels[downIndex] = t.Pixels[downIndex], t.Pixels[upIndex]
-			}
-		}
-	}
-	return float32(t.width)
+	t.width = int32(img.Bounds().Dx())
+	t.height = int32(img.Bounds().Dy())
+	fmt.Println("(t *Texture) GenFont", t.width, t.height)
+	return float32(rwidth), float32(t.height), float32(t.width)
 }
 
 // to gpu

@@ -24,12 +24,11 @@ var (
 	size     = flag.Float64("size", 15, "font size in points")
 	spacing  = flag.Float64("spacing", 1.5, "line spacing (e.g. 2 means double spaced)")
 	wonb     = flag.Bool("whiteonblack", false, "white text on a black background")
-	text     = string("天地玄黄宇宙洪荒111")
+	text     = string("../.,;[]天地玄黄宇宙洪荒111")
 )
 
 func CalcWidth(face font.Face, content string) int {
 	// Calculate the widths and print to image
-	var runeidx int
 	var widthnow int
 	for i, x := range text {
 		awidth, _ := face.GlyphAdvance(rune(x))
@@ -37,10 +36,6 @@ func CalcWidth(face font.Face, content string) int {
 		ptx := widthnow
 		widthnow += iwidthf + 2
 		fmt.Printf("--idx:%d  widthf:%+v ptx:%d \n", i, iwidthf, ptx)
-
-		// pt := freetype.Pt(ptx, 128)
-		// c.DrawString(string(x), pt)
-		runeidx++
 	}
 	return widthnow
 }
@@ -61,7 +56,7 @@ func main() {
 
 	// Freetype context
 	fg, bg := image.Black, image.White
-	rgba := image.NewRGBA(image.Rect(0, 0, 100, 200))
+	rgba := image.NewRGBA(image.Rect(0, 0, 200, 32))
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 	c := freetype.NewContext()
 	c.SetDPI(*dpi)
@@ -95,27 +90,28 @@ func main() {
 	// Truetype stuff
 	opts := truetype.Options{}
 	opts.Size = *size
+	opts.DPI = *dpi
 	face := truetype.NewFace(f, &opts)
 
 	// Calculate the widths and print to image
-	var runeidx int
 	var widthnow int
-	for i, x := range text {
+	for _, x := range text {
 		awidth, ok := face.GlyphAdvance(rune(x))
+		bounds, _, _ := face.GlyphBounds(rune(x))
 		if ok != true {
 			log.Println(err)
 			return
 		}
 		iwidthf := int(float64(awidth) / 64)
 		ptx := widthnow
-		widthnow += iwidthf + 2
-		fmt.Printf("--idx:%d  widthf:%+v ptx:%d \n", i, iwidthf, ptx)
-
-		pt := freetype.Pt(ptx, 128)
+		pty := 32 - bounds.Max.Y.Ceil()
+		widthnow += iwidthf
+		fmt.Printf("[dpi:%.1f size:%.1f] char:%s widthf:%+v \n", *dpi, *size, string(x), iwidthf)
+		fmt.Printf("ptx, pty : %d %d miny:%d maxy:%d\n", ptx, pty, bounds.Min.Y.Ceil(), bounds.Max.Y.Ceil())
+		pt := freetype.Pt(ptx, pty)
 		c.DrawString(string(x), pt)
-		runeidx++
 	}
-
+	// return
 	// Save that RGBA image to disk.
 	outFile, err := os.Create("out.png")
 	if err != nil {

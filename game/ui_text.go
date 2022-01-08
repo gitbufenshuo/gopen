@@ -6,24 +6,11 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
+	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 const pixration float32 = 0.02
-
-var textModelDefault *resource.Model
-var InitDefaultTextOK bool
-
-func InitDefaultText() {
-	if InitDefaultTextOK {
-		return
-	}
-	InitDefaultTextOK = true
-	{
-		textModelDefault = resource.NewQuadModel_LeftALign()
-		textModelDefault.Upload()
-	}
-}
 
 type UIText struct {
 	gi              *GlobalInfo
@@ -38,7 +25,6 @@ type UIText struct {
 }
 
 func NewUIText(gi *GlobalInfo) *UIText {
-	InitDefaultText()
 	uitext := new(UIText)
 	uitext.enabled = true
 	uitext.gi = gi
@@ -46,7 +32,7 @@ func NewUIText(gi *GlobalInfo) *UIText {
 	uitext.id = rand.Int()
 	/////////////////////////
 	uitext.renderComponent = new(resource.RenderComponent)
-	uitext.renderComponent.ModelR = textModelDefault
+
 	uitext.renderComponent.TextureR = resource.NewTexture()
 	{
 		uitext.renderComponent.ShaderR = buttonShaderDefault
@@ -93,21 +79,20 @@ func (uitext *UIText) Update() {
 }
 
 func (uitext *UIText) OnDraw() {
-	// fmt.Println("uibutton,", uibutton.renderComponent.ShaderR)
 	uitext.renderComponent.ShaderR.Active()
 	uitext.renderComponent.ModelR.Active()
 	uitext.renderComponent.TextureR.Active()
-	mloc, lightloc, sortzloc := uitext.shaderOP.UniformLoc("model"),
+	modelMAT := uitext.transform.WorldModel()
+
+	proloc, mloc, lightloc, sortzloc := uitext.shaderOP.UniformLoc("projection"),
+		uitext.shaderOP.UniformLoc("model"),
 		uitext.shaderOP.UniformLoc("light"),
 		uitext.shaderOP.UniformLoc("sortz")
-
-	//
-	modelt := uitext.transform.WorldModel()
-	gl.UniformMatrix4fv(mloc, 1, false, modelt.Address())
+	orProjection := uitext.gi.UICanvas.Orthographic()
+	gl.UniformMatrix4fv(proloc, 1, false, orProjection.Address())
+	gl.UniformMatrix4fv(mloc, 1, false, modelMAT.Address())
 	gl.Uniform1f(lightloc, 1)
-	gl.Uniform1f(sortzloc, 0.0005)
-	// gl.Uniform1f(whrloc, uitext.gi.GetWHR())
-
+	gl.Uniform1f(sortzloc, uitext.sortz)
 }
 
 func (uitext *UIText) OnDrawFinish() {
@@ -125,11 +110,20 @@ func (uitext *UIText) SetText(content string) {
 	// re - gen - texture
 	tr := uitext.renderComponent.TextureR
 	tr.Clear()
-	pixWidth := tr.GenFont(content, uitext.gi.FontConfig)
+	width, height, outterWidth := tr.GenFont(content, uitext.gi.FontConfig)
 	tr.Upload()
+	if uitext.renderComponent.ModelR != nil {
+		uitext.renderComponent.ModelR.Clear()
+	}
+	modelr := resource.NewUITextModel_BySpec(
+		matmath.CreateVec4(-1, 1, 0, 0),
+		width, height, outterWidth,
+	)
+	modelr.Upload()
+	uitext.renderComponent.ModelR = modelr
 	// re - scale - model
-	uitext.transform.Scale.SetIndexValue(0, float32(pixWidth/30)*pixration) // 字图每16像素，是屏幕的1/20
-	uitext.transform.Scale.SetIndexValue(1, pixration*1.4)
+	uitext.transform.Scale.SetIndexValue(0, 0.5) // 字图每16像素，是屏幕的1/20
+	uitext.transform.Scale.SetIndexValue(1, 0.5)
 }
 
 func (uitext *UIText) SortZ() float32 {

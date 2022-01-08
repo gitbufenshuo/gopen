@@ -56,3 +56,27 @@ func NewQuadModel_BySpec(pivot matmath.Vec4, width, height float32) *Model {
 
 	return res
 }
+
+func NewUITextModel_BySpec(pivot matmath.Vec4, width, height, outterWidth float32) *Model {
+	res := NewModel()
+	res.ReadFromContent(modelQuadJSON)
+	xoffset := -(width / 2) * pivot.GetIndexValue(0)
+	yoffset := -(height / 2) * pivot.GetIndexValue(1)
+	for idx := 0; idx != 4; idx++ {
+		if res.Vertices[idx*5+0] < 0 {
+			res.Vertices[idx*5+0] = -width / 2
+		} else {
+			res.Vertices[idx*5+0] = width / 2
+		}
+		res.Vertices[idx*5+0] += xoffset
+		if res.Vertices[idx*5+1] < 0 {
+			res.Vertices[idx*5+1] = -height / 2
+		} else {
+			res.Vertices[idx*5+1] = height / 2
+		}
+		res.Vertices[idx*5+1] += yoffset
+	}
+	res.Vertices[1*5+3] = width / outterWidth
+	res.Vertices[2*5+3] = width / outterWidth
+	return res
+}

@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/game/common"
 )
 
@@ -109,7 +107,6 @@ func (uilt *UILayoutTable) arrangeByRow() {
 		ty = offy - float32(idx/uilt.Rows)*uilt.ElementHeight
 		tx = offx + float32(idx%uilt.Rows)*uilt.ElementWidth
 		oneele.UISpec.LocalPos.SetValue2(tx, ty)
-		fmt.Println(offx, offy)
 	}
 }
 
