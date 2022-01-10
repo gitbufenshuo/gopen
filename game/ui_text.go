@@ -20,6 +20,7 @@ type UIText struct {
 	transform       *common.Transform
 	shaderOP        *ShaderOP
 	sortz           float32
+	mouseHover      bool
 	//
 	content string
 }
@@ -54,6 +55,15 @@ func (uitext *UIText) ID_sg(_id ...int) int {
 	}
 	uitext.id = _id[0]
 	return uitext.id
+}
+func (uitext *UIText) HoverCheck() bool {
+	return false
+}
+func (uitext *UIText) HoverSet(ing bool) {
+	uitext.mouseHover = ing
+}
+func (uitext *UIText) Bounds() []*matmath.Vec2 {
+	return nil
 }
 
 func (uitext *UIText) GetRenderComponent() *resource.RenderComponent {

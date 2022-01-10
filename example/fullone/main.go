@@ -76,17 +76,6 @@ func (mylogic *MyLogic) Update() {
 	if mylogic.gi.InputSystemManager.KeyUp(int(glfw.KeyS)) {
 		mylogic.ClickButtonS.SwitchBling()
 	}
-	if mylogic.gi.CurFrame%5 == 0 {
-		xr, yr := mylogic.gi.InputMouseCtl.MouseXR, mylogic.gi.InputMouseCtl.MouseYR
-		//
-		bouldlist := mylogic.ClickButtonS.Bounds()
-		target := matmath.CreateVec2(xr, yr)
-		if matmath.Vec2BoundCheck(bouldlist, &target) {
-			mylogic.ClickButtonS.EnableBling()
-		} else {
-			mylogic.ClickButtonS.DisableBling()
-		}
-	}
 }
 
 func NewMyLogic(gi *game.GlobalInfo) *MyLogic {
@@ -136,7 +125,7 @@ func initLogic(gi *game.GlobalInfo) {
 			Pivot:          matmath.CreateVec4(-1, 0, 0, 0),
 			LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
 			Width:          100,
-			Height:         30,
+			Height:         100,
 			SizeRelativity: matmath.CreateVec4(0, 0, 0, 0),
 			PosRelativity:  matmath.CreateVec4(0, 0, 0, 0),
 		}
@@ -148,8 +137,8 @@ func initLogic(gi *game.GlobalInfo) {
 		newShaderR.Upload()
 		rc.ShaderR = newShaderR
 		tableLayout := game.NewUILayoutTable(gi)
-		tableLayout.ElementWidth = 110
-		tableLayout.ElementHeight = 35
+		tableLayout.ElementWidth = 101
+		tableLayout.ElementHeight = 101
 		tableLayout.Rows = 3
 		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-200, 150, 0, 0)
 		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(1, 1, 0, 0)

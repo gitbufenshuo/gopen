@@ -38,6 +38,7 @@ type GlobalInfo struct {
 	gameobjects           map[int]GameObjectI
 	manageobjects         map[int]ManageObjectI
 	uiobjects             map[int]UIObjectI
+	sorted_uiobjects      []UIObjectI
 	nowID                 int
 	nowMD                 int
 	nowUD                 int
@@ -256,8 +257,36 @@ func (gi *GlobalInfo) update() {
 	for _, mb := range gi.manageobjects {
 		mb.Update() // call the manageobjects' Update function
 	}
-	for _, ub := range gi.uiobjects {
-		ub.Update()
+	{
+		if len(gi.sorted_uiobjects) != len(gi.uiobjects) {
+			gi.sorted_uiobjects = make([]UIObjectI, len(gi.uiobjects))
+		}
+		var appendidx int
+		for _, ub := range gi.uiobjects {
+			gi.sorted_uiobjects[appendidx] = ub
+			appendidx++
+		}
+		sort.Slice(gi.sorted_uiobjects, func(i, j int) bool {
+			return gi.sorted_uiobjects[i].SortZ() > gi.sorted_uiobjects[j].SortZ()
+		})
+		xr, yr := gi.InputMouseCtl.MouseXR, gi.InputMouseCtl.MouseYR
+		var hoverAlready bool
+		for beginIndex := len(gi.sorted_uiobjects) - 1; beginIndex >= 0; beginIndex-- {
+			gi.sorted_uiobjects[beginIndex].Update()
+			if !hoverAlready {
+				if gi.sorted_uiobjects[beginIndex].HoverCheck() {
+					//
+					bouldlist := gi.sorted_uiobjects[beginIndex].Bounds()
+					target := matmath.CreateVec2(xr, yr)
+					if matmath.Vec2BoundCheck(bouldlist, &target) {
+						hoverAlready = true
+						gi.sorted_uiobjects[beginIndex].HoverSet(true)
+					} else {
+						gi.sorted_uiobjects[beginIndex].HoverSet(false)
+					}
+				}
+			}
+		}
 	}
 	gi.dealWithTime(2)
 }
@@ -279,16 +308,7 @@ func (gi *GlobalInfo) draw() {
 	}
 	// ui system
 	{
-		var aluiob []UIObjectI = make([]UIObjectI, len(gi.uiobjects))
-		var appendidx int
-		for _, ub := range gi.uiobjects {
-			aluiob[appendidx] = ub
-			appendidx++
-		}
-		sort.Slice(aluiob, func(i, j int) bool {
-			return aluiob[i].SortZ() > aluiob[j].SortZ()
-		})
-		for _, ub := range aluiob {
+		for _, ub := range gi.sorted_uiobjects {
 			if !ub.Enabled() {
 				continue
 			}

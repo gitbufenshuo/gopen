@@ -4,6 +4,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
+	"github.com/gitbufenshuo/gopen/matmath"
 )
 
 // the common gameobject Interface
@@ -36,4 +37,8 @@ type UIObjectI interface {
 	OnDraw()
 	OnDrawFinish()
 	SortZ() float32
+	//
+	HoverCheck() bool // 是否需要监听鼠标悬停
+	Bounds() []*matmath.Vec2
+	HoverSet(ing bool) // 设置是否鼠标 hover
 }

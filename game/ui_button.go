@@ -70,7 +70,8 @@ type UIButton struct {
 	// a_model_loc     int32
 	// u_light_loc     int32
 	// u_sortz_loc     int32
-	sortz float32
+	sortz      float32
+	mouseHover bool
 	//
 	uitext *UIText
 }
@@ -144,6 +145,12 @@ func (uibutton *UIButton) GetTransform() *common.Transform {
 }
 func (uibutton *UIButton) SetParent(otherTrans *common.Transform) {
 	uibutton.transform.SetParent(otherTrans)
+}
+func (uibutton *UIButton) HoverCheck() bool {
+	return true
+}
+func (uibutton *UIButton) HoverSet(ing bool) {
+	uibutton.mouseHover = ing
 }
 
 func (uibutton *UIButton) Bounds() []*matmath.Vec2 {
@@ -230,7 +237,7 @@ func (uibutton *UIButton) Start() {
 }
 
 func (uibutton *UIButton) Update() {
-
+	uibutton.bling = uibutton.mouseHover
 }
 func (uibutton *UIButton) AddUniform(name string) {
 	// fmt.Println("uibutton,", uibutton.renderComponent.ShaderR)
