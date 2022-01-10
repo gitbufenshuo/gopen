@@ -27,7 +27,7 @@ func (fc *FontConfig) RenderText(content string) (*image.RGBA, int) {
 	imageWidth := Mi2(rawwidth)
 	imageHeight := 32
 
-	textBg := color.RGBA{0xdd, 0xdd, 0x11, 0x22}
+	textBg := color.RGBA{0x00, 0xdd, 0x11, 0x88}
 	img := image.NewRGBA(image.Rect(0, 0, int(imageWidth), int(imageHeight)))
 	for widx := 0; widx < int(imageWidth); widx++ {
 		for hidx := 0; hidx < int(imageHeight); hidx++ {

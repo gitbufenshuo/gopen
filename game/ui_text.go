@@ -116,13 +116,13 @@ func (uitext *UIText) SetText(content string) {
 		uitext.renderComponent.ModelR.Clear()
 	}
 	modelr := resource.NewUITextModel_BySpec(
-		matmath.CreateVec4(-1, 1, 0, 0),
+		matmath.CreateVec4(-1, 0, 0, 0),
 		width, height, outterWidth,
 	)
 	modelr.Upload()
 	uitext.renderComponent.ModelR = modelr
 	// re - scale - model
-	uitext.transform.Scale.SetIndexValue(0, 0.5) // 字图每16像素，是屏幕的1/20
+	uitext.transform.Scale.SetIndexValue(0, 0.5)
 	uitext.transform.Scale.SetIndexValue(1, 0.5)
 }
 

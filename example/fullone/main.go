@@ -133,7 +133,7 @@ func initLogic(gi *game.GlobalInfo) {
 		// ui system
 		rc := new(resource.RenderComponent)
 		buttonuispec := game.UISpec{
-			Pivot:          matmath.CreateVec4(-1, 1, 0, 0),
+			Pivot:          matmath.CreateVec4(-1, 0, 0, 0),
 			LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
 			Width:          100,
 			Height:         30,
