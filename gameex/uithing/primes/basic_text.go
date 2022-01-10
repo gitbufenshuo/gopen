@@ -1,9 +1,10 @@
-package game
+package primes
 
 import (
 	"fmt"
 	"math/rand"
 
+	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
@@ -12,20 +13,31 @@ import (
 
 const pixration float32 = 0.02
 
+var shaderDefault *resource.ShaderProgram
+
+func STInit() {
+	if shaderDefault == nil {
+		shaderDefault = resource.NewShaderProgram()
+		shaderDefault.ReadFromText(resource.ShaderUIButtonText.Vertex, resource.ShaderUIButtonText.Fragment)
+		shaderDefault.Upload()
+	}
+}
+
 type UIText struct {
-	gi              *GlobalInfo
+	gi              *game.GlobalInfo
 	id              int
 	renderComponent *resource.RenderComponent
 	enabled         bool
 	transform       *common.Transform
-	shaderOP        *ShaderOP
+	shaderOP        *game.ShaderOP
 	sortz           float32
 	mouseHover      bool
 	//
 	content string
 }
 
-func NewUIText(gi *GlobalInfo) *UIText {
+func NewUIText(gi *game.GlobalInfo) *UIText {
+	STInit()
 	uitext := new(UIText)
 	uitext.enabled = true
 	uitext.gi = gi
@@ -36,8 +48,8 @@ func NewUIText(gi *GlobalInfo) *UIText {
 
 	uitext.renderComponent.TextureR = resource.NewTexture()
 	{
-		uitext.renderComponent.ShaderR = buttonShaderDefault
-		uitext.shaderOP = NewShaderOP()
+		uitext.renderComponent.ShaderR = shaderDefault
+		uitext.shaderOP = game.NewShaderOP()
 		uitext.shaderOP.SetProgram(uitext.renderComponent.ShaderR.ShaderProgram())
 		uitext.shaderOP.IfUI()
 	}
@@ -107,6 +119,9 @@ func (uitext *UIText) OnDraw() {
 
 func (uitext *UIText) OnDrawFinish() {
 
+}
+func (uitext *UIText) SetParent(parent *common.Transform) {
+	uitext.transform.SetParent(parent)
 }
 
 //

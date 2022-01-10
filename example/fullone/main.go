@@ -11,6 +11,8 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/gameex/uithing/uibuttons/pk_basic_button"
+
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
@@ -63,8 +65,8 @@ func myInit(gi *game.GlobalInfo) {
 type MyLogic struct {
 	gi *game.GlobalInfo
 	*gameobjects.NilManageObject
-	ClickButtonS *game.UIButton
-	ClickButtonD *game.UIButton
+	ClickButtonS *pk_basic_button.UIButton
+	ClickButtonD *pk_basic_button.UIButton
 }
 
 func (mylogic *MyLogic) Start() {
@@ -142,7 +144,7 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.Rows = 3
 		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-200, 150, 0, 0)
 		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(1, 1, 0, 0)
-		var buttonlist []*game.UIButton
+		var buttonlist []game.UICanBeLayout
 		for idx := 0; idx != 10; idx++ {
 			tr := resource.NewTexture()
 			tr.GenPure(1, 1, color.RGBA{0xbb, 0xbb, 0xbb, 0xbb})
@@ -150,7 +152,7 @@ func initLogic(gi *game.GlobalInfo) {
 			// tr.ReadFromFile("ui/go.png")
 			// tr.GenFont("火水", gi.FontConfig)
 			tr.Upload()
-			button := game.NewCustomButton(gi, game.ButtonConfig{
+			button := pk_basic_button.NewCustomButton(gi, pk_basic_button.ButtonConfig{
 				UISpec: buttonuispec,
 
 				Content: fmt.Sprintf("S键切换闪烁%d", idx),

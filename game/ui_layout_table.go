@@ -15,7 +15,7 @@ type UILayoutTable struct {
 	Rows          int     // 一行不得超过
 	Cols          int     // 一列不得超过
 	//
-	Elements []*UIButton //
+	Elements []UICanBeLayout //
 }
 
 func NewUILayoutTable(gi *GlobalInfo) *UILayoutTable {
@@ -75,7 +75,7 @@ func (uilt *UILayoutTable) Update() {
 
 }
 
-func (uilt *UILayoutTable) SetEles(eles []*UIButton) {
+func (uilt *UILayoutTable) SetEles(eles []UICanBeLayout) {
 	for _, onebutton := range eles {
 		onebutton.GetTransform().SetParent(uilt.transform)
 	}
@@ -106,7 +106,7 @@ func (uilt *UILayoutTable) arrangeByRow() {
 	for idx, oneele := range uilt.Elements {
 		ty = offy - float32(idx/uilt.Rows)*uilt.ElementHeight
 		tx = offx + float32(idx%uilt.Rows)*uilt.ElementWidth
-		oneele.UISpec.LocalPos.SetValue2(tx, ty)
+		oneele.GetUISpec().LocalPos.SetValue2(tx, ty)
 	}
 }
 
@@ -118,6 +118,6 @@ func (uilt *UILayoutTable) arrangeByCol() {
 	for idx, oneele := range uilt.Elements {
 		tx = offx + float32(idx/uilt.Cols)*uilt.ElementWidth
 		ty = offy - float32(idx%uilt.Cols)*uilt.ElementHeight
-		oneele.UISpec.LocalPos.SetValue2(tx, ty)
+		oneele.GetUISpec().LocalPos.SetValue2(tx, ty)
 	}
 }

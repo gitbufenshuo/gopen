@@ -32,6 +32,7 @@ type UIObjectI interface {
 	ID_sg(...int) int
 	GetRenderComponent() *resource.RenderComponent
 	Enabled() bool
+	SetParent(*common.Transform)
 	Start()
 	Update()
 	OnDraw()
