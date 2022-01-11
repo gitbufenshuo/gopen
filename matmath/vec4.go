@@ -30,6 +30,9 @@ func (vec4 *Vec4) SetIndexValue(index int, value float32) {
 func (vec4 *Vec4) GetValue2() (float32, float32) {
 	return vec4.data[0], vec4.data[1]
 }
+func (vec4 *Vec4) GetValue3() (float32, float32, float32) {
+	return vec4.data[0], vec4.data[1], vec4.data[2]
+}
 
 func (vec4 *Vec4) SetX(value1 float32) {
 	vec4.data[0] = value1

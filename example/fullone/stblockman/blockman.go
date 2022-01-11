@@ -12,7 +12,6 @@ import (
 
 type BlockManLeg struct {
 	*gameobjects.BasicObject
-	InnerModel *resource.Model
 }
 
 func NewBlockManLeg(gi *game.GlobalInfo) *BlockManLeg {
@@ -34,13 +33,11 @@ func NewBlockManLeg(gi *game.GlobalInfo) *BlockManLeg {
 	wheel := new(BlockManLeg)
 	///
 	wheel.BasicObject = blockobject
-	//	wheel.InnerModel = wheel.ModelAsset_sg().Resource.(*resource.Model)
 	return wheel
 }
 
 type BlockManHand struct {
 	*gameobjects.BasicObject
-	InnerModel *resource.Model
 }
 
 func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
@@ -61,13 +58,11 @@ func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
 	hand := new(BlockManHand)
 	///
 	hand.BasicObject = blockobject
-	// hand.InnerModel = hand.ModelAsset_sg().Resource.(*resource.Model)
 	return hand
 }
 
 type BlockManBody struct {
 	*gameobjects.BasicObject
-	InnerModel *resource.Model
 }
 
 func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
@@ -90,13 +85,11 @@ func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
 	logic := NewLogicColorControl()
 	body.AddLogicSupport(logic)
 	///
-	// body.InnerModel = body.ModelAsset_sg().Resource.(*resource.Model)
 	return body
 }
 
 type BlockManHead struct {
 	*gameobjects.BasicObject
-	InnerModel *resource.Model
 }
 
 func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
@@ -118,7 +111,6 @@ func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
 	head := new(BlockManHead)
 	///
 	head.BasicObject = blockobject
-	// head.InnerModel = head.ModelAsset_sg().Resource.(*resource.Model)
 	head.Transform.Postion.SetIndexValue(1, 1.5)
 	return head
 }
