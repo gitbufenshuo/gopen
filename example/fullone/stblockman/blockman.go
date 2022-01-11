@@ -11,7 +11,7 @@ import (
 )
 
 type BlockManLeg struct {
-	*gameobjects.BlockObject
+	*gameobjects.BasicObject
 	InnerModel *resource.Model
 }
 
@@ -29,17 +29,17 @@ func NewBlockManLeg(gi *game.GlobalInfo) *BlockManLeg {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanleg.model", customModel)
 	}
-	block := gameobjects.NewBlock(gi, "blockmanleg.model", "grid.png.texuture")
-	block.Color = []float32{1, 1, 1}
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanleg.model", "grid.png.texuture")
+
 	wheel := new(BlockManLeg)
 	///
-	wheel.BlockObject = block
-	wheel.InnerModel = wheel.ModelAsset_sg().Resource.(*resource.Model)
+	wheel.BasicObject = blockobject
+	//	wheel.InnerModel = wheel.ModelAsset_sg().Resource.(*resource.Model)
 	return wheel
 }
 
 type BlockManHand struct {
-	*gameobjects.BlockObject
+	*gameobjects.BasicObject
 	InnerModel *resource.Model
 }
 
@@ -57,17 +57,16 @@ func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanhand.model", customModel)
 	}
-	block := gameobjects.NewBlock(gi, "blockmanhand.model", "hand.png.texuture")
-	block.Color = []float32{1, 1, 1}
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanhand.model", "hand.png.texuture")
 	hand := new(BlockManHand)
 	///
-	hand.BlockObject = block
-	hand.InnerModel = hand.ModelAsset_sg().Resource.(*resource.Model)
+	hand.BasicObject = blockobject
+	// hand.InnerModel = hand.ModelAsset_sg().Resource.(*resource.Model)
 	return hand
 }
 
 type BlockManBody struct {
-	*gameobjects.BlockObject
+	*gameobjects.BasicObject
 	InnerModel *resource.Model
 }
 
@@ -85,17 +84,16 @@ func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanbody.model", customModel)
 	}
-	block := gameobjects.NewBlock(gi, "blockmanbody.model", "body.png.texuture")
-	block.Color = []float32{1, 1, 1}
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanbody.model", "body.png.texuture")
 	body := new(BlockManBody)
 	///
-	body.BlockObject = block
-	body.InnerModel = body.ModelAsset_sg().Resource.(*resource.Model)
+	body.BasicObject = blockobject
+	// body.InnerModel = body.ModelAsset_sg().Resource.(*resource.Model)
 	return body
 }
 
 type BlockManHead struct {
-	*gameobjects.BlockObject
+	*gameobjects.BasicObject
 	InnerModel *resource.Model
 }
 
@@ -114,12 +112,11 @@ func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanhead.model", customModel)
 	}
-	block := gameobjects.NewBlock(gi, "blockmanhead.model", "head.png.texuture")
-	block.Color = []float32{1, 1, 1}
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanhead.model", "head.png.texuture")
 	head := new(BlockManHead)
 	///
-	head.BlockObject = block
-	head.InnerModel = head.ModelAsset_sg().Resource.(*resource.Model)
+	head.BasicObject = blockobject
+	// head.InnerModel = head.ModelAsset_sg().Resource.(*resource.Model)
 	head.Transform.Postion.SetIndexValue(1, 1.5)
 	return head
 }

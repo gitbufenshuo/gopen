@@ -187,7 +187,10 @@ func (gi *GlobalInfo) startlogic() {
 		mb.Start()
 	}
 	for _, gb := range gi.gameobjects {
-		gb.Start()
+		logiclist := gb.GetLogicSupport()
+		for _, onelogic := range logiclist {
+			onelogic.Start()
+		}
 	}
 	for _, ub := range gi.uiobjects {
 		ub.Start()
@@ -252,7 +255,10 @@ func (gi *GlobalInfo) update() {
 	}
 	gi.InputMouseCtl.Update()
 	for _, gb := range gi.gameobjects {
-		gb.Update() // call the gameobjects' Update function
+		logiclist := gb.GetLogicSupport()
+		for _, onelogic := range logiclist {
+			onelogic.Update() // call the gameobjects' Update function
+		}
 	}
 	for _, mb := range gi.manageobjects {
 		mb.Update() // call the manageobjects' Update function
@@ -321,7 +327,8 @@ func (gi *GlobalInfo) draw() {
 }
 
 func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
-	co.SetUniform()
+	co.GetRenderSupport().SetUniform(co.GetTransform(), gi)
+	// co.SetUniform()
 	// co.ShaderCtl().M = co.GetTransform().Model()
 	// co.ShaderCtl().Rotation = co.GetTransform().RotationMAT4()
 	// var curTransform *common.Transform
@@ -344,25 +351,31 @@ func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
 }
 
 func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
-	if gb.NotDrawable() {
+	if gb.GetRenderSupport() == nil {
 		return
 	}
-	if !gb.DrawEnable_sg() {
+	rs := gb.GetRenderSupport()
+	if !rs.DrawEnable_sg() {
 		return
 	}
-	gb.ShaderAsset_sg().Resource.Active() // shader
+	rs.ShaderAsset_sg().Resource.Active() // shader
 	gi.prepareMVP(gb)
-	gb.OnDraw() // call the gameobjects' OnDraw function
+	logiclist := gb.GetLogicSupport()
+	for _, onelogic := range logiclist {
+		onelogic.OnDraw() // call the gameobjects' OnDraw function
+	}
 	// change context
-	gb.ModelAsset_sg().Resource.Active() // model
-	if _asset := gb.TextureAsset_sg(); _asset != nil {
+	rs.ModelAsset_sg().Resource.Active() // model
+	if _asset := rs.TextureAsset_sg(); _asset != nil {
 		_asset.Resource.Active()
 	}
 	// draw
-	modelResource := gb.ModelAsset_sg().Resource.(*resource.Model)
+	modelResource := rs.ModelAsset_sg().Resource.(*resource.Model)
 	vertexNum := len(modelResource.Indices)
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
-	gb.OnDrawFinish()
+	for _, onelogic := range logiclist {
+		onelogic.OnDrawFinish()
+	}
 }
 func (gi *GlobalInfo) drawSkyBox() {
 	var rotation = gi.MainCamera.Transform.RotationMAT4()

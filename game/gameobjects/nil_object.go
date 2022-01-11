@@ -2,9 +2,7 @@ package gameobjects
 
 import (
 	"github.com/gitbufenshuo/gopen/game"
-	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/common"
-	"github.com/gitbufenshuo/gopen/matmath"
 )
 
 // the empty object
@@ -33,61 +31,12 @@ func (gb *NilObject) ID_sg(_id ...int) int {
 	gb.id = _id[0]
 	return gb.id
 }
-func (gb *NilObject) ModelAsset_sg(_as ...*asset_manager.Asset) *asset_manager.Asset {
-	return nil
-}
-func (gb *NilObject) ShaderAsset_sg(_as ...*asset_manager.Asset) *asset_manager.Asset {
-	return nil
-}
-func (gb *NilObject) TextureAsset_sg(_as ...*asset_manager.Asset) *asset_manager.Asset {
-	return nil
-}
-func (gb *NilObject) NotDrawable() bool {
-	return true
-}
-func (gb *NilObject) DrawEnable_sg(_bool ...bool) bool {
-	return false
-}
-
-func (gb *NilObject) ReadyForDraw_sg(_bool ...bool) bool {
-	return false
-}
 func (gb *NilObject) GetTransform() *common.Transform {
 	return gb.Transform
 }
-func (gb *NilObject) SetUniform() {
-
+func (gb *NilObject) GetRenderSupport() game.RenderSupportI {
+	return nil
 }
-
-func (gb *NilObject) Start() {
-
-}
-
-func (gb *NilObject) Model() matmath.MAT4 {
-	var transform matmath.MAT4
-	transform.ToIdentity()
-
-	transform.Scale(&gb.Transform.Scale)
-
-	transform.Rotate(&gb.Transform.Rotation)
-
-	transform.Translate4(&gb.Transform.Postion)
-
-	return transform
-}
-
-func (gb *NilObject) View() matmath.MAT4 {
-	return gb.GI().View()
-}
-
-func (gb *NilObject) Projection() matmath.MAT4 {
-	return gb.GI().Projection()
-}
-
-// should update uniform-value to gpu
-func (gb *NilObject) OnDraw() {
-}
-func (gb *NilObject) OnDrawFinish() {
-}
-func (gb *NilObject) Update() {
+func (gb *NilObject) GetLogicSupport() []game.LogicSupportI {
+	return nil
 }
