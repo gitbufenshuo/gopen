@@ -12,6 +12,7 @@ type BasicObject struct {
 	Transform *common.Transform
 	gi        *game.GlobalInfo
 	renderS   *supports.DefaultRenderSupport
+	logicS    []game.LogicSupportI
 }
 
 func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername string) *BasicObject {
@@ -48,5 +49,8 @@ func (gb *BasicObject) GetRenderSupport() game.RenderSupportI {
 }
 
 func (gb *BasicObject) GetLogicSupport() []game.LogicSupportI {
-	return nil
+	return gb.logicS
+}
+func (gb *BasicObject) AddLogicSupport(logic game.LogicSupportI) {
+	gb.logicS = append(gb.logicS, logic)
 }

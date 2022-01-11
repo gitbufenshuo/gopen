@@ -62,3 +62,6 @@ func (sop *ShaderOP) UniformLoc(uname string) int32 {
 	}
 	return -1
 }
+func (sop *ShaderOP) SetUniform3f(uname string, v0 float32, v1 float32, v2 float32) {
+	gl.Uniform3f(sop.UniformLoc(uname), v0, v1, v2)
+}

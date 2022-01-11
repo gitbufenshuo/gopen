@@ -86,8 +86,10 @@ func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
 	}
 	blockobject := gameobjects.NewBlockObject(gi, "blockmanbody.model", "body.png.texuture")
 	body := new(BlockManBody)
-	///
 	body.BasicObject = blockobject
+	logic := NewLogicColorControl()
+	body.AddLogicSupport(logic)
+	///
 	// body.InnerModel = body.ModelAsset_sg().Resource.(*resource.Model)
 	return body
 }

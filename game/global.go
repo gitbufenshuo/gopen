@@ -362,7 +362,7 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 	gi.prepareMVP(gb)
 	logiclist := gb.GetLogicSupport()
 	for _, onelogic := range logiclist {
-		onelogic.OnDraw() // call the gameobjects' OnDraw function
+		onelogic.OnDraw(gb) // call the gameobjects' OnDraw function
 	}
 	// change context
 	rs.ModelAsset_sg().Resource.Active() // model
@@ -374,7 +374,7 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 	vertexNum := len(modelResource.Indices)
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 	for _, onelogic := range logiclist {
-		onelogic.OnDrawFinish()
+		onelogic.OnDrawFinish(gb)
 	}
 }
 func (gi *GlobalInfo) drawSkyBox() {

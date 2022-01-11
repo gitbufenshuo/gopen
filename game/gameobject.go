@@ -13,6 +13,7 @@ type RenderSupportI interface {
 	ShaderAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
 	TextureAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
 	SetUniform(*common.Transform, *GlobalInfo)
+	ShaderOP() *ShaderOP
 	NotDrawable() bool
 	DrawEnable_sg(...bool) bool
 }
@@ -21,8 +22,8 @@ type RenderSupportI interface {
 type LogicSupportI interface {
 	Start()
 	Update()
-	OnDraw()
-	OnDrawFinish()
+	OnDraw(GameObjectI)
+	OnDrawFinish(GameObjectI)
 }
 
 // the common gameobject Interface
