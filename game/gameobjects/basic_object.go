@@ -87,16 +87,6 @@ func (gb *BasicObject) DrawEnable_sg(_bool ...bool) bool {
 	return gb.drawEnable
 }
 
-func (gb *BasicObject) ReadyForDraw_sg(_bool ...bool) bool {
-	if len(_bool) == 0 {
-		return gb.readyForDraw
-	}
-	if len(_bool) > 1 {
-		panic("len(_bool)")
-	}
-	gb.readyForDraw = _bool[0]
-	return gb.readyForDraw
-}
 func (gb *BasicObject) GetTransform() *common.Transform {
 	return gb.Transform
 }

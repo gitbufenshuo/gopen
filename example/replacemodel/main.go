@@ -86,13 +86,11 @@ func (co *CustomObject) Update() {
 	if (co.GI().CurFrame/100)%2 == 0 {
 		// use mvp_model.1
 		co.BasicObject.ModelAsset_sg(co.GI().AssetManager.FindByName("mvp_model.1"))
-		co.BasicObject.ReadyForDraw_sg(false) // not ready because we replace a new model which may be not uploaed to the gpu
 		return
 	}
 	if (co.GI().CurFrame/100)%2 == 1 {
 		// use mvp_model.2
 		co.BasicObject.ModelAsset_sg(co.GI().AssetManager.FindByName("mvp_model.2"))
-		co.BasicObject.ReadyForDraw_sg(false)
 		return
 	}
 
