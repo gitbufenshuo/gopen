@@ -134,12 +134,6 @@ func NewBlockManCore(gi *game.GlobalInfo) *BlockManCore {
 	return core
 }
 
-func (bmc *BlockManCore) Update() {
-	// return
-	v := float32(bmc.GI().CurFrame) * 1.2
-	bmc.Transform.Rotation.SetIndexValue(1, v)
-}
-
 type BlockMan struct {
 	gi        *game.GlobalInfo
 	ID        int

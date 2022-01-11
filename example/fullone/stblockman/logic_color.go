@@ -18,12 +18,10 @@ func NewLogicColorControl() *LogicColorControl {
 }
 
 func (lcc *LogicColorControl) OnDraw(gb game.GameObjectI) {
-	// fmt.Println("asdfa")
 	rs := gb.GetRenderSupport()
 	rs.ShaderOP().SetUniform3f("u_Color", lcc.Color[0], lcc.Color[1], lcc.Color[2])
 }
 func (lcc *LogicColorControl) OnDrawFinish(gb game.GameObjectI) {
-	// fmt.Println("asdfa")
 	rs := gb.GetRenderSupport()
 	rs.ShaderOP().SetUniform3f("u_Color", 0, 0, 0)
 }
