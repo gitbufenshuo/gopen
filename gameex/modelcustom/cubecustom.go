@@ -3,6 +3,8 @@ package modelcustom
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
@@ -35,6 +37,17 @@ func NewCubeCustomTool(gi *game.GlobalInfo) *CubeCustomTool {
 	//
 	res.gi = gi
 	return res
+}
+func (cct *CubeCustomTool) LoadFromFile(path string) *GameObjectNode {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil
+	}
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil
+	}
+	return cct.LoadFromData(data)
 }
 
 func (cct *CubeCustomTool) LoadFromData(data []byte) *GameObjectNode {
