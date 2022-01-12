@@ -3,6 +3,9 @@ package matmath
 import (
 	"fmt"
 	"math"
+	"strings"
+
+	"github.com/gitbufenshuo/gopen/help"
 )
 
 type Vec4 struct {
@@ -12,6 +15,16 @@ type Vec4 struct {
 func CreateVec4(x, y, z, w float32) Vec4 {
 	return Vec4{
 		data: [4]float32{x, y, z, w},
+	}
+}
+func CreateVec4FromStr(data string) Vec4 {
+	segs := strings.Split(data, ",")
+	return Vec4{
+		data: [4]float32{
+			help.Str2Float32(segs[0]),
+			help.Str2Float32(segs[1]),
+			help.Str2Float32(segs[2]),
+			help.Str2Float32(segs[3])},
 	}
 }
 func (vec4 *Vec4) PrettyShow(reason string) {
@@ -50,6 +63,7 @@ func (vec4 *Vec4) SetValue2(value1, value2 float32) {
 	vec4.data[0] = value1
 	vec4.data[1] = value2
 }
+
 func (vec4 *Vec4) AddIndexValue(index int, value float32) {
 	vec4.data[index] += value
 }
@@ -77,6 +91,12 @@ func (vec4 *Vec4) SetValue4(value1, value2, value3, value4 float32) {
 	vec4.data[1] = value2
 	vec4.data[2] = value3
 	vec4.data[3] = value4
+}
+func (vec4 *Vec4) Clone(other *Vec4) {
+	vec4.data[0] = other.data[0]
+	vec4.data[1] = other.data[1]
+	vec4.data[2] = other.data[2]
+	vec4.data[3] = other.data[3]
 }
 
 // left X right

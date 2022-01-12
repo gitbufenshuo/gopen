@@ -28,7 +28,7 @@ func NewBlockManLeg(gi *game.GlobalInfo) *BlockManLeg {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanleg.model", customModel)
 	}
-	blockobject := gameobjects.NewBlockObject(gi, "blockmanleg.model", "grid.png.texuture")
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanleg.model", "grid.png.texture")
 
 	wheel := new(BlockManLeg)
 	///
@@ -54,7 +54,7 @@ func NewBlockManHand(gi *game.GlobalInfo) *BlockManHand {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanhand.model", customModel)
 	}
-	blockobject := gameobjects.NewBlockObject(gi, "blockmanhand.model", "hand.png.texuture")
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanhand.model", "hand.png.texture")
 	hand := new(BlockManHand)
 	///
 	hand.BasicObject = blockobject
@@ -79,7 +79,7 @@ func NewBlockManBody(gi *game.GlobalInfo) *BlockManBody {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanbody.model", customModel)
 	}
-	blockobject := gameobjects.NewBlockObject(gi, "blockmanbody.model", "body.png.texuture")
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanbody.model", "body.png.texture")
 	body := new(BlockManBody)
 	body.BasicObject = blockobject
 	logic := NewLogicColorControl()
@@ -107,7 +107,7 @@ func NewBlockManHead(gi *game.GlobalInfo) *BlockManHead {
 		}
 		gi.AssetManager.CreateModelSilent("blockmanhead.model", customModel)
 	}
-	blockobject := gameobjects.NewBlockObject(gi, "blockmanhead.model", "head.png.texuture")
+	blockobject := gameobjects.NewBlockObject(gi, "blockmanhead.model", "head.png.texture")
 	head := new(BlockManHead)
 	///
 	head.BasicObject = blockobject

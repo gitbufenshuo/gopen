@@ -11,6 +11,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 	"github.com/gitbufenshuo/gopen/gameex/uithing/uibuttons/pk_basic_button"
 
 	"github.com/gitbufenshuo/gopen/matmath"
@@ -90,33 +91,48 @@ func NewMyLogic(gi *game.GlobalInfo) *MyLogic {
 }
 
 func initLogic(gi *game.GlobalInfo) {
-	blockMan := stblockman.NewBlockMan(gi)
-	gi.AddManageObject(blockMan)
-	// input system
 	{
+		// input system
 		inputsystem.InitInputSystem(gi)
 		inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyS))
 		gi.SetInputSystem(inputsystem.GetInputSystem())
 	}
-	// particle system
-	{
+	if false {
+		blockMan := stblockman.NewBlockMan(gi)
+		gi.AddManageObject(blockMan)
+		// particle system
 		{
-			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
-			gi.ParticalSystem.EntityList[0].TargetTransform = blockMan.HandLeft.Transform
-			for idx := 0; idx != 50; idx++ {
-				gi.ParticalSystem.EntityList[0].CoreList = append(gi.ParticalSystem.EntityList[0].CoreList, game.NewParticleCore())
+			{
+				gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
+				gi.ParticalSystem.EntityList[0].TargetTransform = blockMan.HandLeft.Transform
+				for idx := 0; idx != 50; idx++ {
+					gi.ParticalSystem.EntityList[0].CoreList = append(gi.ParticalSystem.EntityList[0].CoreList, game.NewParticleCore())
+				}
+				gi.ParticalSystem.EntityList[0].Light = 1
 			}
-			gi.ParticalSystem.EntityList[0].Light = 1
-		}
-		{
-			gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
-			gi.ParticalSystem.EntityList[1].TargetTransform = blockMan.HandRight.Transform
-			for idx := 0; idx != 50; idx++ {
-				gi.ParticalSystem.EntityList[1].CoreList = append(gi.ParticalSystem.EntityList[1].CoreList, game.NewParticleCore())
+			{
+				gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, game.NewParticleEntity())
+				gi.ParticalSystem.EntityList[1].TargetTransform = blockMan.HandRight.Transform
+				for idx := 0; idx != 50; idx++ {
+					gi.ParticalSystem.EntityList[1].CoreList = append(gi.ParticalSystem.EntityList[1].CoreList, game.NewParticleCore())
+				}
 			}
 		}
 	}
-
+	if true {
+		// customcube
+		var data = []byte(`
+		<blockroot name="root" kind="nil">
+			<block name="body" kind="basic" pivot="0,0,0,0" size="1,1,1,1" pos="0,0,0,0" rotation="0,0,0,0" image="body.png.texture">
+				<block name="handleft" kind="basic" pivot="0,0,0,0" size="1,1,5,1" pos="-2,0,0,0" rotation="45,0,0,0" image="body.png.texture">
+				</block>
+				<block name="handright" kind="basic" pivot="0,0,0,0" size="1,1,1,1" pos="2,0,0,0" rotation="0,0,0,0" image="body.png.texture">
+				</block>
+			</block>
+		</blockroot>
+		`)
+		modelcustom.NewCubeCustomTool(gi).LoadFromData(data)
+	}
 	// mylogic begin
 	mylogic := NewMyLogic(gi)
 	gi.AddManageObject(mylogic)
@@ -142,7 +158,7 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.ElementWidth = 101
 		tableLayout.ElementHeight = 101
 		tableLayout.Rows = 3
-		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-200, 150, 0, 0)
+		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-2000, 150, 0, 0)
 		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(1, 1, 0, 0)
 		var buttonlist []game.UICanBeLayout
 		for idx := 0; idx != 10; idx++ {
@@ -187,10 +203,10 @@ func initModel(gi *game.GlobalInfo) {
 }
 
 func initTexture(gi *game.GlobalInfo) {
-	gi.AssetManager.LoadTextureFromFile("grid.png", "grid.png.texuture")
-	gi.AssetManager.LoadTextureFromFile("head.png", "head.png.texuture")
-	gi.AssetManager.LoadTextureFromFile("hand.png", "hand.png.texuture")
-	gi.AssetManager.LoadTextureFromFile("body.png", "body.png.texuture")
+	gi.AssetManager.LoadTextureFromFile("grid.png", "grid.png.texture")
+	gi.AssetManager.LoadTextureFromFile("head.png", "head.png.texture")
+	gi.AssetManager.LoadTextureFromFile("hand.png", "hand.png.texture")
+	gi.AssetManager.LoadTextureFromFile("body.png", "body.png.texture")
 }
 
 func main() {

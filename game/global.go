@@ -313,7 +313,7 @@ func (gi *GlobalInfo) draw() {
 		gi.ParticalSystem.Draw()
 	}
 	// ui system
-	{
+	if true {
 		for _, ub := range gi.sorted_uiobjects {
 			if !ub.Enabled() {
 				continue
