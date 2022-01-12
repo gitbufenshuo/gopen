@@ -49,111 +49,56 @@ func NewBoneSatus(px, py, pz, rx, ry, rz float32) *BoneSatus {
 }
 
 type AnimationFrame struct {
-	HeadStatus      *BoneSatus
-	BodyStatus      *BoneSatus
-	HandLeftStatus  *BoneSatus
-	HandRightStatus *BoneSatus
-	LegLeftStatus   *BoneSatus
-	LegRightStatus  *BoneSatus
-}
-
-func (af *AnimationFrame) ToByte() []byte {
-	var list = [][]byte{
-		af.HeadStatus.ToByte(),
-		af.BodyStatus.ToByte(),
-		af.HandLeftStatus.ToByte(),
-		af.HandRightStatus.ToByte(),
-		af.LegLeftStatus.ToByte(),
-		af.LegRightStatus.ToByte(),
-	}
-	return bytes.Join(list, []byte(","))
+	StatusList []*BoneSatus
 }
 
 // 0|1|2|3|4|5,0|1|2|3|4|5,0|1|2|3|4|5,0|1|2|3|4|5,0|1|2|3|4|5
-func NewAnimationFrameFromData(data string) *AnimationFrame {
+func NewAnimationFrameFromData(data string, boneNum int) *AnimationFrame {
 	af := new(AnimationFrame)
 	//
 	segs := strings.Split(data, ",")
-	if len(segs) != 6 {
+	if len(segs) != boneNum {
 		fmt.Println(segs)
 		os.Exit(1)
 	}
-	af.HeadStatus = NewBoneStatusFromData(segs[0])
-	af.BodyStatus = NewBoneStatusFromData(segs[1])
-	af.HandLeftStatus = NewBoneStatusFromData(segs[2])
-	af.HandRightStatus = NewBoneStatusFromData(segs[3])
-	af.LegLeftStatus = NewBoneStatusFromData(segs[4])
-	af.LegRightStatus = NewBoneStatusFromData(segs[5])
+	for idx := range segs {
+		af.StatusList = append(af.StatusList, NewBoneStatusFromData(segs[idx]))
+	}
 	return af
 }
 
-type AnimationController struct {
-	InitFrame *AnimationFrame
-	AniMode   map[string][]*AnimationFrame
-	ModeList  []string
-	CurMode   string
-	CurIndex  int
-	CurDir    int
-	////////////////////////////////////////////////
-	headNode      *Transform
-	bodyNode      *Transform
-	handLeftNode  *Transform
-	handRightNode *Transform
-	legLeftNode   *Transform
-	legRightNode  *Transform
+type AnimationMeta struct {
+	AniMode  map[string][]*AnimationFrame
+	ModeList []string
 }
 
-func NewAnimationController() *AnimationController {
-	res := new(AnimationController)
-	res.AniMode = make(map[string][]*AnimationFrame)
-	res.CurDir = 1
-	return res
-}
-
-/*
-STOP
-head,body,left,right,wheel
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
---------------------------
-JUMP
-head,body,left,right,wheel
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
---------------------------
-FIRE
-head,body,left,right,wheel
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-,       ,    ,    ,     ,
-
-
-*/
-func (ac *AnimationController) LoadFromFile(filename string) {
-	data, _ := ioutil.ReadFile(filename)
-	ac.LoadFromData(data)
-}
-
-func (ac *AnimationController) LoadFromData(data []byte) {
+func LoadAnimationMetaFromData(data []byte) *AnimationMeta {
+	am := new(AnimationMeta)
+	am.AniMode = make(map[string][]*AnimationFrame)
 	split := []byte("\n--------------------------\n")
 	modeList := bytes.Split(data, split)
 	////////////////////////////////////
 	for _, onemodeData := range modeList {
 		buffer := bytes.NewBuffer(onemodeData)
 		scanner := bufio.NewScanner(buffer)
+		descline := "" // __init 6
 		mode := ""
+		boneNum := 6
 		linenum := 0
 		aflist := []*AnimationFrame{}
 		for scanner.Scan() { // 扫描一行
 			content := scanner.Text()
 			////////////////////////
 			if linenum == 0 {
-				mode = content
+				descline = content
+				if strings.Contains(descline, " ") {
+					descsegs := strings.Split(descline, " ")
+					mode = descsegs[0]
+					boneNum = help.Str2Int(descsegs[1])
+				} else {
+					mode = descline
+					boneNum = 6
+				}
 				linenum++
 				continue
 			}
@@ -168,141 +113,74 @@ func (ac *AnimationController) LoadFromData(data []byte) {
 			}
 			////////////////////////
 			linenum++
-			af := NewAnimationFrameFromData(content)
+			af := NewAnimationFrameFromData(content, boneNum)
 			aflist = append(aflist, af)
 		}
-		if !strings.HasPrefix(mode, "//") {
-			ac.ModeList = append(ac.ModeList, mode)
-			ac.AniMode[mode] = aflist
+		if !strings.HasPrefix(descline, "//") {
+			am.ModeList = append(am.ModeList, mode)
+			am.AniMode[mode] = aflist
 		}
 	}
-	ac.CurMode = ac.ModeList[0]
+	return am
 }
 
-func (ac *AnimationController) Write2Data() []byte {
-	split := []byte("\n--------------------------\n")
-	////////
-	modeDataList := [][]byte{}
-	for _, modename := range ac.ModeList {
-		modebuffer := bytes.NewBuffer(nil)
-		modebuffer.Reset()
-		modebuffer.WriteString(modename)
-		modebuffer.WriteString("\n")
-		modebuffer.WriteString("head,body,left,right,wheel\n")
-		afList := ac.AniMode[modename]
-		dataList := [][]byte{}
-		for _, oneaf := range afList {
-			dataList = append(dataList, oneaf.ToByte())
-		}
-		modebuffer.Write(bytes.Join(dataList, []byte("\n")))
-		modeDataList = append(modeDataList, modebuffer.Bytes())
-	}
-	return bytes.Join(modeDataList, split)
+func LoadAnimationMetaFromFile(filename string) *AnimationMeta {
+	data, _ := ioutil.ReadFile(filename)
+	return LoadAnimationMetaFromData(data)
 }
 
-func (ac *AnimationController) AddMode(mode string, frameList []*AnimationFrame) {
-	ac.AniMode[mode] = frameList
+type AnimationController struct {
+	InitFrame *AnimationFrame
+	AM        *AnimationMeta
+	CurMode   string
+	CurIndex  int
+	////////////////////////////////////////////////
+	nodeList []*Transform
 }
 
+func NewAnimationController() *AnimationController {
+	res := new(AnimationController)
+	return res
+}
+func (ac *AnimationController) UseAimationMeta(am *AnimationMeta) {
+	ac.AM = am
+	ac.CurMode = am.ModeList[0]
+	ac.CurIndex = 0
+}
 func (ac *AnimationController) ChangeMode(mode string) {
 	ac.CurMode = mode
 	ac.CurIndex = 0
 }
-
-// generate the init frame
-func (ac *AnimationController) BindBoneNode(head, body, handLeft, handRight, legLeft, legRight *Transform) {
-	ac.headNode = head
-	ac.bodyNode = body
-	ac.handLeftNode = handLeft
-	ac.handRightNode = handRight
-	ac.legLeftNode = legLeft
-	ac.legRightNode = legRight
+func (ac *AnimationController) BindBoneNodeList(list []*Transform) {
+	ac.nodeList = list
 	ac.RecordInitFrame()
 }
+
 func (ac *AnimationController) RecordInitFrame() {
 	initFrame := new(AnimationFrame)
-	{
-		position := ac.headNode.Postion
-		rotation := ac.headNode.Rotation
-		initFrame.HeadStatus = &BoneSatus{
+	for idx := range ac.nodeList {
+		position := ac.nodeList[idx].Postion
+		rotation := ac.nodeList[idx].Rotation
+		initFrame.StatusList = append(initFrame.StatusList, &BoneSatus{
 			Position: &position,
 			Rotation: &rotation,
-		}
-	}
-	{
-		position := ac.bodyNode.Postion
-		rotation := ac.bodyNode.Rotation
-		initFrame.BodyStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := ac.handLeftNode.Postion
-		rotation := ac.handLeftNode.Rotation
-		initFrame.HandLeftStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := ac.handRightNode.Postion
-		rotation := ac.handRightNode.Rotation
-		initFrame.HandRightStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := ac.legLeftNode.Postion
-		rotation := ac.legLeftNode.Rotation
-		initFrame.LegLeftStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
-	}
-	{
-		position := ac.legRightNode.Postion
-		rotation := ac.legRightNode.Rotation
-		initFrame.LegRightStatus = &BoneSatus{
-			Position: &position,
-			Rotation: &rotation,
-		}
+		})
 	}
 	ac.InitFrame = initFrame
 }
 
 func (ac *AnimationController) Update() {
 	initFrame := ac.InitFrame
-	list := ac.AniMode[ac.CurMode]
+	list := ac.AM.AniMode[ac.CurMode]
 	if len(list) == 0 {
 		return
 	}
 	curFrame := list[ac.CurIndex]
-	if ac.headNode != nil {
-		ac.headNode.Postion.Add2_InPlace(initFrame.HeadStatus.Position, curFrame.HeadStatus.Position)
-		ac.headNode.Rotation.Add2_InPlace(initFrame.HeadStatus.Rotation, curFrame.HeadStatus.Rotation)
-	}
-	if ac.bodyNode != nil {
-		ac.bodyNode.Postion.Add2_InPlace(initFrame.BodyStatus.Position, curFrame.BodyStatus.Position)
-		ac.bodyNode.Rotation.Add2_InPlace(initFrame.BodyStatus.Rotation, curFrame.BodyStatus.Rotation)
-	}
-	if ac.handLeftNode != nil {
-		ac.handLeftNode.Postion.Add2_InPlace(initFrame.HandLeftStatus.Position, curFrame.HandLeftStatus.Position)
-		ac.handLeftNode.Rotation.Add2_InPlace(initFrame.HandLeftStatus.Rotation, curFrame.HandLeftStatus.Rotation)
-	}
-	//
-	if ac.handRightNode != nil {
-		ac.handRightNode.Postion.Add2_InPlace(initFrame.HandRightStatus.Position, curFrame.HandRightStatus.Position)
-		ac.handRightNode.Rotation.Add2_InPlace(initFrame.HandRightStatus.Rotation, curFrame.HandRightStatus.Rotation)
-	}
-	if ac.legLeftNode != nil {
-		ac.legLeftNode.Postion.Add2_InPlace(initFrame.LegLeftStatus.Position, curFrame.LegLeftStatus.Position)
-		ac.legLeftNode.Rotation.Add2_InPlace(initFrame.LegLeftStatus.Rotation, curFrame.LegLeftStatus.Rotation)
-	}
-	if ac.legRightNode != nil {
-		ac.legRightNode.Postion.Add2_InPlace(initFrame.LegRightStatus.Position, curFrame.LegRightStatus.Position)
-		ac.legRightNode.Rotation.Add2_InPlace(initFrame.LegRightStatus.Rotation, curFrame.LegRightStatus.Rotation)
+	for idx := range ac.nodeList {
+		if ac.nodeList[idx] != nil {
+			ac.nodeList[idx].Postion.Add2_InPlace(initFrame.StatusList[idx].Position, curFrame.StatusList[idx].Position)
+			ac.nodeList[idx].Rotation.Add2_InPlace(initFrame.StatusList[idx].Rotation, curFrame.StatusList[idx].Rotation)
+		}
 	}
 	//
 	ac.CurIndex++

@@ -11,7 +11,6 @@ import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
-	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 	"github.com/gitbufenshuo/gopen/gameex/uithing/uibuttons/pk_basic_button"
 
 	"github.com/gitbufenshuo/gopen/matmath"
@@ -97,7 +96,7 @@ func initLogic(gi *game.GlobalInfo) {
 		inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyS))
 		gi.SetInputSystem(inputsystem.GetInputSystem())
 	}
-	if false {
+	if true {
 		blockMan := stblockman.NewBlockMan(gi)
 		gi.AddManageObject(blockMan)
 		// particle system
@@ -118,20 +117,6 @@ func initLogic(gi *game.GlobalInfo) {
 				}
 			}
 		}
-	}
-	if true {
-		// customcube
-		var data = []byte(`
-		<blockroot name="root" kind="nil">
-			<block name="body" kind="basic" pivot="0,0,0,0" size="1,1,1,1" pos="0,0,0,0" rotation="0,0,0,0" image="body.png.texture">
-				<block name="handleft" kind="basic" pivot="0,0,0,0" size="1,1,5,1" pos="-2,0,0,0" rotation="45,0,0,0" image="body.png.texture">
-				</block>
-				<block name="handright" kind="basic" pivot="0,0,0,0" size="1,1,1,1" pos="2,0,0,0" rotation="0,0,0,0" image="body.png.texture">
-				</block>
-			</block>
-		</blockroot>
-		`)
-		modelcustom.NewCubeCustomTool(gi).LoadFromData(data)
 	}
 	// mylogic begin
 	mylogic := NewMyLogic(gi)

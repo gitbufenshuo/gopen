@@ -151,8 +151,8 @@ func (bm *BlockMan) Update() {
 	bm.AnimationRun()
 	if gi.CurFrame%111 == 0 {
 		rint := rand.Int()
-		rint %= len(bm.AnimationCtl.ModeList)
-		bm.AnimationCtl.ChangeMode(bm.AnimationCtl.ModeList[rint])
+		rint %= len(bm.AnimationCtl.AM.ModeList)
+		bm.AnimationCtl.ChangeMode(bm.AnimationCtl.AM.ModeList[rint])
 	}
 }
 func (bm *BlockMan) AnimationRun() {
@@ -212,16 +212,18 @@ func NewBlockMan(gi *game.GlobalInfo) *BlockMan {
 
 func (blockMan *BlockMan) CreateAnimation() {
 	blockMan.AnimationCtl = common.NewAnimationController()
-	blockMan.AnimationCtl.BindBoneNode(
-		blockMan.Head.Transform,
-		blockMan.Body.Transform,
-		blockMan.HandLeft.Transform,
-		blockMan.HandRight.Transform,
-		blockMan.LegLeft.Transform,
-		blockMan.LegRight.Transform,
+	am := common.LoadAnimationMetaFromFile("blockman.dong")
+	blockMan.AnimationCtl.UseAimationMeta(am)
+	blockMan.AnimationCtl.BindBoneNodeList(
+		[]*common.Transform{
+			blockMan.Head.Transform,
+			blockMan.Body.Transform,
+			blockMan.HandLeft.Transform,
+			blockMan.HandRight.Transform,
+			blockMan.LegLeft.Transform,
+			blockMan.LegRight.Transform,
+		},
 	)
-
-	blockMan.AnimationCtl.LoadFromFile("blockman.dong")
-	fmt.Println(blockMan.AnimationCtl.ModeList)
+	fmt.Println(blockMan.AnimationCtl.AM.ModeList)
 	return
 }
