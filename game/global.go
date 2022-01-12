@@ -56,6 +56,7 @@ type GlobalInfo struct {
 	InputMouseCtl         *InputMouse
 	CursorMode            int
 	InputSystemManager    InputSystemI
+	AnimationSystem       AnimationSystemI
 	UICanvas              *UICanvas
 	//
 	*GlobalFrameInfo
@@ -252,6 +253,9 @@ func (gi *GlobalInfo) update() {
 	// gi.dealWithTime(0)
 	if gi.InputSystemManager != nil {
 		gi.InputSystemManager.Update()
+	}
+	if gi.AnimationSystem != nil {
+		gi.AnimationSystem.Update()
 	}
 	gi.InputMouseCtl.Update()
 	for _, gb := range gi.gameobjects {

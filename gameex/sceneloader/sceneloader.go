@@ -8,11 +8,13 @@ import (
 	"strings"
 
 	"github.com/gitbufenshuo/gopen/game"
+	"github.com/gitbufenshuo/gopen/gameex/animationsystem"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 )
 
 // 资源加载
 // 模型加载
+// 动画加载
 // 等等
 
 type SceneLoader struct {
@@ -66,5 +68,26 @@ func (sl *SceneLoader) LoadCubeModelList() {
 		_, cubepath := segs[0], segs[1]
 		path := path.Join(sl.SpecPath, "asset", cubepath)
 		sl.cct.LoadFromFile(path)
+	}
+}
+
+func (sl *SceneLoader) LoadDongList() {
+	filename := path.Join(sl.SpecPath, "pick", "dong.csv")
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("LoadDongList", err)
+		return
+	}
+	defer file.Close()
+	//
+	as := animationsystem.NewAnimationSystem(sl.gi) // 动画统一管理器
+	sl.gi.AnimationSystem = as
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := scanner.Text()
+		segs := strings.Split(text, " ")
+		dongname, dongpath := segs[0], segs[1]
+		path := path.Join(sl.SpecPath, "asset", dongpath)
+		as.AddAnimationMeta(dongname, animationsystem.LoadAnimationMetaFromFile(path))
 	}
 }

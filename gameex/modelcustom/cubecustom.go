@@ -30,6 +30,7 @@ type GameObjectNodeSpec struct {
 // 读取一个文件，根据文件内容生成复合模型
 type CubeCustomTool struct {
 	gi *game.GlobalInfo
+	ac game.AnimationControllerI
 }
 
 func NewCubeCustomTool(gi *game.GlobalInfo) *CubeCustomTool {
@@ -58,6 +59,9 @@ func (cct *CubeCustomTool) LoadFromData(data []byte) *GameObjectNode {
 	blockrootnode := cct.FindBlockRoot(doc)
 	gbn := new(GameObjectNode)
 	cct.ScanNode(blockrootnode, gbn)
+	if cct.ac != nil {
+		cct.ac.RecordInitFrame()
+	}
 	return nil
 }
 func (cct *CubeCustomTool) FindBlockRoot(node *html.Node) *html.Node {
@@ -100,6 +104,14 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 		rotation := matmath.CreateVec4FromStr(attrmap["rotation"])
 		gbn.GB.GetTransform().Rotation.Clone(&rotation)
 	}
+	if dongid, found := attrmap["dong"]; found {
+		if node.Data == "blockroot" { // 根节点可能指定动画id
+			cct.ac = cct.gi.AnimationSystem.CreateAnimationController(dongid) // 创建 AnimationController
+		} else {
+			cct.ac.BindBoneNode(dongid, gbn.GB.GetTransform())
+		}
+	}
+
 	cct.gi.AddGameObject(gbn.GB)
 	fmt.Println("ScanNode", gbn.GB)
 	// 考虑下级 跟链表一样

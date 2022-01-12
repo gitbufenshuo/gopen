@@ -139,6 +139,7 @@ func initTexture(gi *game.GlobalInfo) {
 func sceneLoad(gi *game.GlobalInfo) {
 	sl := sceneloader.NewSceneLoader(gi, "scenespec")
 	sl.LoadTextureList()
+	sl.LoadDongList()
 	sl.LoadCubeModelList()
 }
 
