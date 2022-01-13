@@ -36,21 +36,21 @@ func NewBlockModel_BySpec(pivot, size matmath.Vec4) *Model {
 		} else {
 			rawblock.Vertices[idx*8+0] = width / 2
 		}
-		rawblock.Vertices[idx*8+0] += xoffset
+		rawblock.Vertices[idx*8+0] += xoffset * (-width / 2)
 		//
 		if rawblock.Vertices[idx*8+1] < 0 {
 			rawblock.Vertices[idx*8+1] = -height / 2
 		} else {
 			rawblock.Vertices[idx*8+1] = height / 2
 		}
-		rawblock.Vertices[idx*8+1] += yoffset
+		rawblock.Vertices[idx*8+1] += yoffset * (-height / 2)
 		//
 		if rawblock.Vertices[idx*8+2] < 0 {
 			rawblock.Vertices[idx*8+2] = -thick / 2
 		} else {
 			rawblock.Vertices[idx*8+2] = thick / 2
 		}
-		rawblock.Vertices[idx*8+2] += zoffset
+		rawblock.Vertices[idx*8+2] += zoffset * (-thick / 2)
 	}
 	return rawblock
 }
