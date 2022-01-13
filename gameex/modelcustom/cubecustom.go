@@ -86,6 +86,15 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 	//
 	if attrmap["kind"] == "nil" {
 		gbn.GB = gameobjects.NewNilObject(cct.gi)
+		// nil 对象也是有 position 和 rotation 的
+		if posdata, found := attrmap["pos"]; found {
+			pos := matmath.CreateVec4FromStr(posdata)
+			gbn.GB.GetTransform().Postion.Clone(&pos)
+		}
+		if rotationdata, found := attrmap["rotation"]; found {
+			rotation := matmath.CreateVec4FromStr(rotationdata)
+			gbn.GB.GetTransform().Rotation.Clone(&rotation)
+		}
 	} else {
 		// 根据 pivot 和 size 生成模型
 		fmt.Println(node.Data, "pivot", attrmap["pivot"])
