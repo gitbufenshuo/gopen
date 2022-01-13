@@ -10,6 +10,7 @@ type NilObject struct {
 	id        int
 	Transform *common.Transform
 	gi        *game.GlobalInfo
+	logicS    []game.LogicSupportI
 }
 
 func NewNilObject(_gi *game.GlobalInfo) *NilObject {
@@ -38,5 +39,8 @@ func (gb *NilObject) GetRenderSupport() game.RenderSupportI {
 	return nil
 }
 func (gb *NilObject) GetLogicSupport() []game.LogicSupportI {
-	return nil
+	return gb.logicS
+}
+func (gb *NilObject) AddLogicSupport(logic game.LogicSupportI) {
+	gb.logicS = append(gb.logicS, logic)
 }

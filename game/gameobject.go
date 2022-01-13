@@ -21,7 +21,7 @@ type RenderSupportI interface {
 // 逻辑提供者
 type LogicSupportI interface {
 	Start()
-	Update()
+	Update(GameObjectI)
 	OnDraw(GameObjectI)
 	OnDrawFinish(GameObjectI)
 }
@@ -31,6 +31,7 @@ type GameObjectI interface {
 	ID_sg(...int) int
 	GetRenderSupport() RenderSupportI
 	GetLogicSupport() []LogicSupportI
+	AddLogicSupport(LogicSupportI)
 	GetTransform() *common.Transform
 }
 type ManageObjectI interface {

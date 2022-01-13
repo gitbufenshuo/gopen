@@ -9,6 +9,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
+	"github.com/gitbufenshuo/gopen/game/supports/logicinner"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"golang.org/x/net/html"
 )
@@ -109,6 +110,13 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 			cct.ac = cct.gi.AnimationSystem.CreateAnimationController(dongid) // 创建 AnimationController
 		} else {
 			cct.ac.BindBoneNode(dongid, gbn.GB.GetTransform())
+		}
+	}
+
+	if node.Data == "blockroot" { // 根节点可能指定 内置logic
+		if rvdata, found := attrmap["rotate"]; found { // 绑定一个 LogicRotate
+			fmt.Println("rvdata", rvdata)
+			gbn.GB.AddLogicSupport(logicinner.NewLogicRotate(rvdata))
 		}
 	}
 

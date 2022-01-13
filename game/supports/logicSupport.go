@@ -12,7 +12,7 @@ func NewNilLogic() *NilLogic {
 func (nl *NilLogic) Start() {
 
 }
-func (nl *NilLogic) Update() {
+func (nl *NilLogic) Update(game.GameObjectI) {
 
 }
 func (nl *NilLogic) OnDraw(game.GameObjectI) {

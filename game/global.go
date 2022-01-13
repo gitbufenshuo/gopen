@@ -261,7 +261,7 @@ func (gi *GlobalInfo) update() {
 	for _, gb := range gi.gameobjects {
 		logiclist := gb.GetLogicSupport()
 		for _, onelogic := range logiclist {
-			onelogic.Update() // call the gameobjects' Update function
+			onelogic.Update(gb) // call the gameobjects' Update function
 		}
 	}
 	for _, mb := range gi.manageobjects {
