@@ -31,12 +31,12 @@ func myInit_Camera(gi *game.GlobalInfo) {
 		// 1. load the cubemap
 		cubemap := resource.NewCubeMap()
 		cubemap.ReadFromFile([]string{
-			"skybox/right.png",
-			"skybox/left.png",
-			"skybox/top.png",
-			"skybox/bottom.png",
-			"skybox/back.png",
-			"skybox/front.png",
+			"scenespec/asset/skybox/right.png",
+			"scenespec/asset/skybox/left.png",
+			"scenespec/asset/skybox/top.png",
+			"scenespec/asset/skybox/bottom.png",
+			"scenespec/asset/skybox/back.png",
+			"scenespec/asset/skybox/front.png",
 		})
 		cubemap.Upload()
 		gi.MainCamera.AddSkyBox(cubemap)
@@ -53,7 +53,7 @@ func myInit(gi *game.GlobalInfo) {
 	// scene loader
 	sceneLoad(gi)
 	//
-	gi.LoadFont("fonts/1620207082885638.ttf")
+	gi.LoadFont("scenespec/asset/fonts/1620207082885638.ttf")
 	{
 		texture := resource.NewTexture()
 		texture.ReadFromFile("./particle.png")
