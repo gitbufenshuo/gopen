@@ -45,7 +45,7 @@ func (t *Texture) SetFormat(f int) {
 func (t *Texture) ReadFromFile(path string) {
 	imgFile, err := os.Open(path)
 	if err != nil {
-		panic("no such file")
+		panic("no such file" + path)
 	}
 	img, _, err := image.Decode(imgFile)
 	if err != nil {
