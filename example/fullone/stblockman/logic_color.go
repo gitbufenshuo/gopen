@@ -25,3 +25,6 @@ func (lcc *LogicColorControl) OnDrawFinish(gb game.GameObjectI) {
 	rs := gb.GetRenderSupport()
 	rs.ShaderOP().SetUniform3f("u_Color", 0, 0, 0)
 }
+func (lcc *LogicColorControl) Clone() game.LogicSupportI {
+	return NewLogicColorControl()
+}

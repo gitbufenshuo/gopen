@@ -408,6 +408,12 @@ func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
 	}
 }
 
+// 实例化 相当于 克隆一份
+func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
+	res := gb.Clone()
+	return res
+}
+
 func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 	gb.ID_sg(gi.nowID + 1)
 

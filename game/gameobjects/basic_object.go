@@ -7,22 +7,25 @@ import (
 
 // the common minimal internal implementation of the GameObjectI
 type BasicObject struct {
-	id        int
-	Transform *game.Transform
-	gi        *game.GlobalInfo
-	renderS   *supports.DefaultRenderSupport
-	logicS    []game.LogicSupportI
+	id                                 int
+	Transform                          *game.Transform
+	gi                                 *game.GlobalInfo
+	renderS                            *supports.DefaultRenderSupport
+	logicS                             []game.LogicSupportI
+	modelname, texturename, shadername string
 }
 
 func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername string) *BasicObject {
 	var gb BasicObject
 	gb.Transform = game.NewTransform(&gb)
 	gb.gi = _gi
+	gb.modelname, gb.texturename, gb.shadername = modelname, texturename, shadername
 	gb.renderS = supports.NewDefaultRenderSupport()
 	gb.renderS.ModelAsset_sg(_gi.AssetManager.FindByName(modelname))
 	gb.renderS.ShaderAsset_sg(_gi.AssetManager.FindByName(shadername))
 	gb.renderS.TextureAsset_sg(_gi.AssetManager.FindByName(texturename))
 	gb.renderS.DrawEnable_sg(true)
+
 	return &gb
 }
 func (gb *BasicObject) GI() *game.GlobalInfo {
@@ -52,4 +55,10 @@ func (gb *BasicObject) GetLogicSupport() []game.LogicSupportI {
 }
 func (gb *BasicObject) AddLogicSupport(logic game.LogicSupportI) {
 	gb.logicS = append(gb.logicS, logic)
+}
+
+// 如果 embed BasicObject , 则必须实现自己的 Clone
+func (gb *BasicObject) Clone() game.GameObjectI {
+	newgb := NewBasicObject(gb.gi, gb.modelname, gb.texturename, gb.shadername)
+	return newgb
 }

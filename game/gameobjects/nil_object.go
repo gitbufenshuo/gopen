@@ -5,6 +5,7 @@ import (
 )
 
 // the empty object
+// Nil 指的是无需渲染
 type NilObject struct {
 	id        int
 	Transform *game.Transform
@@ -42,4 +43,11 @@ func (gb *NilObject) GetLogicSupport() []game.LogicSupportI {
 }
 func (gb *NilObject) AddLogicSupport(logic game.LogicSupportI) {
 	gb.logicS = append(gb.logicS, logic)
+}
+
+// 如果 embed NilObject , 则必须实现自己的 Clone
+func (gb *NilObject) Clone() game.GameObjectI {
+	newgb := NewNilObject(gb.gi)
+
+	return newgb
 }
