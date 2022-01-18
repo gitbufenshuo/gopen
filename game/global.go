@@ -393,6 +393,19 @@ func (gi *GlobalInfo) drawSkyBox() {
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
 
+// delete the gameobject and its children
+func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
+	tr := gb.GetTransform()
+	tr.SetParent(nil)
+	////////////////////////////////////////////////////
+	gi.AnimationSystem.GameobjectDel(gb.ID_sg()) // 先删掉动画
+	delete(gi.gameobjects, gb.ID_sg())           // 从 map 里弄掉
+	children := tr.Children
+	for idx := range children {
+		gi.DelGameObject(children[idx].GB)
+	}
+}
+
 func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 	gb.ID_sg(gi.nowID + 1)
 

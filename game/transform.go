@@ -10,6 +10,7 @@ type Transform struct {
 	Scale    matmath.Vec4
 	Parent   *Transform // nil if root
 	Children []*Transform
+	GB       GameObjectI // 跟 transform绑定的 gameobject
 }
 
 func TransformArrSwap(arr []*Transform, idx, jdx int) {
@@ -33,11 +34,13 @@ func TransformArrDelLast(arr []*Transform) []*Transform {
 	return arr[:lenOfArr-2]
 }
 
-func NewTransform() *Transform {
+func NewTransform(gb GameObjectI) *Transform {
 	var transform Transform
 	transform.Scale.SetValue3(1, 1, 1)
+	transform.GB = gb
 	return &transform
 }
+
 func (transform *Transform) Model() matmath.MAT4 {
 	var matRes matmath.MAT4
 	matRes.ToIdentity()

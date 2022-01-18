@@ -78,7 +78,7 @@ func NewDefaultCamera() *Camera {
 	c.Front.SetValue4(0, 0, -1, 1)
 	c.UP.SetValue3(0, 1, 0)
 
-	c.Transform = NewTransform()
+	c.Transform = NewTransform(nil)
 	return c
 }
 

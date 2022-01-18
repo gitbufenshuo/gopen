@@ -26,7 +26,7 @@ func NewParticleCore() *ParticleCore {
 		quadModel.Upload()
 		pc.modelResource = quadModel
 	}
-	pc.Transform = NewTransform()
+	pc.Transform = NewTransform(nil)
 	return pc
 }
 

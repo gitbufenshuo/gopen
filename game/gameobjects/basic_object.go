@@ -16,7 +16,7 @@ type BasicObject struct {
 
 func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername string) *BasicObject {
 	var gb BasicObject
-	gb.Transform = game.NewTransform()
+	gb.Transform = game.NewTransform(&gb)
 	gb.gi = _gi
 	gb.renderS = supports.NewDefaultRenderSupport()
 	gb.renderS.ModelAsset_sg(_gi.AssetManager.FindByName(modelname))

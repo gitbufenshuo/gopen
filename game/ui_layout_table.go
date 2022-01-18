@@ -17,7 +17,7 @@ type UILayoutTable struct {
 func NewUILayoutTable(gi *GlobalInfo) *UILayoutTable {
 	uilt := new(UILayoutTable)
 	uilt.gi = gi
-	uilt.transform = NewTransform()
+	uilt.transform = NewTransform(nil)
 	return uilt
 }
 

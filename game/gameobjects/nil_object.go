@@ -14,7 +14,7 @@ type NilObject struct {
 
 func NewNilObject(_gi *game.GlobalInfo) *NilObject {
 	var gb NilObject
-	gb.Transform = game.NewTransform()
+	gb.Transform = game.NewTransform(&gb)
 	gb.gi = _gi
 	return &gb
 }

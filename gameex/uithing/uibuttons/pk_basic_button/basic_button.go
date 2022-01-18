@@ -128,7 +128,7 @@ func NewCustomButton(gi *game.GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	}
 
 	//
-	uibutton.transform = game.NewTransform()
+	uibutton.transform = game.NewTransform(nil)
 	//
 	uibutton.uitext = primes.NewUIText(gi)
 	gi.AddUIObject(uibutton.uitext)

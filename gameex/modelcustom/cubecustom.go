@@ -116,7 +116,7 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 	}
 	if dongid, found := attrmap["dong"]; found {
 		if node.Data == "blockroot" { // 根节点可能指定动画id
-			cct.ac = cct.gi.AnimationSystem.CreateAnimationController(dongid) // 创建 AnimationController
+			cct.ac = cct.gi.AnimationSystem.CreateAnimationController(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
 		} else {
 			cct.ac.BindBoneNode(dongid, gbn.GB.GetTransform())
 		}

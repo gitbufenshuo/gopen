@@ -53,7 +53,7 @@ func NewUIText(gi *game.GlobalInfo) *UIText {
 		uitext.shaderOP.IfUI()
 	}
 	//
-	uitext.transform = game.NewTransform()
+	uitext.transform = game.NewTransform(nil)
 	return uitext
 
 }

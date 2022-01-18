@@ -5,6 +5,7 @@ type AnimationControllerI interface {
 	RecordInitFrame()
 }
 type AnimationSystemI interface {
-	CreateAnimationController(amname string) AnimationControllerI
+	CreateAnimationController(amname string, gbid int) AnimationControllerI
+	GameobjectDel(gbid int)
 	Update()
 }

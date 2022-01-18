@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"runtime"
 
+	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_main"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
@@ -105,7 +106,7 @@ func initLogic(gi *game.GlobalInfo) {
 			button := pk_basic_button.NewCustomButton(gi, pk_basic_button.ButtonConfig{
 				UISpec: buttonuispec,
 
-				Content: fmt.Sprintf("拼接人调试器"),
+				Content: fmt.Sprintf("1个按钮"),
 				Bling:   false, // 是否闪烁
 				SortZ:   0.01,  // 渲染层级，越小的，越靠近人眼
 				// ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader
@@ -123,6 +124,10 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.SetEles(buttonlist)
 		tableLayout.Arrange()
 		gi.AddManageObject(tableLayout)
+	}
+	{
+		logicmain := logic_main.NewLogicMain(gi)
+		gi.AddManageObject(logicmain)
 	}
 }
 
