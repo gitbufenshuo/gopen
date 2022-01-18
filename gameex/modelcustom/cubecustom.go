@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
@@ -126,6 +127,13 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 		if rvdata, found := attrmap["rotate"]; found { // 绑定一个 LogicRotate
 			fmt.Println("rvdata", rvdata)
 			gbn.GB.AddLogicSupport(logicinner.NewLogicRotate(rvdata))
+		}
+		if logicdata, found := attrmap["logic"]; found { // 自定义 logic
+			fmt.Println("logic", logicdata)
+			segs := strings.Split(logicdata, ",")
+			for _, onelogic := range segs {
+				gbn.GB.AddLogicSupport(cct.gi.LogicSystem.GetLogicByName(cct.gi, fmt.Sprintf("logic_%s", onelogic)))
+			}
 		}
 	}
 

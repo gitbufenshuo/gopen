@@ -57,6 +57,7 @@ type GlobalInfo struct {
 	CursorMode            int
 	InputSystemManager    InputSystemI
 	AnimationSystem       AnimationSystemI
+	LogicSystem           LogicSystemI
 	UICanvas              *UICanvas
 	//
 	*GlobalFrameInfo
@@ -215,6 +216,7 @@ func (gi *GlobalInfo) SetKeyCallback(callback func(win *glfw.Window, key glfw.Ke
 	gi.keyCallback = callback
 }
 func (gi *GlobalInfo) Boot() {
+	gi.LogicSystem = NewLogicBind()
 	gi.initAssetManager()
 	if gi.CustomInit == nil {
 		panic("gi.CustomInit == nil")

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"runtime"
 
+	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic"
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_main"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
@@ -51,6 +52,8 @@ func myInit(gi *game.GlobalInfo) {
 	initModel(gi)
 	// create a gameobject that can be drawn on the window
 	initTexture(gi)
+	//
+	logic.BindCustomLogic(gi)
 	// scene loader
 	sceneLoad(gi)
 	//
