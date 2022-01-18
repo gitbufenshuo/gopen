@@ -166,6 +166,12 @@ func (ac *AnimationController) ChangeMode(mode string) {
 	ac.CurMode = mode
 	ac.CurIndex = 0
 }
+func (ac *AnimationController) GetModeList() []string {
+	return ac.AM.ModeList
+}
+func (ac *AnimationController) NowMode() string {
+	return ac.CurMode
+}
 
 func (ac *AnimationController) BindBoneNode(name string, transform *game.Transform) {
 	newAnimationControlSpec := new(AnimationControlSpec)

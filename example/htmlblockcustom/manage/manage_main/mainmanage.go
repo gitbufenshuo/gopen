@@ -1,4 +1,4 @@
-package logic_main
+package manage_main
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
-type LogicMain struct {
+type ManageMain struct {
 	gi *game.GlobalInfo
 	*gameobjects.NilManageObject
 	//
@@ -20,15 +20,15 @@ type LogicMain struct {
 	Dir               int
 }
 
-func NewLogicMain(gi *game.GlobalInfo) *LogicMain {
-	res := new(LogicMain)
+func NewManageMain(gi *game.GlobalInfo) *ManageMain {
+	res := new(ManageMain)
 	//
 	res.NilManageObject = gameobjects.NewNilManageObject()
 	res.gi = gi
 	res.OjbectsMap = make(map[int]game.GameObjectI)
 	return res
 }
-func (lm *LogicMain) Start() {
+func (lm *ManageMain) Start() {
 	model := resource.NewBlockModel_BySpec(
 		matmath.CreateVec4FromStr("0,0,0,0"),
 		matmath.CreateVec4FromStr("1,1,1,1"),
@@ -37,7 +37,7 @@ func (lm *LogicMain) Start() {
 	fmt.Println("modelresourcename", lm.modelresourcename)
 	lm.gi.AssetManager.CreateModelSilent(lm.modelresourcename, model)
 }
-func (lm *LogicMain) Update() {
+func (lm *ManageMain) Update() {
 	if lm.gi.CurFrame%100 == 0 {
 		fmt.Println("now object count:", len(lm.OjbectsMap))
 	}

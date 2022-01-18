@@ -1,6 +1,8 @@
 package animationsystem
 
 import (
+	"fmt"
+
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 )
@@ -27,12 +29,20 @@ func (as *AnimationSystem) AddAnimationMeta(amname string, am *AnimationMeta) {
 	as.AnimationMataMap[amname] = am
 }
 
+func (as *AnimationSystem) GetAnimationController(gbid int) game.AnimationControllerI {
+	if v, found := as.AnimationControllerList[gbid]; found {
+		return v
+	}
+	return nil
+}
+
 func (as *AnimationSystem) CreateAnimationController(amname string, gbid int) game.AnimationControllerI {
 	am := as.AnimationMataMap[amname]
 	//
 	ac := NewAnimationController()
 	ac.UseAimationMeta(am)
 	as.AnimationControllerList[gbid] = ac
+	fmt.Println(">>>>>>CreateAnimationController", amname, gbid)
 	var aci game.AnimationControllerI = ac
 	return aci
 }

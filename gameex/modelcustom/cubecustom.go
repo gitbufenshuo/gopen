@@ -115,6 +115,7 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 		rotation := matmath.CreateVec4FromStr(attrmap["rotation"])
 		gbn.GB.GetTransform().Rotation.Clone(&rotation)
 	}
+	cct.gi.AddGameObject(gbn.GB)
 	if dongid, found := attrmap["dong"]; found {
 		if node.Data == "blockroot" { // 根节点可能指定动画id
 			cct.ac = cct.gi.AnimationSystem.CreateAnimationController(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
@@ -137,7 +138,6 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 		}
 	}
 
-	cct.gi.AddGameObject(gbn.GB)
 	fmt.Println("ScanNode", gbn.GB)
 	// 考虑下级 跟链表一样
 	child := node.FirstChild

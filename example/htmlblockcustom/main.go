@@ -7,7 +7,7 @@ import (
 	"runtime"
 
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic"
-	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_main"
+	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/manage/manage_main"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
@@ -129,8 +129,8 @@ func initLogic(gi *game.GlobalInfo) {
 		gi.AddManageObject(tableLayout)
 	}
 	{
-		logicmain := logic_main.NewLogicMain(gi)
-		gi.AddManageObject(logicmain)
+		mm := manage_main.NewManageMain(gi)
+		gi.AddManageObject(mm)
 	}
 }
 
