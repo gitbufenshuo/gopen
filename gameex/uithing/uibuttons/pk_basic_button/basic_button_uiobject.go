@@ -1,8 +1,8 @@
 package pk_basic_button
 
 import (
+	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
@@ -98,10 +98,10 @@ func (uibutton *UIButton) SortZ() float32 {
 func (uibutton *UIButton) OnDrawFinish() {
 
 }
-func (uibutton *UIButton) GetTransform() *common.Transform {
+func (uibutton *UIButton) GetTransform() *game.Transform {
 	return uibutton.transform
 }
-func (uibutton *UIButton) SetParent(otherTrans *common.Transform) {
+func (uibutton *UIButton) SetParent(otherTrans *game.Transform) {
 	uibutton.transform.SetParent(otherTrans)
 }
 func (uibutton *UIButton) HoverCheck() bool {

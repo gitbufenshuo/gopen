@@ -2,14 +2,13 @@ package gameobjects
 
 import (
 	"github.com/gitbufenshuo/gopen/game"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/game/supports"
 )
 
 // the common minimal internal implementation of the GameObjectI
 type BasicObject struct {
 	id        int
-	Transform *common.Transform
+	Transform *game.Transform
 	gi        *game.GlobalInfo
 	renderS   *supports.DefaultRenderSupport
 	logicS    []game.LogicSupportI
@@ -17,7 +16,7 @@ type BasicObject struct {
 
 func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername string) *BasicObject {
 	var gb BasicObject
-	gb.Transform = common.NewTransform()
+	gb.Transform = game.NewTransform()
 	gb.gi = _gi
 	gb.renderS = supports.NewDefaultRenderSupport()
 	gb.renderS.ModelAsset_sg(_gi.AssetManager.FindByName(modelname))
@@ -40,7 +39,7 @@ func (gb *BasicObject) ID_sg(_id ...int) int {
 	return gb.id
 }
 
-func (gb *BasicObject) GetTransform() *common.Transform {
+func (gb *BasicObject) GetTransform() *game.Transform {
 	return gb.Transform
 }
 

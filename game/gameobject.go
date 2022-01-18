@@ -3,7 +3,6 @@ package game
 import (
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
@@ -12,7 +11,7 @@ type RenderSupportI interface {
 	ModelAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
 	ShaderAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
 	TextureAsset_sg(...*asset_manager.Asset) *asset_manager.Asset
-	SetUniform(*common.Transform, *GlobalInfo)
+	SetUniform(*Transform, *GlobalInfo)
 	ShaderOP() *ShaderOP
 	NotDrawable() bool
 	DrawEnable_sg(...bool) bool
@@ -32,7 +31,7 @@ type GameObjectI interface {
 	GetRenderSupport() RenderSupportI
 	GetLogicSupport() []LogicSupportI
 	AddLogicSupport(LogicSupportI)
-	GetTransform() *common.Transform
+	GetTransform() *Transform
 }
 type ManageObjectI interface {
 	ID_sg(...int) int
@@ -43,7 +42,7 @@ type UIObjectI interface {
 	ID_sg(...int) int
 	GetRenderComponent() *resource.RenderComponent
 	Enabled() bool
-	SetParent(*common.Transform)
+	SetParent(*Transform)
 	Start()
 	Update()
 	OnDraw()

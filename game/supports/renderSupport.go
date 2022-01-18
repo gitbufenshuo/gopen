@@ -4,7 +4,6 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -51,10 +50,10 @@ func (drs *DefaultRenderSupport) TextureAsset_sg(_as ...*asset_manager.Asset) *a
 	drs.textureAsset = _as[0]
 	return drs.textureAsset
 }
-func (drs *DefaultRenderSupport) SetUniform(tr *common.Transform, gi *game.GlobalInfo) {
+func (drs *DefaultRenderSupport) SetUniform(tr *game.Transform, gi *game.GlobalInfo) {
 	var modelMAT = tr.Model()
 	var rotationMAT = tr.RotationMAT4()
-	var curTransform *common.Transform
+	var curTransform *game.Transform
 	curTransform = tr
 	for {
 		if curTransform.Parent != nil { // not root

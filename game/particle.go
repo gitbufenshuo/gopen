@@ -5,14 +5,13 @@ import (
 	"math/rand"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type ParticleCore struct {
 	modelResource *resource.Model
-	Transform     *common.Transform
+	Transform     *Transform
 }
 
 func NewParticleCore() *ParticleCore {
@@ -27,7 +26,7 @@ func NewParticleCore() *ParticleCore {
 		quadModel.Upload()
 		pc.modelResource = quadModel
 	}
-	pc.Transform = common.NewTransform()
+	pc.Transform = NewTransform()
 	return pc
 }
 
@@ -38,7 +37,7 @@ func (pc *ParticleCore) UploadUniforms(ml int32) {
 
 type ParticleEntity struct {
 	CoreList        []*ParticleCore
-	TargetTransform *common.Transform
+	TargetTransform *Transform
 	Light           float32
 }
 

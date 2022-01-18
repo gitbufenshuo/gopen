@@ -6,7 +6,6 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
@@ -28,7 +27,7 @@ type UIText struct {
 	id              int
 	renderComponent *resource.RenderComponent
 	enabled         bool
-	transform       *common.Transform
+	transform       *game.Transform
 	shaderOP        *game.ShaderOP
 	sortz           float32
 	mouseHover      bool
@@ -54,7 +53,7 @@ func NewUIText(gi *game.GlobalInfo) *UIText {
 		uitext.shaderOP.IfUI()
 	}
 	//
-	uitext.transform = common.NewTransform()
+	uitext.transform = game.NewTransform()
 	return uitext
 
 }
@@ -120,7 +119,7 @@ func (uitext *UIText) OnDraw() {
 func (uitext *UIText) OnDrawFinish() {
 
 }
-func (uitext *UIText) SetParent(parent *common.Transform) {
+func (uitext *UIText) SetParent(parent *game.Transform) {
 	uitext.transform.SetParent(parent)
 }
 

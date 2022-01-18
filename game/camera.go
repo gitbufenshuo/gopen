@@ -4,7 +4,6 @@ import (
 	"math"
 
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
@@ -57,7 +56,7 @@ func NewCubeMapObject(cubemapTexture *resource.CubeMap) *CubeMapObject {
 }
 
 type Camera struct {
-	Transform     *common.Transform
+	Transform     *Transform
 	Pos           matmath.Vec4
 	Front         matmath.Vec4
 	UP            matmath.Vec4
@@ -79,7 +78,7 @@ func NewDefaultCamera() *Camera {
 	c.Front.SetValue4(0, 0, -1, 1)
 	c.UP.SetValue3(0, 1, 0)
 
-	c.Transform = common.NewTransform()
+	c.Transform = NewTransform()
 	return c
 }
 

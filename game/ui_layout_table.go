@@ -1,13 +1,9 @@
 package game
 
-import (
-	"github.com/gitbufenshuo/gopen/game/common"
-)
-
 type UILayoutTable struct {
 	gi        *GlobalInfo
 	id        int
-	transform *common.Transform
+	transform *Transform
 	UISpec    UISpec
 	//
 	ElementWidth  float32 // 相邻元素的间隔宽度
@@ -21,7 +17,7 @@ type UILayoutTable struct {
 func NewUILayoutTable(gi *GlobalInfo) *UILayoutTable {
 	uilt := new(UILayoutTable)
 	uilt.gi = gi
-	uilt.transform = common.NewTransform()
+	uilt.transform = NewTransform()
 	return uilt
 }
 

@@ -1,4 +1,4 @@
-package common
+package game
 
 import (
 	"github.com/gitbufenshuo/gopen/matmath"

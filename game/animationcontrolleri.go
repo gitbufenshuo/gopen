@@ -1,9 +1,7 @@
 package game
 
-import "github.com/gitbufenshuo/gopen/game/common"
-
 type AnimationControllerI interface {
-	BindBoneNode(name string, transform *common.Transform)
+	BindBoneNode(name string, transform *Transform)
 	RecordInitFrame()
 }
 type AnimationSystemI interface {

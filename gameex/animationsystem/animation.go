@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gitbufenshuo/gopen/game/common"
+	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
@@ -141,7 +141,7 @@ func LoadAnimationMetaFromFile(filename string) *AnimationMeta {
 type AnimationControlSpec struct {
 	Name      string
 	Index     int
-	transform *common.Transform
+	transform *game.Transform
 }
 
 type AnimationController struct {
@@ -167,7 +167,7 @@ func (ac *AnimationController) ChangeMode(mode string) {
 	ac.CurIndex = 0
 }
 
-func (ac *AnimationController) BindBoneNode(name string, transform *common.Transform) {
+func (ac *AnimationController) BindBoneNode(name string, transform *game.Transform) {
 	newAnimationControlSpec := new(AnimationControlSpec)
 	newAnimationControlSpec.Name = name
 	newAnimationControlSpec.Index = ac.AM.IndexMap[name]

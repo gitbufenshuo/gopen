@@ -2,20 +2,19 @@ package gameobjects
 
 import (
 	"github.com/gitbufenshuo/gopen/game"
-	"github.com/gitbufenshuo/gopen/game/common"
 )
 
 // the empty object
 type NilObject struct {
 	id        int
-	Transform *common.Transform
+	Transform *game.Transform
 	gi        *game.GlobalInfo
 	logicS    []game.LogicSupportI
 }
 
 func NewNilObject(_gi *game.GlobalInfo) *NilObject {
 	var gb NilObject
-	gb.Transform = common.NewTransform()
+	gb.Transform = game.NewTransform()
 	gb.gi = _gi
 	return &gb
 }
@@ -32,7 +31,7 @@ func (gb *NilObject) ID_sg(_id ...int) int {
 	gb.id = _id[0]
 	return gb.id
 }
-func (gb *NilObject) GetTransform() *common.Transform {
+func (gb *NilObject) GetTransform() *game.Transform {
 	return gb.Transform
 }
 func (gb *NilObject) GetRenderSupport() game.RenderSupportI {

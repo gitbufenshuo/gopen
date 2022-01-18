@@ -5,7 +5,6 @@ import (
 
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
-	"github.com/gitbufenshuo/gopen/game/common"
 	"github.com/gitbufenshuo/gopen/gameex/uithing/primes"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
@@ -64,7 +63,7 @@ type UIButton struct {
 	renderComponent *resource.RenderComponent
 	enabled         bool
 	UISpec          game.UISpec
-	transform       *common.Transform
+	transform       *game.Transform
 	shaderOP        *game.ShaderOP
 	bling           bool
 	customDraw      func(shaderOP *game.ShaderOP)
@@ -129,7 +128,7 @@ func NewCustomButton(gi *game.GlobalInfo, buttonconfig ButtonConfig) *UIButton {
 	}
 
 	//
-	uibutton.transform = common.NewTransform()
+	uibutton.transform = game.NewTransform()
 	//
 	uibutton.uitext = primes.NewUIText(gi)
 	gi.AddUIObject(uibutton.uitext)
