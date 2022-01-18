@@ -106,7 +106,7 @@ func initLogic(gi *game.GlobalInfo) {
 			button := pk_basic_button.NewCustomButton(gi, pk_basic_button.ButtonConfig{
 				UISpec: buttonuispec,
 
-				Content: fmt.Sprintf("1个按钮"),
+				Content: fmt.Sprintf("1个 按钮"),
 				Bling:   false, // 是否闪烁
 				SortZ:   0.01,  // 渲染层级，越小的，越靠近人眼
 				// ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader

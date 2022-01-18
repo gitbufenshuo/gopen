@@ -17,8 +17,9 @@ type FontConfig struct {
 
 func NewFontConfig(tf *truetype.Font, face font.Face) *FontConfig {
 	return &FontConfig{
-		TextFont: tf,
-		FontFace: face,
+		TextFont:   tf,
+		FontFace:   face,
+		SpaceWidth: 5,
 	}
 }
 
@@ -47,6 +48,7 @@ func (fc *FontConfig) RenderText(content string) (*image.RGBA, int) {
 	for _, contD := range content {
 		if string(contD) == " " {
 			widthnow += fc.SpaceWidth
+			continue
 		}
 		awidth, ok := fc.FontFace.GlyphAdvance(rune(contD))
 		bounds, _, _ := fc.FontFace.GlyphBounds(rune(contD))
