@@ -408,7 +408,7 @@ func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
 	}
 }
 
-// 实例化 相当于 克隆一份
+// 实例化 相当于 克隆一份 todolist
 func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
 	res := gb.Clone()
 	return res

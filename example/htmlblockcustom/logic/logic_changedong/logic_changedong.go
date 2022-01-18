@@ -54,3 +54,6 @@ func (lc *LogicChangedong) Update(gb game.GameObjectI) {
 		}
 	}
 }
+func (lc *LogicChangedong) Clone() game.LogicSupportI {
+	return NewLogicChangedong(lc.gi)
+}

@@ -25,3 +25,6 @@ func (lj *LogicJump) Update(gb game.GameObjectI) {
 		fmt.Println("jump jump")
 	}
 }
+func (lj *LogicJump) Clone() game.LogicSupportI {
+	return NewLogicJump(lj.gi)
+}

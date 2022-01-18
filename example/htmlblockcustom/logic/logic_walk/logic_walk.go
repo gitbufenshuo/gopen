@@ -25,3 +25,6 @@ func (lj *LogicWalk) Update(gb game.GameObjectI) {
 		fmt.Println("walk walk")
 	}
 }
+func (lj *LogicWalk) Clone() game.LogicSupportI {
+	return NewLogicWalk(lj.gi)
+}

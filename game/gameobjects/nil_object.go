@@ -48,6 +48,9 @@ func (gb *NilObject) AddLogicSupport(logic game.LogicSupportI) {
 // 如果 embed NilObject , 则必须实现自己的 Clone
 func (gb *NilObject) Clone() game.GameObjectI {
 	newgb := NewNilObject(gb.gi)
-
+	logiclist := gb.GetLogicSupport()
+	for idx := range logiclist {
+		newgb.AddLogicSupport(logiclist[idx].Clone()) // 将 logicsupport 绑定
+	}
 	return newgb
 }
