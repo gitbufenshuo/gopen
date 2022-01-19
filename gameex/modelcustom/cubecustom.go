@@ -31,8 +31,8 @@ type GameObjectNodeSpec struct {
 
 // 读取一个文件，根据文件内容生成复合模型
 type CubeCustomTool struct {
-	gi *game.GlobalInfo
-	ac game.AnimationControllerI
+	gi     *game.GlobalInfo
+	acgbid int
 }
 
 func NewCubeCustomTool(gi *game.GlobalInfo) *CubeCustomTool {
@@ -61,8 +61,9 @@ func (cct *CubeCustomTool) LoadFromData(data []byte) *GameObjectNode {
 	blockrootnode := cct.FindBlockRoot(doc)
 	gbn := new(GameObjectNode)
 	cct.ScanNode(blockrootnode, gbn)
-	if cct.ac != nil {
-		cct.ac.RecordInitFrame()
+	if cct.acgbid != 0 {
+		ac := cct.gi.AnimationSystem.GetAC(cct.acgbid)
+		ac.RecordInitFrame()
 	}
 	return nil
 }
@@ -118,9 +119,10 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 	cct.gi.AddGameObject(gbn.GB)
 	if dongid, found := attrmap["dong"]; found {
 		if node.Data == "blockroot" { // 根节点可能指定动画id
-			cct.ac = cct.gi.AnimationSystem.CreateAC(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
+			cct.gi.AnimationSystem.CreateAC(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
+			cct.acgbid = gbn.GB.ID_sg()
 		} else {
-			cct.ac.BindBoneNode(dongid, gbn.GB.GetTransform())
+			cct.gi.AnimationSystem.BindBoneNode(cct.acgbid, dongid, gbn.GB.GetTransform())
 		}
 	}
 

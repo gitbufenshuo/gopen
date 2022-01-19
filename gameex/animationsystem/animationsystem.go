@@ -6,12 +6,21 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 )
 
+func NewAniMoving(gbid int, bonename string) *game.AniMoving {
+	res := new(game.AniMoving)
+	//
+	res.GBID = gbid
+	res.BoneName = bonename
+	return res
+}
+
 type AnimationSystem struct {
 	gi *game.GlobalInfo
 	//
 	AnimationMataMap map[string]*AnimationMeta
 	ACRuntimeList    map[int]*AnimationController // 这个是会执行的AC
 	ACStoreList      map[int]*AnimationController // 这个相当于AC库
+	MovingList       map[int][]*game.AniMoving
 }
 
 func NewAnimationSystem(gi *game.GlobalInfo) *AnimationSystem {
@@ -21,6 +30,8 @@ func NewAnimationSystem(gi *game.GlobalInfo) *AnimationSystem {
 	res.AnimationMataMap = make(map[string]*AnimationMeta)
 	res.ACRuntimeList = make(map[int]*AnimationController)
 	res.ACStoreList = make(map[int]*AnimationController)
+	//
+	res.MovingList = make(map[int][]*game.AniMoving)
 	return res
 }
 
@@ -34,6 +45,12 @@ func (as *AnimationSystem) GetAC(gbid int) game.AnimationControllerI {
 	}
 	return nil
 }
+func (as *AnimationSystem) GetMoving(gbid int) []*game.AniMoving {
+	if v, found := as.MovingList[gbid]; found {
+		return v
+	}
+	return nil
+}
 
 func (as *AnimationSystem) CreateAC(amname string, gbid int) game.AnimationControllerI {
 	am := as.AnimationMataMap[amname]
@@ -43,8 +60,33 @@ func (as *AnimationSystem) CreateAC(amname string, gbid int) game.AnimationContr
 	as.ACRuntimeList[gbid] = ac
 	as.ACStoreList[gbid] = ac
 	fmt.Println(">>>>>>CreateAnimationController", amname, gbid)
-	var aci game.AnimationControllerI = ac
-	return aci
+	return ac
+}
+
+func (as *AnimationSystem) CloneAC(oldgbid, newgbid int) game.AnimationControllerI {
+	ac := as.ACStoreList[oldgbid]
+	newac := ac.Clone() // NodeList 没有复制
+	as.ACRuntimeList[newgbid] = newac
+	as.ACStoreList[newgbid] = newac
+	return newac
+}
+
+// gbid: 主gameobject id
+func (as *AnimationSystem) BindBoneNode(gbid int, bonename string, transform *game.Transform) {
+	ac := as.GetAC(gbid)
+	ac.BindBoneNode(bonename, transform)
+	//
+	movingGBID := transform.GB.ID_sg()
+	newanimov := NewAniMoving(gbid, bonename)
+	as.addMovingList(movingGBID, newanimov)
+}
+
+func (as *AnimationSystem) addMovingList(gbid int, mov *game.AniMoving) {
+	if v, found := as.MovingList[gbid]; found {
+		v = append(v, mov)
+	} else {
+		as.MovingList[gbid] = []*game.AniMoving{mov}
+	}
 }
 
 // 一个 gameobject 被删除了
@@ -71,6 +113,10 @@ func (as *AnimationSystem) Start() {
 }
 
 func (as *AnimationSystem) Update() {
+	fmt.Println("AnimationSystem MovingList")
+	for gbid, list := range as.MovingList {
+		fmt.Println("          ", gbid, list[0].BoneName, list[0].GBID)
+	}
 	for _, oneac := range as.ACRuntimeList {
 		oneac.Update()
 	}

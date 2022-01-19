@@ -28,6 +28,18 @@ func (bs *BoneSatus) ToByte() []byte {
 	))
 }
 
+func (bs *BoneSatus) Clone() *BoneSatus {
+	newbs := new(BoneSatus)
+	var pos matmath.Vec4
+	newbs.Position = &pos
+	var rot matmath.Vec4
+	newbs.Rotation = &rot
+	//
+	newbs.Position.Clone(bs.Position)
+	newbs.Rotation.Clone(bs.Rotation)
+	return newbs
+}
+
 // 0|1|2|3|4|5
 func NewBoneStatusFromData(data string) *BoneSatus {
 	if data == "NONE" {
@@ -66,6 +78,16 @@ func NewAnimationFrameFromData(data string, boneNum int) *AnimationFrame {
 		af.StatusList = append(af.StatusList, NewBoneStatusFromData(segs[idx]))
 	}
 	return af
+}
+
+func (af *AnimationFrame) Clone() *AnimationFrame {
+	newaf := new(AnimationFrame)
+	newaf.StatusList = make([]*BoneSatus, len(af.StatusList))
+	//
+	for idx := range newaf.StatusList {
+		newaf.StatusList[idx] = af.StatusList[idx].Clone()
+	}
+	return newaf
 }
 
 type AnimationMeta struct {
@@ -196,11 +218,16 @@ func (ac *AnimationController) RecordInitFrame() {
 	}
 	ac.InitFrame = initFrame
 }
+
 func (ac *AnimationController) Clone() *AnimationController {
 	newac := NewAnimationController()
-
+	newac.InitFrame = ac.InitFrame.Clone()
+	newac.AM = ac.AM
+	newac.CurMode = ac.CurMode
+	newac.CurIndex = ac.CurIndex
 	return newac
 }
+
 func (ac *AnimationController) Update() {
 	initFrame := ac.InitFrame
 	list := ac.AM.AniMode[ac.CurMode]

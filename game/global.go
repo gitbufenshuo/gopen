@@ -429,8 +429,30 @@ func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
 		cres.GetTransform().SetParent(res.GetTransform())
 	}
 	//
-
+	oldac := gi.AnimationSystem.GetAC(gb.ID_sg())
+	if oldac != nil {
+		gi.AnimationSystem.CloneAC(gb.ID_sg(), res.ID_sg())
+		newchildren := res.GetTransform().Children
+		for idx := range newchildren {
+			gi.processAni(newchildren[idx].GB, gb.ID_sg(), res.ID_sg())
+		}
+	}
 	return res
+}
+
+func (gi *GlobalInfo) processAni(gb GameObjectI, oldgbid, newgbid int) {
+	fromgbid := gi.CloneRecord[gb.ID_sg()]
+	frommov := gi.AnimationSystem.GetMoving(fromgbid)
+	for idx := range frommov {
+		if frommov[idx].GBID == oldgbid {
+			gi.AnimationSystem.BindBoneNode(newgbid, frommov[idx].BoneName, gb.GetTransform())
+		}
+	}
+	//
+	children := gb.GetTransform().Children
+	for idx := range children {
+		gi.processAni(children[idx].GB, oldgbid, newgbid)
+	}
 }
 
 func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
