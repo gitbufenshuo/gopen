@@ -383,6 +383,7 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 		onelogic.OnDrawFinish(gb)
 	}
 }
+
 func (gi *GlobalInfo) drawSkyBox() {
 	var rotation = gi.MainCamera.Transform.RotationMAT4()
 	gi.MainCamera.CubeMapObject.shaderResource.Active()
@@ -395,22 +396,35 @@ func (gi *GlobalInfo) drawSkyBox() {
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
 
-// delete the gameobject and its children
-func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
+func (gi *GlobalInfo) delGameObject(gb GameObjectI) {
 	tr := gb.GetTransform()
-	tr.SetParent(nil)
 	////////////////////////////////////////////////////
-	gi.AnimationSystem.GameobjectDel(gb.ID_sg()) // 先删掉动画
-	delete(gi.gameobjects, gb.ID_sg())           // 从 map 里弄掉
+	delete(gi.gameobjects, gb.ID_sg()) // 从 map 里弄掉
 	children := tr.Children
 	for idx := range children {
-		gi.DelGameObject(children[idx].GB)
+		gi.delGameObject(children[idx].GB)
 	}
+}
+
+// delete the gameobject and its children
+// 将所有的 gameobjectid 从 map 中删掉
+// 将gb从transform树中摘掉
+// 注意，并没有删除动画系统中的数据
+func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
+	gi.delGameObject(gb)
+	tr := gb.GetTransform()
+	tr.SetParent(nil)
 }
 
 // 实例化 相当于 克隆一份 todolist
 func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
-	res := gb.Clone()
+	res := gb.Clone() // 克隆自身, 复用渲染资源, 克隆logic(肯定)
+	gi.AddGameObject(res)
+	gbtr := gb.GetTransform()
+	for idx := range gbtr.Children {
+		cres := gi.InstantiateGameObject(gbtr.Children[idx].GB)
+		cres.GetTransform().SetParent(res.GetTransform())
+	}
 	return res
 }
 

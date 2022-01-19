@@ -60,6 +60,9 @@ func (gb *BasicObject) AddLogicSupport(logic game.LogicSupportI) {
 // 如果 embed BasicObject , 则必须实现自己的 Clone
 func (gb *BasicObject) Clone() game.GameObjectI {
 	newgb := NewBasicObject(gb.gi, gb.modelname, gb.texturename, gb.shadername)
+	newgb.Transform.Postion.Clone(&gb.GetTransform().Postion)
+	newgb.Transform.Scale.Clone(&gb.GetTransform().Scale)
+	newgb.Transform.Rotation.Clone(&gb.GetTransform().Rotation)
 	logiclist := gb.GetLogicSupport()
 	for idx := range logiclist {
 		newgb.AddLogicSupport(logiclist[idx].Clone()) // 将 logicsupport 绑定

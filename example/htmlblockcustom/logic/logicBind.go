@@ -2,6 +2,7 @@ package logic
 
 import (
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_changedong"
+	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_clone"
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_jump"
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_walk"
 	"github.com/gitbufenshuo/gopen/game"
@@ -17,4 +18,8 @@ func BindCustomLogic(gi *game.GlobalInfo) {
 	gi.LogicSystem.BindLogicByName(gi,
 		"changedong", logic_changedong.NewLogicChangedong,
 	)
+	gi.LogicSystem.BindLogicByName(gi,
+		"clone", logic_clone.NewLogicClone,
+	)
+
 }

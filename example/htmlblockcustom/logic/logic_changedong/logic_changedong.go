@@ -33,7 +33,7 @@ func (lc *LogicChangedong) boot(gb game.GameObjectI) {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyS))
 	lc.gi.SetInputSystem(inputsystem.GetInputSystem())
 
-	lc.ac = lc.gi.AnimationSystem.GetAnimationController(gb.ID_sg())
+	lc.ac = lc.gi.AnimationSystem.GetAC(gb.ID_sg())
 	if lc.ac != nil {
 		lc.modelist = lc.ac.GetModeList()
 		fmt.Println("lc.modelist", lc.modelist)

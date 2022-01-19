@@ -8,8 +8,9 @@ type AnimationControllerI interface {
 	RecordInitFrame()
 }
 type AnimationSystemI interface {
-	CreateAnimationController(amname string, gbid int) AnimationControllerI
-	GetAnimationController(gbid int) AnimationControllerI
+	CreateAC(amname string, gbid int) AnimationControllerI
+	GetAC(gbid int) AnimationControllerI
 	GameobjectDel(gbid int)
+	GameobjectDetach(gbid int)
 	Update()
 }
