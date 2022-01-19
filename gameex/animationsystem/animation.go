@@ -142,6 +142,7 @@ type AnimationControlSpec struct {
 	Name      string
 	Index     int
 	transform *game.Transform
+	GBID      int
 }
 
 type AnimationController struct {
@@ -178,7 +179,7 @@ func (ac *AnimationController) BindBoneNode(name string, transform *game.Transfo
 	newAnimationControlSpec.Name = name
 	newAnimationControlSpec.Index = ac.AM.IndexMap[name]
 	newAnimationControlSpec.transform = transform
-
+	newAnimationControlSpec.GBID = transform.GB.ID_sg()
 	ac.NodeList = append(ac.NodeList, newAnimationControlSpec)
 	// ac.RecordInitFrame()
 }
@@ -195,7 +196,11 @@ func (ac *AnimationController) RecordInitFrame() {
 	}
 	ac.InitFrame = initFrame
 }
+func (ac *AnimationController) Clone() *AnimationController {
+	newac := NewAnimationController()
 
+	return newac
+}
 func (ac *AnimationController) Update() {
 	initFrame := ac.InitFrame
 	list := ac.AM.AniMode[ac.CurMode]

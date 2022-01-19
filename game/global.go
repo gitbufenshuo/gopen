@@ -57,6 +57,7 @@ type GlobalInfo struct {
 	CursorMode            int
 	InputSystemManager    InputSystemI
 	AnimationSystem       AnimationSystemI
+	CloneRecord           map[int]int // who clone who
 	LogicSystem           LogicSystemI
 	UICanvas              *UICanvas
 	//
@@ -72,6 +73,7 @@ func NewGlobalInfo(windowWidth, windowHeight int, title string) *GlobalInfo {
 	globalInfo.manageobjects = make(map[int]ManageObjectI)
 	globalInfo.uiobjects = make(map[int]UIObjectI)
 	globalInfo.CursorMode = glfw.CursorNormal
+	globalInfo.CloneRecord = make(map[int]int)
 	return globalInfo
 }
 
@@ -420,11 +422,14 @@ func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
 func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
 	res := gb.Clone() // 克隆自身, 复用渲染资源, 克隆logic(肯定)
 	gi.AddGameObject(res)
+	gi.CloneRecord[res.ID_sg()] = gb.ID_sg() // res 是由 gb 克隆的
 	gbtr := gb.GetTransform()
 	for idx := range gbtr.Children {
 		cres := gi.InstantiateGameObject(gbtr.Children[idx].GB)
 		cres.GetTransform().SetParent(res.GetTransform())
 	}
+	//
+
 	return res
 }
 
