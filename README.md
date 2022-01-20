@@ -6,15 +6,12 @@ Golang writen 3D render library and some game-relative concepts.
 ```
     # Find a directory which is not $GOPATH
     git clone https://github.com/gitbufenshuo/gopen
-    cd gopen
-    cd bins/gopeninit
-    go run main.go
 ```
 
 # try some examples
 
 ```
-    cd gopen/example/basic
+    cd gopen/example/htmlblockcustom
     go run main.go
 ```
 
