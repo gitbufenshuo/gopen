@@ -10,9 +10,10 @@ import (
 type LogicClone struct {
 	gi *game.GlobalInfo
 	*supports.NilLogic
+	NoClone bool // 不允许clone吗
 }
 
-func NewLogicClone(gi *game.GlobalInfo) game.LogicSupportI {
+func newLogicClone(gi *game.GlobalInfo) *LogicClone {
 	res := new(LogicClone)
 	//
 	res.NilLogic = supports.NewNilLogic()
@@ -20,8 +21,12 @@ func NewLogicClone(gi *game.GlobalInfo) game.LogicSupportI {
 	return res
 }
 
+func NewLogicClone(gi *game.GlobalInfo) game.LogicSupportI {
+	return newLogicClone(gi)
+}
+
 func (lc *LogicClone) Update(gb game.GameObjectI) {
-	if lc.gi.CurFrame == 100 {
+	if lc.gi.CurFrame == 100 && !lc.NoClone {
 		fmt.Println("LogicClone", gb.ID_sg())
 		newgb := lc.gi.InstantiateGameObject(gb)
 		newtr := newgb.GetTransform()
@@ -29,5 +34,7 @@ func (lc *LogicClone) Update(gb game.GameObjectI) {
 	}
 }
 func (lc *LogicClone) Clone() game.LogicSupportI {
-	return NewLogicClone(lc.gi)
+	newlc := newLogicClone(lc.gi)
+	newlc.NoClone = true
+	return newlc
 }

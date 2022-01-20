@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strings"
 
@@ -107,7 +108,7 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 			matmath.CreateVec4FromStr(attrmap["pivot"]),
 			matmath.CreateVec4FromStr(attrmap["size"]),
 		)
-		modelresourcename := fmt.Sprintf("html.%s.%d%p", node.Data, node.DataAtom, node)
+		modelresourcename := fmt.Sprintf("html.%s.%d%p%d", node.Data, node.DataAtom, node, rand.Int()%1000)
 		fmt.Println("modelresourcename", modelresourcename)
 		cct.gi.AssetManager.CreateModelSilent(modelresourcename, model)
 		gbn.GB = gameobjects.NewBasicObject(cct.gi, modelresourcename, attrmap["image"], "mvp_shader")
@@ -142,7 +143,7 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 		}
 	}
 
-	fmt.Println("ScanNode", gbn.GB)
+	fmt.Println("                   [ScanNode]", node.Data, node.Attr, gbn.GB.ID_sg())
 	// 考虑下级 跟链表一样
 	child := node.FirstChild
 	for ; child != nil; child = child.NextSibling {

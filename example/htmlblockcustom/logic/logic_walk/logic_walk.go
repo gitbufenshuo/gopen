@@ -1,8 +1,6 @@
 package logic_walk
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 )
@@ -21,9 +19,6 @@ func NewLogicWalk(gi *game.GlobalInfo) game.LogicSupportI {
 }
 
 func (lj *LogicWalk) Update(gb game.GameObjectI) {
-	if lj.gi.CurFrame%55 == 0 {
-		fmt.Println("walk walk")
-	}
 }
 func (lj *LogicWalk) Clone() game.LogicSupportI {
 	return NewLogicWalk(lj.gi)

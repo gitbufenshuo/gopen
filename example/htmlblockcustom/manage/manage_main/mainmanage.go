@@ -39,7 +39,7 @@ func (lm *ManageMain) Start() {
 }
 func (lm *ManageMain) Update() {
 	if lm.gi.CurFrame%100 == 0 {
-		fmt.Println("now object count:", len(lm.OjbectsMap))
+		// fmt.Println("now object count:", len(lm.OjbectsMap))
 	}
 	if lm.gi.CurFrame%3 == 0 {
 		if lm.Dir > 0 {

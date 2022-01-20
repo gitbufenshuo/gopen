@@ -455,6 +455,13 @@ func (gi *GlobalInfo) processAni(gb GameObjectI, oldgbid, newgbid int) {
 	}
 }
 
+func (gi *GlobalInfo) GetGameObject(gbid int) GameObjectI {
+	if res, found := gi.gameobjects[gbid]; found {
+		return res
+	}
+	return nil
+}
+
 func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 	gb.ID_sg(gi.nowID + 1)
 

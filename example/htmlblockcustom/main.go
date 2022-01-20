@@ -128,7 +128,7 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.Arrange()
 		gi.AddManageObject(tableLayout)
 	}
-	{
+	if false {
 		mm := manage_main.NewManageMain(gi)
 		gi.AddManageObject(mm)
 	}

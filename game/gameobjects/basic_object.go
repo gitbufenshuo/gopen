@@ -1,6 +1,8 @@
 package gameobjects
 
 import (
+	"fmt"
+
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 )
@@ -65,7 +67,12 @@ func (gb *BasicObject) Clone() game.GameObjectI {
 	newgb.Transform.Rotation.Clone(&gb.GetTransform().Rotation)
 	logiclist := gb.GetLogicSupport()
 	for idx := range logiclist {
-		newgb.AddLogicSupport(logiclist[idx].Clone()) // 将 logicsupport 绑定
+		newl := logiclist[idx].Clone()
+		fmt.Println(">>    >>   >>   >>  logiclist clone", idx, newl)
+		if newl == nil {
+			continue
+		}
+		newgb.AddLogicSupport(newl) // 将 logicsupport 绑定
 	}
 	return newgb
 }

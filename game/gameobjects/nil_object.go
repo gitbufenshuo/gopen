@@ -53,6 +53,10 @@ func (gb *NilObject) Clone() game.GameObjectI {
 	newgb.Transform.Rotation.Clone(&gb.GetTransform().Rotation)
 	logiclist := gb.GetLogicSupport()
 	for idx := range logiclist {
+		newl := logiclist[idx].Clone()
+		if newl == nil {
+			continue
+		}
 		newgb.AddLogicSupport(logiclist[idx].Clone()) // 将 logicsupport 绑定
 	}
 	return newgb

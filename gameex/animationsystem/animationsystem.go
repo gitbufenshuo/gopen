@@ -2,7 +2,6 @@ package animationsystem
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/gitbufenshuo/gopen/game"
 )
@@ -114,19 +113,24 @@ func (as *AnimationSystem) Start() {
 }
 
 func (as *AnimationSystem) Update() {
-	fmt.Println("AnimationSystem MovingList")
-	var printarr []string
-	for gbid, list := range as.MovingList {
-		// fmt.Println("          ", gbid, list[0].BoneName, list[0].GBID)
-		printarr = append(printarr,
-			fmt.Sprintf("        %d->%d:%s", list[0].GBID, gbid, list[0].BoneName))
-	}
-	sort.Slice(printarr, func(i, j int) bool {
-		return printarr[i] < printarr[j]
-	})
-	for idx := range printarr {
-		fmt.Println(printarr[idx])
-	}
+	// fmt.Println("AnimationSystem MovingList")
+	// var printarr []string
+	// for gbid, list := range as.MovingList {
+	// 	// fmt.Println("          ", gbid, list[0].BoneName, list[0].GBID)
+	// 	if fromwho, found := as.gi.CloneRecord[gbid]; found {
+	// 		printarr = append(printarr,
+	// 			fmt.Sprintf("        %d->%d(from:%d):%s", list[0].GBID, gbid, fromwho, list[0].BoneName))
+	// 	} else {
+	// 		printarr = append(printarr,
+	// 			fmt.Sprintf("        %d->%d(from:None):%s", list[0].GBID, gbid, list[0].BoneName))
+	// 	}
+	// }
+	// sort.Slice(printarr, func(i, j int) bool {
+	// 	return printarr[i] < printarr[j]
+	// })
+	// for idx := range printarr {
+	// 	fmt.Println(printarr[idx])
+	// }
 	for _, oneac := range as.ACRuntimeList {
 		oneac.Update()
 	}
