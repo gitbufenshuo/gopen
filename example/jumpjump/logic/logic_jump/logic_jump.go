@@ -118,20 +118,14 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 func (lj *LogicJump) PlayerMode_StaticUpdate(gb game.GameObjectI) {
 	///////////////////////
 	if inputsystem.GetInputSystem().KeyDown(int(glfw.KeySpace)) {
-		lj.playerMode = PlayerMode_Energy
-		lj.beginms = lj.gi.NowMS
+		lj.playerMode = PlayerMode_Jump
+		lj.logicposy = 0.0001
+		lj.vely = 30
+		lj.ac.ChangeMode("MOVING")
 	}
 }
 func (lj *LogicJump) PlayerMode_EnergyUpdate(gb game.GameObjectI) {
-	if !inputsystem.GetInputSystem().KeyPress(int(glfw.KeySpace)) {
-		lj.playerMode = PlayerMode_Jump
-		lj.ac.ChangeMode("MOVING")
-		lj.vely = float32(lj.gi.NowMS - lj.beginms)
-		if lj.vely > 30 {
-			lj.vely = 30
-		}
-		lj.logicposy = 0.0001
-	}
+
 }
 func (lj *LogicJump) PlayerMode_JumpUpdate(gb game.GameObjectI) {
 	fmt.Println("PlayerMode_JumpUpdate")
