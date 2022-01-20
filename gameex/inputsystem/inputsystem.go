@@ -24,6 +24,7 @@ type InputListenerQueue struct {
 	nowFrame   int            // 现在是哪一帧
 	//
 	justPress    bool    // 是否刚刚按下 // 只会持续一帧
+	conPress     bool    // 是否按下
 	justRelease  bool    // 是否放开 // 只会持续一帧
 	justDBClick  bool    // 是否双击 // 只会持续一帧
 	justTriClick bool    // 是否三击 // 只会持续一帧 // todolist
@@ -69,6 +70,10 @@ func (ilq *InputListenerQueue) CalcjustPress(ism *InputSystemManager) {
 		return
 	}
 	ilq.justPress = true
+}
+
+func (ilq *InputListenerQueue) CalcconPress(ism *InputSystemManager) {
+	ilq.conPress = ilq.stateNow == glfw.Press
 }
 
 func (ilq *InputListenerQueue) CalcjustRelease(ism *InputSystemManager) {
@@ -151,6 +156,8 @@ func (ilq *InputListenerQueue) CheckListener(ism *InputSystemManager) {
 	{
 		// justPress check
 		ilq.CalcjustPress(ism)
+		// conPress check
+		ilq.CalcconPress(ism)
 		// justRelease check
 		ilq.CalcjustRelease(ism)
 		// double click check
@@ -260,6 +267,9 @@ func (ism *InputSystemManager) ID_sg(_id ...int) int {
 
 func (ism *InputSystemManager) KeyDown(key int) bool {
 	return ism.keyList[key].justPress
+}
+func (ism *InputSystemManager) KeyPress(key int) bool {
+	return ism.keyList[key].conPress
 }
 func (ism *InputSystemManager) KeyUp(key int) bool {
 	return ism.keyList[key].justRelease

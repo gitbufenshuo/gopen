@@ -9,7 +9,7 @@ func NewNilLogic() *NilLogic {
 	return new(NilLogic)
 }
 
-func (nl *NilLogic) Start() {
+func (nl *NilLogic) Start(game.GameObjectI) {
 
 }
 func (nl *NilLogic) Update(game.GameObjectI) {

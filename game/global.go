@@ -167,7 +167,7 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		gl.ClearColor(0.5, 0.5, 0.5, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		// window.SwapBuffers()
-		time.Sleep(time.Millisecond * 20)
+		// time.Sleep(time.Millisecond * 20)
 		///////////////////////////////////////////////////
 		// the very update every frame
 		gi.update()
@@ -193,7 +193,7 @@ func (gi *GlobalInfo) startlogic() {
 	for _, gb := range gi.gameobjects {
 		logiclist := gb.GetLogicSupport()
 		for _, onelogic := range logiclist {
-			onelogic.Start()
+			onelogic.Start(gb)
 		}
 	}
 	for _, ub := range gi.uiobjects {
@@ -239,6 +239,9 @@ func (gi *GlobalInfo) dealWithTime(mode int) {
 		gi.NowMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
 		gi.ElapsedMS = gi.NowMS - gi.StartMS
 		gi.FrameElapsedMS = gi.NowMS - gi.LastFrameMS
+		if gi.FrameElapsedMS > 10000000000 {
+			gi.FrameElapsedMS = 0
+		}
 		gi.FrameRate = 1000 / gi.FrameElapsedMS
 	}
 	if mode == 2 { // frame ends
@@ -467,6 +470,11 @@ func (gi *GlobalInfo) AddGameObject(gb GameObjectI) {
 
 	gi.nowID++
 	gi.gameobjects[gb.ID_sg()] = gb
+
+	logiclist := gb.GetLogicSupport()
+	for _, onelogic := range logiclist {
+		onelogic.Start(gb)
+	}
 }
 func (gi *GlobalInfo) AddManageObject(mb ManageObjectI) {
 	mb.ID_sg(gi.nowMD + 1)

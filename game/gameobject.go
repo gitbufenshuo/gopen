@@ -19,7 +19,7 @@ type RenderSupportI interface {
 
 // 逻辑提供者
 type LogicSupportI interface {
-	Start()
+	Start(GameObjectI)
 	Update(GameObjectI)
 	OnDraw(GameObjectI)
 	OnDrawFinish(GameObjectI)

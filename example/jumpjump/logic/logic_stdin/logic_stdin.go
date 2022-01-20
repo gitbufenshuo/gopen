@@ -61,7 +61,7 @@ func (ls *LogicStdin) jianbian(gb game.GameObjectI) {
 		break
 	default:
 		ls.nowgbid++
-		ls.nowgbid %= 100
+		ls.nowgbid %= 30
 		thisgbid = ls.nowgbid
 	}
 	if gb := ls.gi.GetGameObject(thisgbid); gb != nil {

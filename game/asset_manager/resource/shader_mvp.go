@@ -41,6 +41,8 @@ var ShaderMVPText ShaderText = ShaderText{
 			light = 1;
 		}
 		outputColor.xyz *= light;
-		outputColor.xyz *= u_Color;
+		if (u_Color.x>0.01){
+			outputColor.xyz *= u_Color;
+		}
 	}`,
 }
