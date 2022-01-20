@@ -122,7 +122,9 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 			cct.gi.AnimationSystem.CreateAC(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
 			cct.acgbid = gbn.GB.ID_sg()
 		} else {
-			cct.gi.AnimationSystem.BindBoneNode(cct.acgbid, dongid, gbn.GB.GetTransform())
+			if dongid != "" {
+				cct.gi.AnimationSystem.BindBoneNode(cct.acgbid, dongid, gbn.GB.GetTransform())
+			}
 		}
 	}
 

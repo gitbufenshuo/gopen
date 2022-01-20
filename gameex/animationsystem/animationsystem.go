@@ -2,6 +2,7 @@ package animationsystem
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/gitbufenshuo/gopen/game"
 )
@@ -20,7 +21,7 @@ type AnimationSystem struct {
 	AnimationMataMap map[string]*AnimationMeta
 	ACRuntimeList    map[int]*AnimationController // 这个是会执行的AC
 	ACStoreList      map[int]*AnimationController // 这个相当于AC库
-	MovingList       map[int][]*game.AniMoving
+	MovingList       map[int][]*game.AniMoving    // gb 被AC管控Move。key 是 被管控gb的id
 }
 
 func NewAnimationSystem(gi *game.GlobalInfo) *AnimationSystem {
@@ -114,8 +115,17 @@ func (as *AnimationSystem) Start() {
 
 func (as *AnimationSystem) Update() {
 	fmt.Println("AnimationSystem MovingList")
+	var printarr []string
 	for gbid, list := range as.MovingList {
-		fmt.Println("          ", gbid, list[0].BoneName, list[0].GBID)
+		// fmt.Println("          ", gbid, list[0].BoneName, list[0].GBID)
+		printarr = append(printarr,
+			fmt.Sprintf("        %d->%d:%s", list[0].GBID, gbid, list[0].BoneName))
+	}
+	sort.Slice(printarr, func(i, j int) bool {
+		return printarr[i] < printarr[j]
+	})
+	for idx := range printarr {
+		fmt.Println(printarr[idx])
 	}
 	for _, oneac := range as.ACRuntimeList {
 		oneac.Update()
