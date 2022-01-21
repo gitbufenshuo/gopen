@@ -103,11 +103,22 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 		fmt.Println(node.Data, "pivot", attrmap["pivot"])
 		fmt.Println(node.Data, "size", attrmap["size"])
 		fmt.Println(node.Data, "image", attrmap["image"])
-
-		model := resource.NewBlockModel_BySpec(
-			matmath.CreateVec4FromStr(attrmap["pivot"]),
-			matmath.CreateVec4FromStr(attrmap["size"]),
-		)
+		var modelkind = "block"
+		if modelv, modelfound := attrmap["model"]; modelfound {
+			modelkind = modelv
+		}
+		var model *resource.Model
+		if modelkind == "block" {
+			model = resource.NewBlockModel_BySpec(
+				matmath.CreateVec4FromStr(attrmap["pivot"]),
+				matmath.CreateVec4FromStr(attrmap["size"]),
+			)
+		} else {
+			model = resource.NewSphereModel_BySpec(
+				matmath.CreateVec4FromStr(attrmap["pivot"]),
+				matmath.CreateVec4FromStr(attrmap["size"]),
+			)
+		}
 		modelresourcename := fmt.Sprintf("html.%s.%d%p%d", node.Data, node.DataAtom, node, rand.Int()%1000)
 		fmt.Println("modelresourcename", modelresourcename)
 		cct.gi.AssetManager.CreateModelSilent(modelresourcename, model)

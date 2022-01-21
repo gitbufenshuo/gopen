@@ -188,3 +188,20 @@ func GenOrthographicMat4(near, far float32, topdown, aspect float32) MAT4 {
 	res.SetEleByRowAndCol(3, 4, -(far+near)/(far-near))
 	return res
 }
+
+func RotateY(vec Vec4, y float32) Vec4 {
+	var mat MAT4
+	mat.ToIdentity()
+	//
+	rotation := CreateVec4(0, y, 0, 1)
+	mat.Rotate(&rotation)
+	return vec.LeftMulMAT(mat)
+}
+func RotateX(vec Vec4, x float32) Vec4 {
+	var mat MAT4
+	mat.ToIdentity()
+	//
+	rotation := CreateVec4(x, 0, 0, 1)
+	mat.Rotate(&rotation)
+	return vec.LeftMulMAT(mat)
+}
