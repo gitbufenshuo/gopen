@@ -31,7 +31,7 @@ var ShaderMVPText ShaderText = ShaderText{
 	out vec4 outputColor;
 	
 	void main() {
-		vec3 directLightSource = vec3(1,-1,1);
+		vec3 directLightSource = vec3(1,1,1);
 		outputColor = texture(tex, fragTexCoord);
 		float light = dot(fragVertNormal, directLightSource);
 		if (outputColor.w<0.5) {
@@ -40,6 +40,10 @@ var ShaderMVPText ShaderText = ShaderText{
 		if (light > 1){
 			light = 1;
 		}
+		if(light < 0){
+			light = 0.2;
+		}
+
 		outputColor.xyz *= light;
 		if (u_Color.x>0.01){
 			outputColor.xyz *= u_Color;
