@@ -115,5 +115,15 @@ func NewSphereModel_BySpec(pivot, size matmath.Vec4) *Model {
 	baseindex = append(baseindex, baseindex[len(baseindex)-1]+1, baseindex[len(baseindex)-1]+2, baseindex[len(baseindex)-1]+3)
 	res.Vertices = append(res.Vertices, basever...)
 	res.Indices = append(res.Indices, baseindex...)
+	///////////////////////////////////////////////
+	// 1. 考虑 size
+	sizex, sizey, sizez := size.GetValue3()
+	for idx := 0; idx != 78; idx++ {
+		res.Vertices[idx*8+0] *= sizex
+		res.Vertices[idx*8+1] *= sizey
+		res.Vertices[idx*8+2] *= sizez
+	}
+	///////////////////////////////////////////////
+	// 2. 考虑 pivot
 	return res
 }
