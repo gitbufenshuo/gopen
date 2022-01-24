@@ -117,13 +117,33 @@ func NewSphereModel_BySpec(pivot, size matmath.Vec4) *Model {
 	res.Indices = append(res.Indices, baseindex...)
 	///////////////////////////////////////////////
 	// 1. 考虑 size
+	var maxx, maxy, maxz float32
+	var minx, miny, minz float32
 	sizex, sizey, sizez := size.GetValue3()
 	for idx := 0; idx != 78; idx++ {
 		res.Vertices[idx*8+0] *= sizex
 		res.Vertices[idx*8+1] *= sizey
 		res.Vertices[idx*8+2] *= sizez
+		if maxx < res.Vertices[idx*8+0] {
+			maxx = res.Vertices[idx*8+0]
+		}
+		if maxy < res.Vertices[idx*8+1] {
+			maxy = res.Vertices[idx*8+1]
+		}
+		if maxz < res.Vertices[idx*8+2] {
+			maxz = res.Vertices[idx*8+2]
+		}
 	}
+	minx, miny, minz = -maxx, -maxy, -maxz
 	///////////////////////////////////////////////
 	// 2. 考虑 pivot
+	pivotx, pivoty, pivotz := pivot.GetValue3()
+	xoff, yoff, zoff := (minx-maxx)*pivotx/2, (miny-maxy)*pivoty/2, (minz-maxz)*pivotz/2
+	//
+	for idx := 0; idx != 78; idx++ {
+		res.Vertices[idx*8+0] += xoff
+		res.Vertices[idx*8+1] += yoff
+		res.Vertices[idx*8+2] += zoff
+	}
 	return res
 }

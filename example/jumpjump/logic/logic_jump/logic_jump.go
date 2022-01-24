@@ -1,8 +1,6 @@
 package logic_jump
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
@@ -128,7 +126,7 @@ func (lj *LogicJump) PlayerMode_EnergyUpdate(gb game.GameObjectI) {
 
 }
 func (lj *LogicJump) PlayerMode_JumpUpdate(gb game.GameObjectI) {
-	fmt.Println("PlayerMode_JumpUpdate")
+
 	if lj.logicposy < 0 {
 		lj.playerMode = PlayerMode_Static
 		lj.ac.ChangeMode("__init")
