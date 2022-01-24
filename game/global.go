@@ -253,6 +253,9 @@ func (gi *GlobalInfo) dealWithTime(mode int) {
 			fmt.Println(string(info))
 		}
 	}
+	if gi.FrameElapsedMS < 16 {
+		time.Sleep(time.Millisecond * time.Duration(16-gi.FrameElapsedMS))
+	}
 }
 func (gi *GlobalInfo) update() {
 	gi.CurFrame++
