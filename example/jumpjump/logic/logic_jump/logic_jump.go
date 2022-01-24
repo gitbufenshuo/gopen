@@ -23,6 +23,7 @@ type LogicJump struct {
 	beginms              float64
 	velx, vely           float32 // 当前速度
 	logicposx, logicposy float32
+	logicroty            float32
 	gravity              float32
 	//
 	ac game.AnimationControllerI
@@ -75,6 +76,7 @@ func (lj *LogicJump) onAD(gb game.GameObjectI) {
 		if nowmode != "MOVING" {
 			lj.ac.ChangeMode("MOVING")
 		}
+		lj.logicroty = -90
 		return
 	}
 	if dpressed {
@@ -82,6 +84,7 @@ func (lj *LogicJump) onAD(gb game.GameObjectI) {
 		if nowmode != "MOVING" {
 			lj.ac.ChangeMode("MOVING")
 		}
+		lj.logicroty = 90
 		return
 	}
 	if nowmode == "MOVING" {
@@ -111,6 +114,8 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	gb.GetTransform().Postion.SetValue2(
 		lj.logicposx, lj.logicposy,
 	)
+	rawroty := gb.GetTransform().Rotation.GetIndexValue(1)
+	gb.GetTransform().Rotation.SetIndexValue(1, (lj.logicroty-rawroty)/10+rawroty)
 }
 
 func (lj *LogicJump) PlayerMode_StaticUpdate(gb game.GameObjectI) {
