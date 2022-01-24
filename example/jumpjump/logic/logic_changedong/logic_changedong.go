@@ -30,7 +30,7 @@ func NewLogicChangedong(gi *game.GlobalInfo) game.LogicSupportI {
 func (lc *LogicChangedong) boot(gb game.GameObjectI) {
 	// input system
 	inputsystem.InitInputSystem(lc.gi)
-	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyS))
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyTab))
 	lc.gi.SetInputSystem(inputsystem.GetInputSystem())
 
 	lc.ac = lc.gi.AnimationSystem.GetAC(gb.ID_sg())
@@ -46,7 +46,7 @@ func (lc *LogicChangedong) Update(gb game.GameObjectI) {
 		lc.bootok = true
 		return
 	}
-	if lc.gi.InputSystemManager.KeyUp(int(glfw.KeyS)) {
+	if lc.gi.InputSystemManager.KeyUp(int(glfw.KeyTab)) {
 		if lc.ac != nil {
 			lc.modeidx++
 			lc.modeidx %= len(lc.modelist)
