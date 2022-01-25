@@ -157,6 +157,7 @@ func LoadAnimationMetaFromData(data []byte) *AnimationMeta {
 
 func LoadAnimationMetaFromFile(filename string) *AnimationMeta {
 	data, _ := ioutil.ReadFile(filename)
+	fmt.Println("Begin LoadAnimationMetaFromFile", filename)
 	return LoadAnimationMetaFromData(data)
 }
 
