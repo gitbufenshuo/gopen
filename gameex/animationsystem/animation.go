@@ -71,7 +71,7 @@ func NewAnimationFrameFromData(data string, boneNum int) *AnimationFrame {
 	//
 	segs := strings.Split(data, ",")
 	if len(segs) != boneNum {
-		fmt.Println(segs)
+		fmt.Println(segs, boneNum)
 		os.Exit(1)
 	}
 	for idx := range segs {
