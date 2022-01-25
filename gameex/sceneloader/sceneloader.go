@@ -88,6 +88,9 @@ func (sl *SceneLoader) LoadDongList() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		text := scanner.Text()
+		if strings.HasPrefix(text, "//") {
+			continue
+		}
 		segs := strings.Split(text, " ")
 		dongname, dongpath := segs[0], segs[1]
 		path := path.Join(sl.SpecPath, "asset", dongpath)
