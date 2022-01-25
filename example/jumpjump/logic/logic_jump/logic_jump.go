@@ -161,7 +161,8 @@ func (lj *LogicJump) onForce(gb game.GameObjectI) {
 	}
 	//
 	deltams := float32(lj.gi.FrameElapsedMS / 1000) // 单位变成秒
-	mergeforce := lj.gravity + upForce              // 合力
+	fmt.Println("onForce", deltams)
+	mergeforce := lj.gravity + upForce // 合力
 	lj.vely += (mergeforce * deltams) * 10
 	lj.logicposy += lj.vely * deltams
 	lj.logicposx += lj.velx * deltams

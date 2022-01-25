@@ -234,32 +234,34 @@ func (gi *GlobalInfo) Boot() {
 	gi.StartMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
 
 }
-func (gi *GlobalInfo) dealWithTime(mode int) {
+func (gi *GlobalInfo) dealWithTime(mode int) bool {
+	nowms := float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
+	if nowms-gi.LastFrameMS < 20 {
+		return false
+	}
 	if mode == 1 { // new frame begins
-		gi.NowMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
+		gi.LastFrameMS = gi.NowMS
+		if gi.LastFrameMS < 100 {
+			gi.LastFrameMS = nowms
+		}
+		gi.NowMS = nowms
 		gi.ElapsedMS = gi.NowMS - gi.StartMS
 		gi.FrameElapsedMS = gi.NowMS - gi.LastFrameMS
-		if gi.FrameElapsedMS > 10000000000 {
-			gi.FrameElapsedMS = 0
-		}
 		gi.FrameRate = 1000 / gi.FrameElapsedMS
 	}
-	if mode == 2 { // frame ends
-		gi.LastFrameMS = gi.NowMS
-	}
+	gi.CurFrame++
 	if mode == 0 { // only for print
 		if gi.GlobalFrameInfo.Debug {
 			info, _ := json.Marshal(gi.GlobalFrameInfo)
 			fmt.Println(string(info))
 		}
 	}
-	if gi.FrameElapsedMS < 16 {
-		time.Sleep(time.Millisecond * time.Duration(16-gi.FrameElapsedMS))
-	}
+	return true
 }
 func (gi *GlobalInfo) update() {
-	gi.CurFrame++
-	gi.dealWithTime(1)
+	if !gi.dealWithTime(1) {
+		return
+	}
 	// gi.dealWithTime(0)
 	if gi.InputSystemManager != nil {
 		gi.InputSystemManager.Update()
@@ -308,7 +310,6 @@ func (gi *GlobalInfo) update() {
 			}
 		}
 	}
-	gi.dealWithTime(2)
 }
 func (gi *GlobalInfo) draw() {
 	// gi.dealWithTime(0)
