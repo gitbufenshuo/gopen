@@ -33,6 +33,9 @@ func NewBoneStatusFromData(data string) *BoneSatus {
 		data = "0.000000|0.000000|0.000000|0.000000|0.000000|0.000000"
 	}
 	segs := strings.Split(data, "|")
+	if len(segs) != 6 {
+		fmt.Println("NewBoneStatusFromData:", data)
+	}
 	px, py, pz, rx, ry, rz := help.Str2Float32(segs[0]), help.Str2Float32(segs[1]), help.Str2Float32(segs[2]), help.Str2Float32(segs[3]), help.Str2Float32(segs[4]), help.Str2Float32(segs[5])
 	return NewBoneSatus(px, py, pz, rx, ry, rz)
 }
