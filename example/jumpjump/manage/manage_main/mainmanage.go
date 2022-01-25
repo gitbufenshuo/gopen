@@ -2,22 +2,24 @@ package manage_main
 
 import (
 	"fmt"
-	"math/rand"
 
+	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
 	"github.com/gitbufenshuo/gopen/game"
-	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
-	"github.com/gitbufenshuo/gopen/game/supports/logicinner"
-	"github.com/gitbufenshuo/gopen/matmath"
+	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/gameex/sceneloader"
+	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 type ManageMain struct {
 	gi *game.GlobalInfo
 	*gameobjects.NilManageObject
 	//
-	modelresourcename string
-	OjbectsMap        map[int]game.GameObjectI
-	Dir               int
+	which          int
+	MainPlayer     game.GameObjectI
+	MainPlayerJump *logic_jump.LogicJump
+	SubPlayer      game.GameObjectI
+	SubPlayerJump  *logic_jump.LogicJump
 }
 
 func NewManageMain(gi *game.GlobalInfo) *ManageMain {
@@ -25,48 +27,56 @@ func NewManageMain(gi *game.GlobalInfo) *ManageMain {
 	//
 	res.NilManageObject = gameobjects.NewNilManageObject()
 	res.gi = gi
-	res.OjbectsMap = make(map[int]game.GameObjectI)
 	return res
 }
+
 func (lm *ManageMain) Start() {
-	model := resource.NewBlockModel_BySpec(
-		matmath.CreateVec4FromStr("0,0,0,0"),
-		matmath.CreateVec4FromStr("1,1,1,1"),
-	)
-	lm.modelresourcename = "code.logicmain"
-	fmt.Println("modelresourcename", lm.modelresourcename)
-	lm.gi.AssetManager.CreateModelSilent(lm.modelresourcename, model)
-}
-func (lm *ManageMain) Update() {
-	if lm.gi.CurFrame%100 == 0 {
-		// fmt.Println("now object count:", len(lm.OjbectsMap))
+	inputsystem.InitInputSystem(lm.gi)
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyP))
+
+	lm.MainPlayer = sceneloader.FindGameobjectByName("scenespec", "MainPlayer")
+	logiclist := lm.MainPlayer.GetLogicSupport()
+	for idx := range logiclist {
+		if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
+			lm.MainPlayerJump = v
+			lm.MainPlayerJump.Chosen = true
+		}
 	}
-	if lm.gi.CurFrame%3 == 0 {
-		if lm.Dir > 0 {
-			for idx := 0; idx != 10; idx++ {
-				gb := gameobjects.NewBasicObject(lm.gi, lm.modelresourcename, "body.png.texture", "mvp_shader")
-				lm.gi.AddGameObject(gb)
-				gb.AddLogicSupport(logicinner.NewLogicRotate("1,1,1,1"))
-				gb.Transform.Postion.SetValue3(10*rand.Float32()-5, 10+0.10*rand.Float32(), 10*rand.Float32()-5)
-				gb.Transform.Scale.SetValue3(rand.Float32(), rand.Float32(), rand.Float32())
-				lm.OjbectsMap[gb.ID_sg()] = gb
-			}
-			if len(lm.OjbectsMap) > 100 {
-				lm.Dir = -1
-				return
-			}
-		} else {
-			for idx := 0; idx != 10; idx++ {
-				for k, v := range lm.OjbectsMap {
-					lm.gi.DelGameObject(v)
-					delete(lm.OjbectsMap, k)
-					break
-				}
-			}
-			if len(lm.OjbectsMap) == 0 {
-				lm.Dir = 1
-				return
+}
+
+func (lm *ManageMain) clonePlayer() {
+	if lm.SubPlayerJump != nil {
+		return
+	}
+	logicx := lm.MainPlayerJump.GetLogicPosX()
+	if lm.gi.CurFrame%30 == 0 {
+		fmt.Println("MainPlayerLogicX", logicx)
+	}
+	if logicx < -5 {
+		lm.SubPlayer = lm.gi.InstantiateGameObject(lm.MainPlayer)
+		logiclist := lm.SubPlayer.GetLogicSupport()
+		for idx := range logiclist {
+			if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
+				lm.SubPlayerJump = v
 			}
 		}
+	}
+}
+
+func (lm *ManageMain) Update() {
+	lm.clonePlayer()
+	if lm.SubPlayerJump == nil {
+		return
+	}
+	if inputsystem.GetInputSystem().KeyDown(int(glfw.KeyP)) {
+		lm.which++
+	}
+	//
+	if lm.which%2 == 0 {
+		lm.MainPlayerJump.Chosen = true
+		lm.SubPlayerJump.Chosen = false
+	} else {
+		lm.MainPlayerJump.Chosen = false
+		lm.SubPlayerJump.Chosen = true
 	}
 }

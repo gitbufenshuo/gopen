@@ -110,7 +110,7 @@ func initLogic(gi *game.GlobalInfo) {
 			button := pk_basic_button.NewCustomButton(gi, pk_basic_button.ButtonConfig{
 				UISpec: buttonuispec,
 
-				Content: fmt.Sprintf("s键切换动作"),
+				Content: fmt.Sprintf("TAB键切换动作"),
 				Bling:   false, // 是否闪烁
 				SortZ:   0.01,  // 渲染层级，越小的，越靠近人眼
 				// ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader
@@ -129,7 +129,7 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.Arrange()
 		gi.AddManageObject(tableLayout)
 	}
-	if false {
+	if true {
 		mm := manage_main.NewManageMain(gi)
 		gi.AddManageObject(mm)
 	}

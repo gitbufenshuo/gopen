@@ -22,6 +22,15 @@ type SceneLoader struct {
 	cct         *modelcustom.CubeCustomTool
 	SpecPath    string // 路径
 	TextureList []string
+	//
+	GameMap map[string]game.GameObjectI
+}
+
+var SceneLoaderMap map[string]*SceneLoader
+
+func FindGameobjectByName(scpath, gbname string) game.GameObjectI {
+	scene := SceneLoaderMap[scpath]
+	return scene.GameMap[gbname]
 }
 
 func NewSceneLoader(gi *game.GlobalInfo, specpath string) *SceneLoader {
@@ -29,6 +38,11 @@ func NewSceneLoader(gi *game.GlobalInfo, specpath string) *SceneLoader {
 	res.gi = gi
 	res.SpecPath = specpath
 	res.cct = modelcustom.NewCubeCustomTool(gi)
+	res.GameMap = make(map[string]game.GameObjectI)
+	if SceneLoaderMap == nil {
+		SceneLoaderMap = make(map[string]*SceneLoader)
+	}
+	SceneLoaderMap[specpath] = res
 	return res
 }
 
@@ -70,7 +84,8 @@ func (sl *SceneLoader) LoadCubeModelList() {
 		segs := strings.Split(text, " ")
 		_, cubepath := segs[0], segs[1]
 		path := path.Join(sl.SpecPath, "asset", cubepath)
-		sl.cct.LoadFromFile(path)
+		gon := sl.cct.LoadFromFile(path)
+		sl.GameMap[gon.Name] = gon.GB
 	}
 }
 

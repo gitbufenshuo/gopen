@@ -66,7 +66,7 @@ func (cct *CubeCustomTool) LoadFromData(data []byte) *GameObjectNode {
 		ac := cct.gi.AnimationSystem.GetAC(cct.acgbid)
 		ac.RecordInitFrame()
 	}
-	return nil
+	return gbn
 }
 func (cct *CubeCustomTool) FindBlockRoot(node *html.Node) *html.Node {
 	if node.Data == "blockroot" {
