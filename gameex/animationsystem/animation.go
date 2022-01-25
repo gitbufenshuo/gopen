@@ -106,12 +106,12 @@ func LoadAnimationMetaFromData(data []byte) *AnimationMeta {
 	split := []byte("\n--------------------------\n")
 	modeList := bytes.Split(data, split)
 	////////////////////////////////////
+	boneNum := 0
 	for _, onemodeData := range modeList {
 		buffer := bytes.NewBuffer(onemodeData)
 		scanner := bufio.NewScanner(buffer)
 		descline := "" // __init 6
 		mode := ""
-		boneNum := 6
 		linenum := 0
 		aflist := []*AnimationFrame{}
 		for scanner.Scan() { // 扫描一行
@@ -122,10 +122,14 @@ func LoadAnimationMetaFromData(data []byte) *AnimationMeta {
 				if strings.Contains(descline, " ") {
 					descsegs := strings.Split(descline, " ")
 					mode = descsegs[0]
-					boneNum = help.Str2Int(descsegs[1])
+					if boneNum == 0 {
+						boneNum = help.Str2Int(descsegs[1])
+					}
 				} else {
 					mode = descline
-					boneNum = 6
+					if boneNum == 0 {
+						boneNum = 6
+					}
 				}
 				linenum++
 				continue
