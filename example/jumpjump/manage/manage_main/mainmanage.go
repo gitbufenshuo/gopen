@@ -2,6 +2,7 @@ package manage_main
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
@@ -17,6 +18,7 @@ type ManageMain struct {
 	*gameobjects.NilManageObject
 	UserMap map[string]int
 	UID     string // 自己的uid
+	Login   bool
 	//
 	which          int64 // which player is this client
 	MainPlayer     game.GameObjectI
@@ -30,6 +32,8 @@ type ManageMain struct {
 	turnMsgLocal commmsg.JumpMSGTurn
 	frame        int
 	Turn         int64 // 回合
+	//
+	serverConn net.Conn
 }
 
 func NewManageMain(gi *game.GlobalInfo) *ManageMain {
@@ -41,13 +45,21 @@ func NewManageMain(gi *game.GlobalInfo) *ManageMain {
 	res.which = -1
 	res.InMsgChan = make(chan commmsg.JumpMSGTurn, 100)
 	res.OutMsgChan = make(chan commmsg.JumpMSGTurn, 100)
-	go res.fakeServer()
+
 	return res
 }
 
-func (lm *ManageMain) fakeServer() {
+func (lm *ManageMain) sendToServer() {
 	for msglist := range lm.OutMsgChan {
-		lm.InMsgChan <- msglist
+		commmsg.WriteJumpMSGTurn([]net.Conn{lm.serverConn}, msglist)
+	}
+}
+
+func (lm *ManageMain) readFromServer() {
+	for {
+		msg := commmsg.ReadOnePack(lm.serverConn)
+		//fmt.Println("read from server turn:", msg.Turn, msg.List, "lenuser", len(lm.UserMap))
+		lm.InMsgChan <- msg
 	}
 }
 
@@ -69,6 +81,17 @@ func (lm *ManageMain) Start() {
 			lm.MainPlayerJump.Chosen = true
 		}
 	}
+	lm.connect()
+}
+
+func (lm *ManageMain) connect() {
+	conn, err := net.Dial("tcp", "127.0.0.1:9090")
+	if err != nil {
+		panic(err)
+	}
+	lm.serverConn = conn
+	go lm.sendToServer()
+	go lm.readFromServer()
 }
 
 func (lm *ManageMain) clonePlayer() {
@@ -106,8 +129,9 @@ func (lm *ManageMain) Update() {
 		lm.OutMsgChan <- lm.turnMsgLocal
 		lm.turnMsgLocal.List = nil
 		// 接收服务器指令
+		//fmt.Println("准备接受服务器指令")
 		inmsglist := <-lm.InMsgChan
-		fmt.Println("inmsglist", inmsglist.Turn, lm.Turn)
+		//fmt.Println("inmsglist", inmsglist.Turn, lm.Turn, len(inmsglist.List))
 		for _, onemsg := range inmsglist.List {
 			lm.MSG_Update(onemsg)
 		}
@@ -157,7 +181,7 @@ func (lm *ManageMain) Local_WSAD_Collect() {
 }
 
 func (lm *ManageMain) Local_Login_Collect() {
-	if lm.which != -1 {
+	if lm.Login {
 		return
 	}
 	if inputsystem.GetInputSystem().KeyDown(int(glfw.KeyP)) {
@@ -175,12 +199,16 @@ func (lm *ManageMain) Local_Login_Collect() {
 func (lm *ManageMain) MSG_Update(msg commmsg.JumpMSGOne) {
 	if msg.Kind == "login" {
 		if _, found := lm.UserMap[msg.UID]; found {
+			fmt.Println("msg.UID found ", msg.UID)
 			return
 		} else {
 			lm.UserMap[msg.UID] = int(lm.which) + 1
 			lm.which++
 		}
 		which := lm.UserMap[msg.UID]
+		if msg.UID == lm.UID {
+			lm.Login = true
+		}
 		fmt.Printf("{login}, (%s:%d)\n", msg.UID, which)
 	} else if msg.Kind == "move" {
 		// 通过 uid 找到 which
@@ -188,10 +216,14 @@ func (lm *ManageMain) MSG_Update(msg commmsg.JumpMSGOne) {
 			return // two player login then begin the game
 		}
 		if which, found := lm.UserMap[msg.UID]; found {
+			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
 			if which == 0 {
-				fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
 				lm.MainPlayerJump.Velx = msg.MoveValX
 				lm.MainPlayerJump.Velz = msg.MoveValZ
+			}
+			if which == 1 {
+				lm.SubPlayerJump.Velx = msg.MoveValX
+				lm.SubPlayerJump.Velz = msg.MoveValZ
 			}
 		}
 	}

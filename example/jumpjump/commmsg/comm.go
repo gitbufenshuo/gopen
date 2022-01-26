@@ -50,13 +50,16 @@ func WriteFixedBytes(conn net.Conn, buffer []byte) error {
 
 func ReadBytesToInt(conn net.Conn) int64 {
 	buffer := make([]byte, 8)
-	ReadFixBytes(conn, buffer)
+	if err := ReadFixBytes(conn, buffer); err != nil {
+		panic(err)
+	}
 	datalen := binary.BigEndian.Uint64(buffer)
 	return int64(datalen)
 }
 
 func ReadOnePack(conn net.Conn) JumpMSGTurn {
 	datalen := ReadBytesToInt(conn)
+	// fmt.Println("datalen := ReadBytesToInt(conn)", datalen)
 	buffer := make([]byte, datalen)
 	ReadFixBytes(conn, buffer)
 	var res JumpMSGTurn
