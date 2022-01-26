@@ -237,7 +237,7 @@ func (gi *GlobalInfo) dealWithTime(mode int) bool {
 	if nowms-gi.NowMS < 16 {
 		return false
 	}
-	fmt.Println("dealwithtime prev", nowms-gi.NowMS)
+
 	if mode == 1 { // new frame begins
 		gi.LastFrameMS = gi.NowMS
 		if gi.LastFrameMS < 100 {
@@ -246,7 +246,6 @@ func (gi *GlobalInfo) dealWithTime(mode int) bool {
 		gi.NowMS = nowms
 		gi.ElapsedMS = gi.NowMS - gi.StartMS
 		gi.FrameElapsedMS = gi.NowMS - gi.LastFrameMS
-		fmt.Println("dealWithTime", gi.FrameElapsedMS, gi.NowMS, gi.LastFrameMS)
 		gi.FrameRate = 1000 / gi.FrameElapsedMS
 	}
 	gi.CurFrame++
