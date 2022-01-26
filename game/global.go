@@ -141,7 +141,6 @@ func (gi *GlobalInfo) StartGame(mode string) {
 
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	fmt.Println("OpenGL version", version)
-	var frame_number int
 	gi.Boot()
 	gl.Enable(gl.DEPTH_TEST)
 	gl.Enable(gl.CULL_FACE)
@@ -163,11 +162,12 @@ func (gi *GlobalInfo) StartGame(mode string) {
 	gi.startlogic()
 	// start hook
 	for !window.ShouldClose() {
-		// time.Sleep(time.Millisecond * 10)
+		if !gi.dealWithTime(1) {
+			continue
+		}
 		gl.ClearColor(0.5, 0.5, 0.5, 1)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		// window.SwapBuffers()
-		// time.Sleep(time.Millisecond * 20)
 		///////////////////////////////////////////////////
 		// the very update every frame
 		gi.update()
@@ -176,9 +176,8 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		///////////////////////////////////////////////////
 		// Maintenance
 		window.SwapBuffers()
-		// time.Sleep(time.Second)
 		glfw.PollEvents()
-		frame_number++
+
 	}
 
 }
@@ -232,13 +231,13 @@ func (gi *GlobalInfo) Boot() {
 	}
 	gi.GlobalFrameInfo = new(GlobalFrameInfo)
 	gi.StartMS = float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
-
 }
 func (gi *GlobalInfo) dealWithTime(mode int) bool {
 	nowms := float64(time.Now().Unix()*1000 + int64(time.Now().Nanosecond()/1000000))
-	if nowms-gi.LastFrameMS < 20 {
+	if nowms-gi.NowMS < 16 {
 		return false
 	}
+	fmt.Println("dealwithtime prev", nowms-gi.NowMS)
 	if mode == 1 { // new frame begins
 		gi.LastFrameMS = gi.NowMS
 		if gi.LastFrameMS < 100 {
@@ -247,6 +246,7 @@ func (gi *GlobalInfo) dealWithTime(mode int) bool {
 		gi.NowMS = nowms
 		gi.ElapsedMS = gi.NowMS - gi.StartMS
 		gi.FrameElapsedMS = gi.NowMS - gi.LastFrameMS
+		fmt.Println("dealWithTime", gi.FrameElapsedMS, gi.NowMS, gi.LastFrameMS)
 		gi.FrameRate = 1000 / gi.FrameElapsedMS
 	}
 	gi.CurFrame++
@@ -259,9 +259,6 @@ func (gi *GlobalInfo) dealWithTime(mode int) bool {
 	return true
 }
 func (gi *GlobalInfo) update() {
-	if !gi.dealWithTime(1) {
-		return
-	}
 	// gi.dealWithTime(0)
 	if gi.InputSystemManager != nil {
 		gi.InputSystemManager.Update()
