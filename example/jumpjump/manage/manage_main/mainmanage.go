@@ -3,6 +3,7 @@ package manage_main
 import (
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
@@ -85,7 +86,7 @@ func (lm *ManageMain) Start() {
 }
 
 func (lm *ManageMain) connect() {
-	conn, err := net.Dial("tcp", "127.0.0.1:9090")
+	conn, err := net.Dial("tcp", os.Args[1])
 	if err != nil {
 		panic(err)
 	}
