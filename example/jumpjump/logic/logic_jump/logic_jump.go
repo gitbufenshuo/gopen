@@ -19,13 +19,14 @@ const (
 type LogicJump struct {
 	gi *game.GlobalInfo
 	*supports.NilLogic
+	Transform *game.Transform
 	//
 	playerMode                      PlayerMode
 	Chosen                          bool
 	beginms                         float64
 	Velx, Vely, Velz                int64 // 当前速度
 	logicposx, logicposy, logicposz int64
-	logicroty                       float32
+	Logicroty                       int64 // 1 代表 0.01°
 	gravity                         int64
 	frame                           int
 	ljs                             *LogicJumpSignal
@@ -69,10 +70,11 @@ func (lj *LogicJump) changeACMode(mode string) {
 
 func (lj *LogicJump) Start(gb game.GameObjectI) {
 	fmt.Println("logic_jump START")
+	lj.Transform = gb.GetTransform()
 }
 
 func (lj *LogicJump) Update(gb game.GameObjectI) {
-	lj.getAC(gb)
+	lj.getAC(gb)         // 逻辑无关
 	lj.syncLogicPosY(gb) // 逻辑无关
 	return
 	if lj.playerMode == PlayerMode_Static {
@@ -83,77 +85,6 @@ func (lj *LogicJump) Update(gb game.GameObjectI) {
 		lj.PlayerMode_JumpUpdate(gb)
 		return
 	}
-}
-
-func (lj *LogicJump) onWSAD(gb game.GameObjectI) {
-	if !lj.Chosen {
-		return
-	}
-	{ // 清空指令
-		lj.ljs.Kind = ""
-		lj.ljs.MoveValX = 0
-		lj.ljs.MoveValZ = 0
-	}
-	apressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyA))
-	dpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyD))
-	wpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyW))
-	spressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyS))
-	fmt.Println(apressed, dpressed, wpressed, spressed)
-	//nowmode := lj.ac.NowMode()
-	var moved bool
-	if apressed {
-		lj.ljs.MoveValX = -50
-		moved = true
-	} else if dpressed {
-		lj.ljs.MoveValX = 50
-		moved = true
-	}
-	if wpressed {
-		lj.ljs.MoveValZ = -50
-		moved = true
-	} else if spressed {
-		lj.ljs.MoveValZ = 50
-		moved = true
-	}
-	if moved {
-		lj.ljs.Kind = "move"
-		// if nowmode != "MOVING" {
-		// 	lj.changeACMode("MOVING")
-		// }
-		// mo := help.Sqrt(lj.velx*lj.velx+lj.velz*lj.velz) / 5
-		// lj.velx /= mo
-		// lj.velz /= mo
-		// if lj.velx == 0 {
-		// 	if lj.velz > 0 {
-		// 		lj.logicroty = 0
-		// 	} else {
-		// 		lj.logicroty = 180
-		// 	}
-		// 	return
-		// } else if lj.velx > 0 {
-		// 	if lj.velz > 0 {
-		// 		lj.logicroty = 45
-		// 	} else if lj.velz < 0 {
-		// 		lj.logicroty = 135
-		// 	} else {
-		// 		lj.logicroty = 90
-		// 	}
-		// } else {
-		// 	if lj.velz > 0 {
-		// 		lj.logicroty = -45
-		// 	} else if lj.velz < 0 {
-		// 		lj.logicroty = -135
-		// 	} else {
-		// 		lj.logicroty = -90
-		// 	}
-		// }
-		return
-	}
-	// if nowmode == "MOVING" {
-	// 	lj.changeACMode("__init")
-	// }
-	// lj.velx = 0
-	// lj.velz = 0
 }
 
 func (lj *LogicJump) OnForce() {
@@ -182,7 +113,8 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 		nowposx, nowposy, nowposz,
 	)
 	rawroty := gb.GetTransform().Rotation.GetIndexValue(1)
-	gb.GetTransform().Rotation.SetIndexValue(1, (lj.logicroty-rawroty)/10+rawroty)
+	rawroty += (float32(lj.Logicroty)/100 - rawroty) / 10
+	gb.GetTransform().Rotation.SetIndexValue(1, rawroty)
 }
 
 func (lj *LogicJump) PlayerMode_StaticUpdate(gb game.GameObjectI) {

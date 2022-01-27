@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg"
+	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg/server/imple"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
@@ -17,9 +19,10 @@ import (
 type ManageMain struct {
 	gi *game.GlobalInfo
 	*gameobjects.NilManageObject
-	UserMap map[string]int
-	UID     string // 自己的uid
-	Login   bool
+	MaxCount int
+	UserMap  map[string]int
+	UID      string // 自己的uid
+	Login    bool
 	//
 	which          int64 // which player is this client
 	MainPlayer     game.GameObjectI
@@ -71,6 +74,7 @@ func (lm *ManageMain) Start() {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyD))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyW))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyS))
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyM))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyP))
 	lm.gi.SetInputSystem(inputsystem.GetInputSystem())
 	//
@@ -86,7 +90,16 @@ func (lm *ManageMain) Start() {
 }
 
 func (lm *ManageMain) connect() {
-	conn, err := net.Dial("tcp", os.Args[1])
+	var remoteadrr string
+	if os.Args[1] == "local" {
+		remoteadrr = "127.0.0.1:9090"
+		lm.MaxCount = 1
+		go imple.Main(1, remoteadrr)
+	} else {
+		remoteadrr = os.Args[1]
+	}
+	time.Sleep(time.Millisecond * 10)
+	conn, err := net.Dial("tcp", remoteadrr)
 	if err != nil {
 		panic(err)
 	}
@@ -153,6 +166,7 @@ func (lm *ManageMain) Local_WSAD_Collect() {
 	dpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyD))
 	wpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyW))
 	spressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyS))
+	mpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyM))
 	var mx, mz int64
 	if apressed {
 		mx = -50
@@ -176,6 +190,7 @@ func (lm *ManageMain) Local_WSAD_Collect() {
 			UID:      lm.UID,
 			MoveValX: mx,
 			MoveValZ: mz,
+			M:        mpressed,
 		})
 	}
 	return
@@ -213,18 +228,24 @@ func (lm *ManageMain) MSG_Update(msg commmsg.JumpMSGOne) {
 		fmt.Printf("{login}, (%s:%d)\n", msg.UID, which)
 	} else if msg.Kind == "move" {
 		// 通过 uid 找到 which
-		if len(lm.UserMap) != 2 {
+		if len(lm.UserMap) != lm.MaxCount {
 			return // two player login then begin the game
 		}
 		if which, found := lm.UserMap[msg.UID]; found {
 			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
+			var logijump *logic_jump.LogicJump
 			if which == 0 {
-				lm.MainPlayerJump.Velx = msg.MoveValX
-				lm.MainPlayerJump.Velz = msg.MoveValZ
+				logijump = lm.MainPlayerJump
 			}
 			if which == 1 {
-				lm.SubPlayerJump.Velx = msg.MoveValX
-				lm.SubPlayerJump.Velz = msg.MoveValZ
+				logijump = lm.SubPlayerJump
+			}
+			logijump.Velx = msg.MoveValX
+			logijump.Velz = msg.MoveValZ
+			if msg.M {
+				logijump.Logicroty += 9000
+				forward := logijump.Transform.GetForward()
+				forward.PrettyShow("jump :::::")
 			}
 		}
 	}

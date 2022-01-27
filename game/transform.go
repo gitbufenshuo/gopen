@@ -77,6 +77,32 @@ func (transform *Transform) RotationMAT4() matmath.MAT4 {
 	matRes.Rotate(&transform.Rotation)
 	return matRes
 }
+
+func (transform *Transform) WorldRotation() matmath.MAT4 {
+	m := transform.Model()
+	//
+	var curTransform *Transform
+	curTransform = transform
+	for {
+		if curTransform.Parent != nil { // not root
+			parentM := curTransform.Parent.RotationMAT4()
+			m.RightMul_InPlace(&parentM)
+		} else {
+			break
+		}
+		curTransform = curTransform.Parent
+	}
+	return m
+}
+
+// world forward
+func (transform *Transform) GetForward() matmath.Vec4 {
+	m := transform.WorldRotation()
+	initForward := matmath.CreateVec4(0, 0, 1, 1)
+	initForward.RightMul_InPlace(&m)
+	return initForward
+}
+
 func (trans *Transform) SetParent(parent *Transform) {
 	if trans.Parent == parent {
 		return

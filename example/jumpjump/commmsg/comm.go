@@ -17,6 +17,7 @@ type JumpMSGOne struct {
 	Which    int64 // 哪一个
 	MoveValX int64
 	MoveValZ int64
+	M        bool
 }
 
 func ReadFixBytes(conn net.Conn, buffer []byte) error {
