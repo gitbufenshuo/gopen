@@ -96,6 +96,7 @@ func (lm *ManageMain) connect() {
 		lm.MaxCount = 1
 		go imple.Main(1, remoteadrr)
 	} else {
+		lm.MaxCount = 2
 		remoteadrr = os.Args[1]
 	}
 	time.Sleep(time.Millisecond * 10)
