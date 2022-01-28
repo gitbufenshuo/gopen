@@ -2,23 +2,11 @@ package commmsg
 
 import (
 	"encoding/binary"
-	"encoding/json"
 	"net"
+
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
-
-type JumpMSGTurn struct {
-	Turn int64
-	List []JumpMSGOne
-}
-
-type JumpMSGOne struct {
-	Kind     string // move jump choose login
-	UID      string
-	Which    int64 // 哪一个
-	MoveValX int64
-	MoveValZ int64
-	M        bool
-}
 
 func ReadFixBytes(conn net.Conn, buffer []byte) error {
 	already := 0
@@ -58,18 +46,16 @@ func ReadBytesToInt(conn net.Conn) int64 {
 	return int64(datalen)
 }
 
-func ReadOnePack(conn net.Conn) JumpMSGTurn {
+func ReadOnePack(conn net.Conn, vaddr protoreflect.ProtoMessage) {
 	datalen := ReadBytesToInt(conn)
 	// fmt.Println("datalen := ReadBytesToInt(conn)", datalen)
 	buffer := make([]byte, datalen)
 	ReadFixBytes(conn, buffer)
-	var res JumpMSGTurn
-	json.Unmarshal(buffer, &res)
-	return res
+	proto.Unmarshal(buffer, vaddr)
 }
 
-func WriteJumpMSGTurn(connlist []net.Conn, msg JumpMSGTurn) {
-	data, err := json.Marshal(msg)
+func WriteJumpMSGTurn(connlist []net.Conn, vaddr protoreflect.ProtoMessage) {
+	data, err := proto.Marshal(vaddr)
 	if err != nil {
 		return
 	}

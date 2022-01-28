@@ -6,14 +6,17 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 type PlayerMode int
 
 const (
-	PlayerMode_Static PlayerMode = 1 // 静止
-	PlayerMode_Jump   PlayerMode = 2 // 跳
+	PlayerMode_Static   PlayerMode = 1 // 静止
+	PlayerMode_Jump     PlayerMode = 2 // 跳
+	PlayerMode_UnderAtt PlayerMode = 3 // 受攻击
+	PlayerMode_DoAtt    PlayerMode = 4 // 主动攻击
 )
 
 type LogicJump struct {
@@ -21,11 +24,12 @@ type LogicJump struct {
 	*supports.NilLogic
 	Transform *game.Transform
 	//
-	playerMode                      PlayerMode
+	PlayerMode                      PlayerMode
 	Chosen                          bool
 	beginms                         float64
 	Velx, Vely, Velz                int64 // 当前速度
 	logicposx, logicposy, logicposz int64
+	rlogicposx, rlogicposz          int64
 	Logicroty                       int64 // 1 代表 0.01°
 	gravity                         int64
 	frame                           int
@@ -45,9 +49,9 @@ func NewLogicJump(gi *game.GlobalInfo) game.LogicSupportI {
 	//
 	res.NilLogic = supports.NewNilLogic()
 	res.gi = gi
-	res.playerMode = PlayerMode_Jump
+	res.PlayerMode = PlayerMode_Static
 	res.gravity = -10 //
-	res.logicposx, res.logicposy = 0, 30
+	res.logicposx, res.logicposy = 0, 0
 	res.ljs = new(LogicJumpSignal)
 	return res
 }
@@ -74,17 +78,56 @@ func (lj *LogicJump) Start(gb game.GameObjectI) {
 }
 
 func (lj *LogicJump) Update(gb game.GameObjectI) {
+	lj.frame++
 	lj.getAC(gb)         // 逻辑无关
 	lj.syncLogicPosY(gb) // 逻辑无关
 	return
-	if lj.playerMode == PlayerMode_Static {
+	if lj.PlayerMode == PlayerMode_Static {
 		lj.PlayerMode_StaticUpdate(gb)
 		return
 	}
-	if lj.playerMode == PlayerMode_Jump {
+	if lj.PlayerMode == PlayerMode_Jump {
 		lj.PlayerMode_JumpUpdate(gb)
 		return
 	}
+}
+
+func (lj *LogicJump) OutterUpdate() {
+	lj.OnForce()
+	//
+	if lj.PlayerMode == PlayerMode_UnderAtt {
+		lj.Velx = help.Int64To(lj.Velx, 0, 90)
+		lj.Velz = help.Int64To(lj.Velz, 0, 90)
+		if lj.Velx == 0 && lj.Velz == 0 {
+			lj.PlayerMode = PlayerMode_Static
+		}
+		return
+	}
+	if lj.PlayerMode == PlayerMode_DoAtt {
+		lj.logicposx, lj.logicposz = help.Int64To(lj.logicposx, lj.rlogicposx, 80), help.Int64To(lj.logicposz, lj.rlogicposz, 80)
+		if lj.logicposx == lj.rlogicposx && lj.logicposz == lj.rlogicposz {
+			lj.PlayerMode = PlayerMode_Static
+		}
+		return
+	}
+}
+
+func (lj *LogicJump) EnterPlayerMode_DoAtt() {
+	lj.PlayerMode = PlayerMode_DoAtt
+	lj.Velx = 0
+	lj.Velz = 0
+	lj.rlogicposx, lj.rlogicposz = lj.logicposx, lj.logicposz
+	lj.logicposx += 3000
+	lj.logicposz += 3000
+}
+
+func (lj *LogicJump) EnterPlayerMode_UnderAtt() {
+	lj.PlayerMode = PlayerMode_UnderAtt
+	forward := lj.Transform.GetForward()
+	fx, _, fz := forward.GetValue3()
+	fmt.Println("forward", fx, fz)
+	lj.Velx = int64(fx * 5000)
+	lj.Velz = int64(fz * 5000)
 }
 
 func (lj *LogicJump) OnForce() {
@@ -101,14 +144,14 @@ func (lj *LogicJump) OnForce() {
 	lj.logicposy += lj.Vely
 	lj.logicposx += lj.Velx
 	lj.logicposz += lj.Velz
-	// fmt.Printf("lj.logicposy:%f lj.vel:%f imp:%f mode:%v\n", lj.logicposy, lj.vel, mergeforce*deltams, lj.playerMode)
+	// fmt.Printf("lj.logicposy:%f lj.vel:%f imp:%f mode:%v\n", lj.logicposy, lj.vel, mergeforce*deltams, lj.PlayerMode)
 }
 
 func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	nowposx, nowposy, nowposz := gb.GetTransform().Postion.GetValue3()
-	nowposx += (float32(lj.logicposx)/100 - nowposx) / 5
-	nowposy += (float32(lj.logicposy)/100 - nowposy) / 5
-	nowposz += (float32(lj.logicposz)/100 - nowposz) / 5
+	nowposx += (float32(lj.logicposx)/1000 - nowposx) / 5
+	nowposy += (float32(lj.logicposy)/1000 - nowposy) / 5
+	nowposz += (float32(lj.logicposz)/1000 - nowposz) / 5
 	gb.GetTransform().Postion.SetValue3(
 		nowposx, nowposy, nowposz,
 	)
@@ -123,7 +166,7 @@ func (lj *LogicJump) PlayerMode_StaticUpdate(gb game.GameObjectI) {
 		return
 	}
 	if inputsystem.GetInputSystem().KeyDown(int(glfw.KeySpace)) {
-		lj.playerMode = PlayerMode_Jump
+		lj.PlayerMode = PlayerMode_Jump
 		lj.logicposy = 1
 		lj.Vely = 30
 		lj.changeACMode("MOVING")
@@ -132,7 +175,7 @@ func (lj *LogicJump) PlayerMode_StaticUpdate(gb game.GameObjectI) {
 
 func (lj *LogicJump) PlayerMode_JumpUpdate(gb game.GameObjectI) {
 	if lj.logicposy < 0 {
-		lj.playerMode = PlayerMode_Static
+		lj.PlayerMode = PlayerMode_Static
 		lj.changeACMode("__init")
 	}
 	// deltams := lj.gi.FrameElapsedMS

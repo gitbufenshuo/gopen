@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg"
+	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg/protodefine/pgocode/jump"
 )
 
 func Main(count int, addr string) {
@@ -35,19 +36,18 @@ func update(twoconn []net.Conn) {
 	var turn int64
 	for {
 		// var
-		var list []commmsg.JumpMSGOne
+		var totalmsg jump.JumpMSGTurn
 		for _, one := range twoconn { // 先读取两个客户端的指令
-			msg := commmsg.ReadOnePack(one)
-			list = append(list, msg.List...) // 拼成一个
-			fmt.Printf("[%d]Read %s\n", turn, one.RemoteAddr().String())
+			var onemsg jump.JumpMSGTurn
+			commmsg.ReadOnePack(one, &onemsg)
+			totalmsg.List = append(totalmsg.List, onemsg.List...)
+			//		fmt.Printf("[%d]Read %s %v\n", turn, one.RemoteAddr().String(), onemsg.List)
 		}
 		//拼成一个
-		var outmsg commmsg.JumpMSGTurn
-		outmsg.List = list
-		outmsg.Turn = turn
+		totalmsg.Turn = turn
 		// 发出去
-		commmsg.WriteJumpMSGTurn(twoconn, outmsg)
-		fmt.Println("send", turn)
+		commmsg.WriteJumpMSGTurn(twoconn, &totalmsg)
+		//	fmt.Println("send", turn, totalmsg.List)
 		turn++
 	}
 }

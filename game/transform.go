@@ -79,7 +79,7 @@ func (transform *Transform) RotationMAT4() matmath.MAT4 {
 }
 
 func (transform *Transform) WorldRotation() matmath.MAT4 {
-	m := transform.Model()
+	m := transform.RotationMAT4()
 	//
 	var curTransform *Transform
 	curTransform = transform

@@ -41,3 +41,12 @@ func ArcCos(input float32) float32 {
 func Sqrt(input float32) float32 {
 	return float32(math.Sqrt(float64(input)))
 }
+
+func Int64To(a, b int64, bili int64) int64 {
+	var diff = b - a
+	var diffbili = diff * bili / 100
+	if diffbili == 0 {
+		return b
+	}
+	return a + diffbili
+}

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "pgocode/jump";
+
+
+message JumpMSGOne {
+    string Kind = 1; //     string // move jump choose login
+	string uid = 2; //  UID      string
+	int64 which = 3; // Which    int64 // 哪一个
+	int64 moveValX = 4; // MoveValX int64
+	int64 moveValZ = 5; // MoveValZ int64
+	bool m = 6; //M        bool
+}
+
+message JumpMSGTurn {
+    int64 turn = 1; // Turn int64
+    repeated JumpMSGOne list = 2; // List []JumpMSGOne
+}
