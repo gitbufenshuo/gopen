@@ -329,9 +329,11 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			} else {
 				return
 			}
-			logijumpOther := lm.fromWhichOtherLogic(which)
-			if logijumpOther.PlayerMode == logic_jump.PlayerMode_Static {
-				logijumpOther.EnterPlayerMode_UnderAtt()
+			if len(lm.UserMap) == 2 {
+				logijumpOther := lm.fromWhichOtherLogic(which)
+				if logijumpOther.PlayerMode == logic_jump.PlayerMode_Static {
+					logijumpOther.EnterPlayerMode_UnderAtt()
+				}
 			}
 		}
 	}
