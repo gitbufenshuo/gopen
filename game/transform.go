@@ -37,6 +37,7 @@ func TransformArrDelLast(arr []*Transform) []*Transform {
 func NewTransform(gb GameObjectI) *Transform {
 	var transform Transform
 	transform.Scale.SetValue3(1, 1, 1)
+	transform.Rotation.SetValue4(0, 1, 0, 0)
 	transform.GB = gb
 	return &transform
 }

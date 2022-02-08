@@ -3,6 +3,8 @@ package matmath
 import (
 	"fmt"
 	"math"
+
+	"github.com/gitbufenshuo/gopen/help"
 )
 
 // element in the data is arranged in column.
@@ -121,28 +123,27 @@ func (mat4 *MAT4) Rotate(rotation *Vec4) {
 	var helperMat MAT4
 	helperMat.ToIdentity()
 	//
-	x_degree := rotation.GetIndexValue(0)
-	y_degree := rotation.GetIndexValue(1)
-	z_degree := rotation.GetIndexValue(2)
-	//
-	cosy := float32(math.Cos(float64((3.141592653 * y_degree) / 180.0)))
-	cosz := float32(math.Cos(float64((3.141592653 * z_degree) / 180.0)))
-	sinz := float32(math.Sin(float64((3.141592653 * z_degree) / 180.0)))
-	siny := float32(math.Sin(float64((3.141592653 * y_degree) / 180.0)))
-	cosx := float32(math.Cos(float64((3.141592653 * x_degree) / 180.0)))
-	sinx := float32(math.Sin(float64((3.141592653 * x_degree) / 180.0)))
+	ux := rotation.GetIndexValue(0)
+	uy := rotation.GetIndexValue(1)
+	uz := rotation.GetIndexValue(2)
+	theta := (rotation.GetIndexValue(3) * 3.141592653) / 180.0 // radius
 
-	(helperMat.data)[0] = cosy * cosz
-	(helperMat.data)[4] = -(cosy * sinz)
-	(helperMat.data)[8] = siny
+	lingA := help.Cos(theta / 2)
+	lingB := ux * help.Cos(theta/2)
+	lingC := uy * help.Sin(theta/2)
+	lingD := uz * help.Sin(theta/2)
 
-	(helperMat.data)[1] = cosx*sinz + sinx*siny*cosz
-	(helperMat.data)[5] = cosx*cosz - sinx*siny*sinz
-	(helperMat.data)[9] = -(sinx * cosy)
+	(helperMat.data)[0] = 1 - 2*lingC*lingC - 2*lingD*lingD
+	(helperMat.data)[4] = 2*lingB*lingC - 2*lingA*lingB
+	(helperMat.data)[8] = 2*lingA*lingC + 2*lingB*lingD
 
-	(helperMat.data)[2] = sinx*sinz - cosx*siny*cosz
-	(helperMat.data)[6] = sinx*cosz + cosx*siny*sinz
-	(helperMat.data)[10] = cosx * cosy
+	(helperMat.data)[1] = 2*lingB*lingC + 2*lingA*lingD
+	(helperMat.data)[5] = 1 - 2*lingB*lingB - 2*lingD*lingD
+	(helperMat.data)[9] = 2*lingC*lingD - 2*lingA*lingB
+
+	(helperMat.data)[2] = 2*lingB*lingD - 2*lingA*lingC
+	(helperMat.data)[6] = 2*lingA*lingB + 2*lingC*lingD
+	(helperMat.data)[10] = 1 - 2*lingB*lingB - 2*lingC*lingC
 
 	mat4.RightMul_InPlace(&helperMat)
 }

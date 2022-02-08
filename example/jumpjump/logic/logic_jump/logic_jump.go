@@ -158,8 +158,8 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	rawroty := gb.GetTransform().Rotation.GetIndexValue(1)
 	rawroty += (float32(lj.Logicroty)/100 - rawroty) / 10
 	// curframe := float32(lj.gi.CurFrame)
-	gb.GetTransform().Rotation.SetIndexValue(0, -30)
-	gb.GetTransform().Rotation.SetIndexValue(1, 45)
+	// gb.GetTransform().Rotation.SetIndexValue(0, -30)
+	// gb.GetTransform().Rotation.SetIndexValue(1, 45)
 	// gb.GetTransform().Rotation.SetIndexValue(1, rawroty)
 }
 

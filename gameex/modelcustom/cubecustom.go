@@ -131,10 +131,12 @@ func (cct *CubeCustomTool) ScanNode(node *html.Node, gbn *GameObjectNode) {
 	cct.gi.AddGameObject(gbn.GB)
 	if dongid, found := attrmap["dong"]; found {
 		if node.Data == "blockroot" { // 根节点可能指定动画id
-			cct.gi.AnimationSystem.CreateAC(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
-			cct.acgbid = gbn.GB.ID_sg()
-		} else {
 			if dongid != "" {
+				cct.gi.AnimationSystem.CreateAC(dongid, gbn.GB.ID_sg()) // 创建 AnimationController
+				cct.acgbid = gbn.GB.ID_sg()
+			}
+		} else {
+			if dongid != "" && cct.acgbid != 0 {
 				cct.gi.AnimationSystem.BindBoneNode(cct.acgbid, dongid, gbn.GB.GetTransform())
 			}
 		}
