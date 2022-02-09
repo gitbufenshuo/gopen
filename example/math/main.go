@@ -42,6 +42,12 @@ func Angle() {
 	fmt.Println(angle)
 }
 
+func Rotate() {
+	xyz := matmath.CreateVec4(0, 1, 0, 1)
+	vec := matmath.RotateX(xyz, 90)
+	vec.PrettyShow("")
+}
+
 func main() {
 	if os.Args[1] == "lookat" {
 		TryLookAt()
@@ -49,6 +55,10 @@ func main() {
 	}
 	if os.Args[1] == "angle" {
 		Angle()
+		return
+	}
+	if os.Args[1] == "rotate" {
+		Rotate()
 		return
 	}
 }

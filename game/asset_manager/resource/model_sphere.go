@@ -1,6 +1,8 @@
 package resource
 
 import (
+	"fmt"
+
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
@@ -60,6 +62,7 @@ func NewSphereModel_BySpec(pivot, size matmath.Vec4) *Model {
 				biannx, bianny, biannz := nxyzbian.GetValue3()
 				//
 				newvers = append(newvers, bianx, biany, bianz, u, v, biannx, bianny, biannz)
+				fmt.Println(onerx, "qian", x, y, z, "Zuihou", bianx, biany, bianz)
 			}
 			for idx := 0; idx != 24; idx++ {
 				newins = append(newins, inAdd+res.Indices[idx])
@@ -69,6 +72,10 @@ func NewSphereModel_BySpec(pivot, size matmath.Vec4) *Model {
 	}
 	res.Vertices = append(res.Vertices, newvers...)
 	res.Indices = append(res.Indices, newins...)
+	fmt.Println("SSSSSSSSSS", len(res.Vertices)/8)
+	for zu := 0; zu != 6; zu++ {
+		fmt.Println("zuIndex", zu, res.Indices[zu*24:(zu+1)*24])
+	}
 	//
 	basever := []float32{
 		1, 0.33333, 1, 0.5, 0.5, 0.5773, 0.5773, 0.5773,
@@ -145,5 +152,6 @@ func NewSphereModel_BySpec(pivot, size matmath.Vec4) *Model {
 		res.Vertices[idx*8+1] += yoff
 		res.Vertices[idx*8+2] += zoff
 	}
+	fmt.Println("sphere model", "vercount:", len(res.Vertices)/8)
 	return res
 }

@@ -129,12 +129,12 @@ func (mat4 *MAT4) Rotate(rotation *Vec4) {
 	theta := (rotation.GetIndexValue(3) * 3.141592653) / 180.0 // radius
 
 	lingA := help.Cos(theta / 2)
-	lingB := ux * help.Cos(theta/2)
+	lingB := ux * help.Sin(theta/2)
 	lingC := uy * help.Sin(theta/2)
 	lingD := uz * help.Sin(theta/2)
 
 	(helperMat.data)[0] = 1 - 2*lingC*lingC - 2*lingD*lingD
-	(helperMat.data)[4] = 2*lingB*lingC - 2*lingA*lingB
+	(helperMat.data)[4] = 2*lingB*lingC - 2*lingA*lingD
 	(helperMat.data)[8] = 2*lingA*lingC + 2*lingB*lingD
 
 	(helperMat.data)[1] = 2*lingB*lingC + 2*lingA*lingD
@@ -144,7 +144,6 @@ func (mat4 *MAT4) Rotate(rotation *Vec4) {
 	(helperMat.data)[2] = 2*lingB*lingD - 2*lingA*lingC
 	(helperMat.data)[6] = 2*lingA*lingB + 2*lingC*lingD
 	(helperMat.data)[10] = 1 - 2*lingB*lingB - 2*lingC*lingC
-
 	mat4.RightMul_InPlace(&helperMat)
 }
 
@@ -194,7 +193,7 @@ func RotateY(vec Vec4, y float32) Vec4 {
 	var mat MAT4
 	mat.ToIdentity()
 	//
-	rotation := CreateVec4(0, y, 0, 1)
+	rotation := CreateVec4(0, 1, 0, y)
 	mat.Rotate(&rotation)
 	return vec.LeftMulMAT(mat)
 }
@@ -202,7 +201,7 @@ func RotateX(vec Vec4, x float32) Vec4 {
 	var mat MAT4
 	mat.ToIdentity()
 	//
-	rotation := CreateVec4(x, 0, 0, 1)
+	rotation := CreateVec4(1, 0, 0, x)
 	mat.Rotate(&rotation)
 	return vec.LeftMulMAT(mat)
 }
