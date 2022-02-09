@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
@@ -102,6 +103,22 @@ func (transform *Transform) GetForward() matmath.Vec4 {
 	initForward := matmath.CreateVec4(0, 0, 1, 1)
 	initForward.RightMul_InPlace(&m)
 	return initForward
+}
+
+func (transform *Transform) SetForward(value matmath.Vec4) {
+	if value.Length() < 0.0001 {
+		return // 忽略
+	}
+	nor := matmath.Vec3Cross(&matmath.VecZ, &value)
+	nor.Normalize() // 归一化
+	if nor.Length() < 0.00001 {
+		nor.SetValue3(0, 1, 0)
+	}
+	costheta := matmath.Vec3CosTheta(&matmath.VecZ, &value)
+	//
+	thetaRadius := help.ArcCos(costheta)
+	transform.Rotation.SetValue3(nor.GetValue3())
+	transform.Rotation.SetIndexValue(3, 360*(thetaRadius/(2*3.141592653)))
 }
 
 func (trans *Transform) SetParent(parent *Transform) {

@@ -7,6 +7,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
 	"github.com/gitbufenshuo/gopen/help"
+	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -155,8 +156,8 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	gb.GetTransform().Postion.SetValue3(
 		nowposx, nowposy, nowposz,
 	)
-	rawroty := gb.GetTransform().Rotation.GetIndexValue(1)
-	rawroty += (float32(lj.Logicroty)/100 - rawroty) / 10
+	forward := matmath.CreateVec4(float32(lj.Velx), 0, float32(lj.Velz), 1)
+	gb.GetTransform().SetForward(forward)
 	// curframe := float32(lj.gi.CurFrame)
 	// gb.GetTransform().Rotation.SetIndexValue(0, -30)
 	// gb.GetTransform().Rotation.SetIndexValue(1, 45)

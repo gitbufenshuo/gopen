@@ -8,6 +8,11 @@ import (
 	"github.com/gitbufenshuo/gopen/help"
 )
 
+//
+var VecZ = CreateVec4(0, 0, 1, 1)
+
+//
+
 type Vec4 struct {
 	data [4]float32
 }
@@ -108,6 +113,22 @@ func Vec3Cross(left, right *Vec4) Vec4 {
 	return res
 }
 
+// left product right 内积
+func Vec3Pro(left, right *Vec4) float32 {
+	return left.data[0]*right.data[0] + left.data[1]*right.data[1] + left.data[2]*right.data[2]
+}
+
+// vec3 模
+func (vec3 *Vec4) Length() float32 {
+	return help.Sqrt(vec3.data[0]*vec3.data[0] + vec3.data[1]*vec3.data[1] + vec3.data[2]*vec3.data[2])
+}
+
+// 向量夹角 cos
+func Vec3CosTheta(left, right *Vec4) float32 {
+	return Vec3Pro(left, right) / (left.Length() * right.Length())
+}
+
+// 归一化
 func (vec4 *Vec4) Normalize() {
 	weight := math.Sqrt(float64(vec4.data[0]*vec4.data[0] + vec4.data[1]*vec4.data[1] + vec4.data[2]*vec4.data[2]))
 	if math.Abs(weight) < 0.000001 {
