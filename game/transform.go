@@ -121,6 +121,15 @@ func (transform *Transform) SetForward(value matmath.Vec4) {
 	transform.Rotation.SetIndexValue(3, 360*(thetaRadius/(2*3.141592653)))
 }
 
+// 设置 local euler angle
+// 让(0,0,1)这个矢量先后绕x轴 y轴 z轴 旋转 xyz, 之后得到的矢量，就是forward
+func (transform *Transform) SetLocalEuler(x, y, z float32) {
+	newone := matmath.RotateX(matmath.VecZ, x)
+	newone = matmath.RotateY(newone, y)
+	newone = matmath.RotateZ(newone, z)
+	transform.SetForward(newone)
+}
+
 func (trans *Transform) SetParent(parent *Transform) {
 	if trans.Parent == parent {
 		return

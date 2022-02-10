@@ -249,10 +249,12 @@ func (ac *AnimationController) Update() {
 				initFrame.StatusList[idx].Position,
 				curFrame.StatusList[ac.NodeList[idx].Index].Position,
 			)
-			ac.NodeList[idx].transform.Rotation.Add2_InPlace(
-				initFrame.StatusList[idx].Rotation,
-				curFrame.StatusList[ac.NodeList[idx].Index].Rotation,
-			)
+			ex, ey, ez := curFrame.StatusList[ac.NodeList[idx].Index].Rotation.GetValue3()
+			ac.NodeList[idx].transform.SetLocalEuler(ex, ey, ez)
+			// ac.NodeList[idx].transform.Rotation.Add2_InPlace(
+			// 	initFrame.StatusList[idx].Rotation,
+			// 	curFrame.StatusList[ac.NodeList[idx].Index].Rotation,
+			// )
 		}
 	}
 	//

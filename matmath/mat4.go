@@ -189,6 +189,14 @@ func GenOrthographicMat4(near, far float32, topdown, aspect float32) MAT4 {
 	return res
 }
 
+func RotateX(vec Vec4, x float32) Vec4 {
+	var mat MAT4
+	mat.ToIdentity()
+	//
+	rotation := CreateVec4(1, 0, 0, x)
+	mat.Rotate(&rotation)
+	return vec.LeftMulMAT(mat)
+}
 func RotateY(vec Vec4, y float32) Vec4 {
 	var mat MAT4
 	mat.ToIdentity()
@@ -197,11 +205,11 @@ func RotateY(vec Vec4, y float32) Vec4 {
 	mat.Rotate(&rotation)
 	return vec.LeftMulMAT(mat)
 }
-func RotateX(vec Vec4, x float32) Vec4 {
+func RotateZ(vec Vec4, z float32) Vec4 {
 	var mat MAT4
 	mat.ToIdentity()
 	//
-	rotation := CreateVec4(1, 0, 0, x)
+	rotation := CreateVec4(0, 0, 1, z)
 	mat.Rotate(&rotation)
 	return vec.LeftMulMAT(mat)
 }
