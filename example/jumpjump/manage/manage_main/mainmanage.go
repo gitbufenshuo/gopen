@@ -126,7 +126,7 @@ func (lm *ManageMain) connect() {
 }
 
 func (lm *ManageMain) cameraControl() {
-	// return
+	return
 	if lm.cameraFollow == nil {
 		return
 	}

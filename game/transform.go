@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
@@ -123,11 +121,7 @@ func (transform *Transform) SetForward(value matmath.Vec4, factor float32) {
 	thetaRadius := help.ArcCos(costheta)
 	newa, newb, newc := nor.GetValue3()
 	newd := 360 * (thetaRadius / (2 * 3.141592653))
-	if factor < 0.9 {
-		forwardx, forwardy, forwardz := value.GetValue3()
-		fmt.Println(forwardx, forwardy, forwardz, "->", newa, newb, newc, newd)
-		fmt.Println("                     old", olda, oldb, oldc, oldd)
-	}
+
 	//
 	olda += (newa - olda) * factor
 	oldb += (newb - oldb) * factor
