@@ -157,7 +157,7 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 		nowposx, nowposy, nowposz,
 	)
 	forward := matmath.CreateVec4(float32(lj.Velx), 0, float32(lj.Velz), 1)
-	gb.GetTransform().SetForward(forward)
+	gb.GetTransform().SetForward(forward, 0.2)
 	// curframe := float32(lj.gi.CurFrame)
 	// gb.GetTransform().Rotation.SetIndexValue(0, -30)
 	// gb.GetTransform().Rotation.SetIndexValue(1, 45)

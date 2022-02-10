@@ -123,9 +123,18 @@ func (mat4 *MAT4) Rotate(rotation *Vec4) {
 	var helperMat MAT4
 	helperMat.ToIdentity()
 	//
+
 	ux := rotation.GetIndexValue(0)
 	uy := rotation.GetIndexValue(1)
 	uz := rotation.GetIndexValue(2)
+
+	oldabclengh := help.Sqrt(ux*ux + uy*uy + uz*uz)
+	if oldabclengh > 0 {
+		ux /= oldabclengh
+		uy /= oldabclengh
+		uz /= oldabclengh
+	}
+
 	theta := (rotation.GetIndexValue(3) * 3.141592653) / 180.0 // radius
 
 	lingA := help.Cos(theta / 2)

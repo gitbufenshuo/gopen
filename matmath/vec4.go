@@ -51,6 +51,9 @@ func (vec4 *Vec4) GetValue2() (float32, float32) {
 func (vec4 *Vec4) GetValue3() (float32, float32, float32) {
 	return vec4.data[0], vec4.data[1], vec4.data[2]
 }
+func (vec4 *Vec4) GetValue4() (float32, float32, float32, float32) {
+	return vec4.data[0], vec4.data[1], vec4.data[2], vec4.data[3]
+}
 
 func (vec4 *Vec4) SetX(value1 float32) {
 	vec4.data[0] = value1
@@ -129,7 +132,7 @@ func Vec3CosTheta(left, right *Vec4) float32 {
 }
 
 // 归一化
-func (vec4 *Vec4) Normalize() {
+func (vec4 *Vec4) Vec3Normalize() {
 	weight := math.Sqrt(float64(vec4.data[0]*vec4.data[0] + vec4.data[1]*vec4.data[1] + vec4.data[2]*vec4.data[2]))
 	if math.Abs(weight) < 0.000001 {
 		return
@@ -191,14 +194,14 @@ func LookAtFrom4(point, target, up *Vec4) MAT4 {
 	// first lets calculate the camera-z and camera-x and camera-y
 	// camera-z
 	camera_z := point.Sub(target)
-	camera_z.Normalize()
+	camera_z.Vec3Normalize()
 	// camera-x
 	camera_x := Vec3Cross(up, &camera_z)
-	camera_x.Normalize()
+	camera_x.Vec3Normalize()
 
 	// camera-y
 	camera_y := Vec3Cross(&camera_z, &camera_x)
-	camera_y.Normalize()
+	camera_y.Vec3Normalize()
 	// deal with the left mat4
 	left.SetEleByRowAndCol(1, 1, (camera_x.data)[0])
 	left.SetEleByRowAndCol(1, 2, (camera_x.data)[1])

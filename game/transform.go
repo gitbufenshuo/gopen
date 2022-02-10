@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
@@ -105,20 +107,40 @@ func (transform *Transform) GetForward() matmath.Vec4 {
 	return initForward
 }
 
-func (transform *Transform) SetForward(value matmath.Vec4) {
+func (transform *Transform) SetForward(value matmath.Vec4, factor float32) {
 	if value.Length() < 0.0001 {
 		return // 忽略
 	}
+	olda, oldb, oldc, oldd := transform.Rotation.GetValue4()
 	nor := matmath.Vec3Cross(&matmath.VecZ, &value)
-	nor.Normalize() // 归一化
+	nor.Vec3Normalize() // 归一化
 	if nor.Length() < 0.00001 {
 		nor.SetValue3(0, 1, 0)
 	}
 	costheta := matmath.Vec3CosTheta(&matmath.VecZ, &value)
 	//
 	thetaRadius := help.ArcCos(costheta)
-	transform.Rotation.SetValue3(nor.GetValue3())
-	transform.Rotation.SetIndexValue(3, 360*(thetaRadius/(2*3.141592653)))
+	newa, newb, newc := nor.GetValue3()
+	newd := 360 * (thetaRadius / (2 * 3.141592653))
+	if factor < 0.9 {
+		forwardx, forwardy, forwardz := value.GetValue3()
+		fmt.Println(forwardx, forwardy, forwardz, "->", newa, newb, newc, newd)
+		fmt.Println("                     old", olda, oldb, oldc, oldd)
+	}
+	//
+	olda += (newa - olda) * factor
+	oldb += (newb - oldb) * factor
+	oldc += (newc - oldc) * factor
+	//
+	// oldabclengh := help.Sqrt(olda*olda + oldb*oldb + oldc*oldc)
+	// olda /= oldabclengh
+	// oldb /= oldabclengh
+	// oldc /= oldabclengh
+
+	oldd += (newd - oldd) * factor
+	transform.Rotation.SetValue3(olda, oldb, oldc)
+	transform.Rotation.SetIndexValue(3, oldd)
+
 }
 
 // 设置 local euler angle
@@ -127,7 +149,7 @@ func (transform *Transform) SetLocalEuler(x, y, z float32) {
 	newone := matmath.RotateX(matmath.VecZ, x)
 	newone = matmath.RotateY(newone, y)
 	newone = matmath.RotateZ(newone, z)
-	transform.SetForward(newone)
+	transform.SetForward(newone, 1)
 }
 
 func (trans *Transform) SetParent(parent *Transform) {
