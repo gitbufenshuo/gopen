@@ -57,10 +57,6 @@ func NewCubeMapObject(cubemapTexture *resource.CubeMap) *CubeMapObject {
 
 type Camera struct {
 	Transform     *Transform
-	Pos           matmath.Vec4
-	Front         matmath.Vec4
-	UP            matmath.Vec4
-	Target        matmath.Vec4
 	NearDistance  float32
 	FarDistance   float32
 	FOV           float32
@@ -75,9 +71,6 @@ func NewDefaultCamera() *Camera {
 	c.NearDistance = 0.1
 	c.FarDistance = 100
 	c.FOV = math.Pi / 2
-	c.Front.SetValue4(0, 0, -1, 1)
-	c.UP.SetValue3(0, 1, 0)
-
 	c.Transform = NewTransform(nil)
 	return c
 }
@@ -87,35 +80,39 @@ func (camera *Camera) AddSkyBox(cubemap *resource.CubeMap) {
 	camera.CubeMapObject = cmo
 }
 
-// set the camera so that it looks at the target
-func (camera *Camera) UpdateTarget(target, front *matmath.Vec4) {
-	target.SetValue3(
-		camera.Pos.GetIndexValue(0)+front.GetIndexValue(0),
-		camera.Pos.GetIndexValue(1)+front.GetIndexValue(1),
-		camera.Pos.GetIndexValue(2)+front.GetIndexValue(2),
+func (camera *Camera) SetForward(x, y, z float32) {
+	camera.Transform.SetForward(
+		matmath.CreateVec4(-x, -y, -z, 1), 1,
 	)
 }
 
-func (camera *Camera) RotateLocalHorizontal(angle float32) {
-	camera.Transform.Rotation.AddIndexValue(1, angle)
-}
-
-func (camera *Camera) RotateLocalVertical(angle float32) {
-	camera.Transform.Rotation.AddIndexValue(0, angle)
-}
-
 func (camera *Camera) ViewMat() matmath.MAT4 {
-	fronttemp := camera.Front
-	targettemp := camera.Target
-	////////////////////////////////////
-	var matRes matmath.MAT4
-	matRes.ToIdentity()
-	matRes.Rotate(&camera.Transform.Rotation)
-	fronttemp.RightMul_InPlace(&matRes)
+	// pos 是起始位置
+	worldMat := camera.Transform.WorldModel()
+	cameraPos := matmath.CreateVec4(0, 0, 0, 1) // 起始位置都在这里
+	cameraPos.RightMul_InPlace(&worldMat)       // 这是相机的世界pos
+	// 然后计算 相机的 视野朝向 (根据rotation)
+	rotationMat := camera.Transform.WorldRotation()
+	cameraFront := matmath.CreateVec4(0, 0, 1, 1) // 朝着z轴负方向看
+	cameraFront.RightMul_InPlace(&rotationMat)
+	cameraUp := matmath.CreateVec4(0, 1, 0, 1)
+	cameraUp.RightMul_InPlace(&rotationMat)
+	posx, posy, posz := cameraPos.GetValue3()
+	frontx, fronty, frontz := cameraFront.GetValue3()
+	// upx, upy, upz := cameraUp.GetValue3()
+	// rotx, roty, rotz, thean := camera.Transform.Rotation.GetValue4()
+	cameraTarget := matmath.CreateVec4(
+		posx-frontx, posy-fronty, posz-frontz, 1,
+	)
+	// fmt.Println("cameraPos", posx, posy, posz)
+	// fmt.Println("                 cameraTarget", posx+frontx, posy+fronty, posz+frontz)
 
-	camera.UpdateTarget(&targettemp, &fronttemp)
-	//
-	viewT := matmath.LookAtFrom4(&camera.Pos, &targettemp, &camera.UP)
+	// fmt.Println("                  cameraUp", upx, upy, upz)
+	// fmt.Println("                  cameraRot", rotx, roty, rotz, thean)
+
+	// targettemp 是 看向某个点的位置
+
+	viewT := matmath.LookAtFrom4(&cameraPos, &cameraTarget, &cameraUp)
 	camera.ViewT = viewT
 	return viewT
 }

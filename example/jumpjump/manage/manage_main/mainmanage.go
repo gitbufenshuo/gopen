@@ -48,6 +48,9 @@ type ManageMain struct {
 	ppressed bool
 	//
 	serverConn net.Conn
+	//
+	cameraX, cameraY, cameraZ float32
+	cameraFollow              *game.Transform
 }
 
 func NewManageMain(gi *game.GlobalInfo) *ManageMain {
@@ -59,7 +62,8 @@ func NewManageMain(gi *game.GlobalInfo) *ManageMain {
 	res.which = -1
 	res.InMsgChan = make(chan *jump.JumpMSGTurn, 100)
 	res.OutMsgChan = make(chan *jump.JumpMSGTurn, 100)
-
+	// camera
+	res.cameraX, res.cameraY, res.cameraZ = gi.MainCamera.Transform.Postion.GetValue3()
 	return res
 }
 
@@ -121,6 +125,20 @@ func (lm *ManageMain) connect() {
 	go lm.readFromServer()
 }
 
+func (lm *ManageMain) cameraControl() {
+	// return
+	if lm.cameraFollow == nil {
+		return
+	}
+	mainCamera := lm.gi.MainCamera
+	fox, foy, foz := lm.cameraFollow.Postion.GetValue3()
+	mainCamera.Transform.Postion.SetValue3(
+		lm.cameraX+fox,
+		lm.cameraY+foy,
+		lm.cameraZ+foz,
+	)
+}
+
 func (lm *ManageMain) clonePlayer() {
 	if lm.SubPlayerJump != nil {
 		return
@@ -151,6 +169,7 @@ func (lm *ManageMain) Update() {
 	defer func() {
 		lm.frame++
 	}()
+	lm.cameraControl()
 	lm.clonePlayer()
 	////////////////
 	// 收集本地指令
@@ -306,7 +325,8 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 				lm.localPlayerJump = lm.SubPlayerJump
 			}
 		}
-		fmt.Printf("{login}, (%s:%d)\n", msg.Uid, which)
+		fmt.Printf("{login}, (%s:%d) 设置相机绑定\n", msg.Uid, which)
+		lm.cameraFollow = lm.localPlayerJump.Transform
 	} else if msg.Kind == "move" {
 		// 通过 uid 找到 which
 		if which, found := lm.UserMap[msg.Uid]; found {

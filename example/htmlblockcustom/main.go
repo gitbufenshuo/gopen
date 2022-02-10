@@ -26,7 +26,7 @@ func init() {
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Pos.SetValue3(0, 3, 13)
+	gi.MainCamera.Transform.Postion.SetValue3(0, 3, 13)
 	gi.MainCamera.NearDistance = 0.5
 	{
 		// skybox

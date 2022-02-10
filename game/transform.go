@@ -111,6 +111,7 @@ func (transform *Transform) SetForward(value matmath.Vec4, factor float32) {
 	if value.Length() < 0.0001 {
 		return // 忽略
 	}
+	value.Vec3Normalize()
 	olda, oldb, oldc, oldd := transform.Rotation.GetValue4()
 	nor := matmath.Vec3Cross(&matmath.VecZ, &value)
 	nor.Vec3Normalize() // 归一化
