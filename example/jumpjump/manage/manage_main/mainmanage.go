@@ -326,7 +326,7 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			}
 		}
 		fmt.Printf("{login}, (%s:%d) 设置相机绑定\n", msg.Uid, which)
-		lm.cameraFollow = lm.localPlayerJump.Transform
+		// lm.cameraFollow = lm.localPlayerJump.Transform
 	} else if msg.Kind == "move" {
 		// 通过 uid 找到 which
 		if which, found := lm.UserMap[msg.Uid]; found {

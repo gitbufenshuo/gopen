@@ -32,6 +32,7 @@ type LogicJump struct {
 	logicposx, logicposy, logicposz int64
 	rlogicposx, rlogicposz          int64
 	Logicroty                       int64 // 1 代表 0.01°
+	factor                          float32
 	gravity                         int64
 	frame                           int
 	ljs                             *LogicJumpSignal
@@ -54,6 +55,7 @@ func NewLogicJump(gi *game.GlobalInfo) game.LogicSupportI {
 	res.gravity = -10 //
 	res.logicposx, res.logicposy = 0, 0
 	res.ljs = new(LogicJumpSignal)
+	res.factor = 5
 	return res
 }
 
@@ -145,14 +147,32 @@ func (lj *LogicJump) OnForce() {
 	lj.logicposy += lj.Vely
 	lj.logicposx += lj.Velx
 	lj.logicposz += lj.Velz
+	lj.factor = 5
+	{
+		// clamp x and z
+		if lj.logicposx < -20*1000 {
+			lj.logicposx = -20 * 1000
+		}
+		if lj.logicposx > 20*1000 {
+			lj.logicposx = 20 * 1000
+		}
+
+		if lj.logicposz < -10*1000 {
+			lj.logicposz = -10 * 1000
+		}
+		if lj.logicposz > 10*1000 {
+			lj.logicposz = 10 * 1000
+		}
+	}
+
 	// fmt.Printf("lj.logicposy:%f lj.vel:%f imp:%f mode:%v\n", lj.logicposy, lj.vel, mergeforce*deltams, lj.PlayerMode)
 }
 
 func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	nowposx, nowposy, nowposz := gb.GetTransform().Postion.GetValue3()
-	nowposx += (float32(lj.logicposx)/1000 - nowposx) / 5
-	nowposy += (float32(lj.logicposy)/1000 - nowposy) / 5
-	nowposz += (float32(lj.logicposz)/1000 - nowposz) / 5
+	nowposx += (float32(lj.logicposx)/1000 - nowposx) / lj.factor
+	nowposy += (float32(lj.logicposy)/1000 - nowposy) / lj.factor
+	nowposz += (float32(lj.logicposz)/1000 - nowposz) / lj.factor
 	gb.GetTransform().Postion.SetValue3(
 		nowposx, nowposy, nowposz,
 	)
