@@ -45,6 +45,7 @@ type ManageMain struct {
 	spressed bool
 	mpressed bool
 	jpressed bool
+	kpressed bool
 	ppressed bool
 	//
 	serverConn net.Conn
@@ -92,6 +93,7 @@ func (lm *ManageMain) Start() {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyM))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyP))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyJ))
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyK))
 	lm.gi.SetInputSystem(inputsystem.GetInputSystem())
 	//
 	lm.MainPlayer = sceneloader.FindGameobjectByName("scenespec", "MainPlayer")
@@ -214,6 +216,7 @@ func (lm *ManageMain) Local_Total_Collect() {
 	spressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyS))
 	mpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyM))
 	jpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyJ))
+	kpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyK))
 	ppressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyP))
 	if !lm.apressed {
 		lm.apressed = apressed
@@ -236,6 +239,9 @@ func (lm *ManageMain) Local_Total_Collect() {
 	if !lm.ppressed {
 		lm.ppressed = ppressed
 	}
+	if !lm.kpressed {
+		lm.kpressed = kpressed
+	}
 	return
 }
 
@@ -246,6 +252,7 @@ func (lm *ManageMain) Local_Collect_End() {
 	lm.spressed = false
 	lm.mpressed = false
 	lm.jpressed = false
+	lm.kpressed = false
 	lm.ppressed = false
 }
 func (lm *ManageMain) Local_Total_Merge() {
@@ -304,6 +311,12 @@ func (lm *ManageMain) Action_Merge() {
 			MoveValZ: mz,
 			M:        lm.mpressed,
 		})
+		if lm.kpressed { // 技能 影分身
+			lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
+				Kind: "skill-yingfenshen",
+				Uid:  lm.UID,
+			})
+		}
 	}
 }
 
@@ -355,6 +368,12 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 					logijumpOther.EnterPlayerMode_UnderAtt()
 				}
 			}
+		}
+	} else if msg.Kind == "skill-yingfenshen" {
+		if which, found := lm.UserMap[msg.Uid]; found {
+			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
+			logijumpThis := lm.fromWhichGetLogic(which)
+			logijumpThis.Skill_Yingfenshen()
 		}
 	}
 }

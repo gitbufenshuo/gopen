@@ -23,6 +23,9 @@ func CreateVec4(x, y, z, w float32) Vec4 {
 	}
 }
 func CreateVec4FromStr(data string) Vec4 {
+	if data == "" {
+		return Vec4{}
+	}
 	segs := strings.Split(data, ",")
 	return Vec4{
 		data: [4]float32{

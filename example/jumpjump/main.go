@@ -150,6 +150,7 @@ func sceneLoad(gi *game.GlobalInfo) {
 	sl.LoadTextureList()
 	sl.LoadDongList()
 	sl.LoadCubeModelList()
+	sl.LoadPrefabList()
 }
 
 func main() {

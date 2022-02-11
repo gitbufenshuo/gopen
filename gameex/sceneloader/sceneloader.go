@@ -112,3 +112,25 @@ func (sl *SceneLoader) LoadDongList() {
 		as.AddAnimationMeta(dongname, animationsystem.LoadAnimationMetaFromFile(path))
 	}
 }
+
+func (sl *SceneLoader) LoadPrefabList() {
+	filename := path.Join(sl.SpecPath, "pick", "prefab.csv")
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("LoadPrefabList", err)
+		return
+	}
+	defer file.Close()
+	//
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := scanner.Text()
+		if strings.HasPrefix(text, "//") {
+			continue
+		}
+		segs := strings.Split(text, " ")
+		_name, _path := segs[0], segs[1]
+		fullpath := path.Join(sl.SpecPath, "asset", _path)
+		modelcustom.LoadPrefabFromFile(_name, fullpath)
+	}
+}

@@ -3,9 +3,11 @@ package logic_jump
 import (
 	"fmt"
 
+	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_follow"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/glfw/v3.1/glfw"
@@ -37,7 +39,8 @@ type LogicJump struct {
 	frame                           int
 	ljs                             *LogicJumpSignal
 	//
-	ac game.AnimationControllerI
+	fenshenList []*logic_follow.LogicFollow
+	ac          game.AnimationControllerI
 }
 
 type LogicJumpSignal struct {
@@ -97,6 +100,9 @@ func (lj *LogicJump) Update(gb game.GameObjectI) {
 
 func (lj *LogicJump) OutterUpdate() {
 	lj.OnForce()
+	for idx, onefenshen := range lj.fenshenList {
+		onefenshen.Move(lj.logicposx, lj.logicposy, lj.logicposz, int64(idx*5))
+	}
 	//
 	if lj.PlayerMode == PlayerMode_UnderAtt {
 		lj.Velx = help.Int64To(lj.Velx, 0, 90)
@@ -122,6 +128,21 @@ func (lj *LogicJump) EnterPlayerMode_DoAtt() {
 	lj.rlogicposx, lj.rlogicposz = lj.logicposx, lj.logicposz
 	lj.logicposx += 3000
 	lj.logicposz += 3000
+}
+
+func (lj *LogicJump) Skill_Yingfenshen() {
+	// instantiate dunshan1
+	prefab := modelcustom.PrefabSystemIns.GetPrefab("dunshanying")
+	if prefab != nil {
+		gb := prefab.Instantiate(lj.gi)
+		gb.GetTransform().Postion.SetIndexValue(0, lj.Transform.Postion.GetIndexValue(0))
+		logiclist := gb.GetLogicSupport()
+		for idx := range logiclist {
+			if v, ok := logiclist[idx].(*logic_follow.LogicFollow); ok {
+				lj.fenshenList = append(lj.fenshenList, v)
+			}
+		}
+	}
 }
 
 func (lj *LogicJump) EnterPlayerMode_UnderAtt() {
