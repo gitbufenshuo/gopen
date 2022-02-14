@@ -62,7 +62,7 @@ func myInit(gi *game.GlobalInfo) {
 	gi.LoadFont("scenespec/asset/fonts/1620207082885638.ttf")
 	{
 		texture := resource.NewTexture()
-		texture.ReadFromFile("./scenespec/asset/particle.png")
+		texture.ReadFromFile("./scenespec/asset/png/particle.png")
 		gi.ParticalSystem = game.NewParticle(gi, texture)
 	}
 	// 业务逻辑

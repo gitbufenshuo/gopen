@@ -58,7 +58,7 @@ func (sl *SceneLoader) LoadTextureList() {
 		text := scanner.Text()
 		segs := strings.Split(text, " ")
 		textureid, texturepath := segs[0], segs[1]
-		path := path.Join(sl.SpecPath, "asset", texturepath)
+		path := path.Join(sl.SpecPath, "asset", "png", texturepath)
 		sl.gi.AssetManager.LoadTextureFromFile(path, textureid)
 		sl.TextureList = append(sl.TextureList, textureid)
 	}
@@ -83,7 +83,7 @@ func (sl *SceneLoader) LoadDongList() {
 		}
 		segs := strings.Split(text, " ")
 		dongname, dongpath := segs[0], segs[1]
-		path := path.Join(sl.SpecPath, "asset", dongpath)
+		path := path.Join(sl.SpecPath, "asset", "dong", dongpath)
 		as.AddAnimationMeta(dongname, animationsystem.LoadAnimationMetaFromFile(path))
 	}
 }
@@ -105,7 +105,7 @@ func (sl *SceneLoader) LoadPrefabList() {
 		}
 		segs := strings.Split(text, " ")
 		_name, _path := segs[0], segs[1]
-		fullpath := path.Join(sl.SpecPath, "asset", _path)
+		fullpath := path.Join(sl.SpecPath, "asset", "prefab", _path)
 		modelcustom.LoadPrefabFromFile(_name, fullpath)
 	}
 }
