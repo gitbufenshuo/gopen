@@ -135,7 +135,7 @@ func initLogic(gi *game.GlobalInfo) {
 		mainscene := modelcustom.SceneSystemIns.GetScene("main")
 		mainscene.Instantiate(gi)
 	}
-	if false {
+	if true {
 		//
 		//
 		mm := manage_main.NewManageMain(gi)

@@ -1,5 +1,7 @@
 package modelcustom
 
+import "github.com/gitbufenshuo/gopen/game"
+
 type SceneSystem struct {
 	scenes map[string]*Scene
 }
@@ -12,6 +14,11 @@ func (scs *SceneSystem) AddScene(name string, scene *Scene) {
 // 通过名称 获取 prefab
 func (scs *SceneSystem) GetScene(name string) *Scene {
 	return scs.scenes[name]
+}
+
+// 获取场景中的 gameobject
+func (scs *SceneSystem) GetSceneOb(scname, obname string) game.GameObjectI {
+	return scs.scenes[scname].runtimeGB[obname]
 }
 
 var SceneSystemIns *SceneSystem

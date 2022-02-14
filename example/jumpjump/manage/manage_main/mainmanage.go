@@ -13,7 +13,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
-	"github.com/gitbufenshuo/gopen/gameex/sceneloader"
+	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -96,12 +96,24 @@ func (lm *ManageMain) Start() {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyK))
 	lm.gi.SetInputSystem(inputsystem.GetInputSystem())
 	//
-	lm.MainPlayer = sceneloader.FindGameobjectByName("scenespec", "MainPlayer")
-	logiclist := lm.MainPlayer.GetLogicSupport()
-	for idx := range logiclist {
-		if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
-			lm.MainPlayerJump = v
-			lm.MainPlayerJump.Chosen = true
+	{
+		lm.MainPlayer = modelcustom.SceneSystemIns.GetSceneOb("main", "mainplayer")
+		logiclist := lm.MainPlayer.GetLogicSupport()
+		for idx := range logiclist {
+			if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
+				lm.MainPlayerJump = v
+				lm.MainPlayerJump.Chosen = true
+			}
+		}
+	}
+	{
+		lm.SubPlayer = modelcustom.SceneSystemIns.GetSceneOb("main", "subplayer")
+		logiclist := lm.SubPlayer.GetLogicSupport()
+		for idx := range logiclist {
+			if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
+				lm.SubPlayerJump = v
+				lm.SubPlayerJump.Chosen = true
+			}
 		}
 	}
 	lm.connect()
@@ -141,23 +153,6 @@ func (lm *ManageMain) cameraControl() {
 	)
 }
 
-func (lm *ManageMain) clonePlayer() {
-	if lm.SubPlayerJump != nil {
-		return
-	}
-	{
-		/*
-			lm.SubPlayer = lm.gi.InstantiateGameObject(lm.MainPlayer)
-			logiclist := lm.SubPlayer.GetLogicSupport()
-			for idx := range logiclist {
-				if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
-					lm.SubPlayerJump = v
-				}
-			}
-		*/
-	}
-}
-
 func (lm *ManageMain) fromWhichGetLogic(which int64) *logic_jump.LogicJump {
 	if which == 0 {
 		return lm.MainPlayerJump
@@ -176,7 +171,6 @@ func (lm *ManageMain) Update() {
 		lm.frame++
 	}()
 	lm.cameraControl()
-	lm.clonePlayer()
 	////////////////
 	// 收集本地指令
 	if lm.frame%3 == 0 {

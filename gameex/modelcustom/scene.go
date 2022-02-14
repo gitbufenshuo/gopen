@@ -13,18 +13,20 @@ import (
 )
 
 type Scene struct {
-	From     PrefabFrom
-	RootNode *SceneNode
+	From      PrefabFrom
+	RootNode  *SceneNode
+	runtimeGB map[string]game.GameObjectI
 }
 
 // 通过这个 scene 生成一整个 场景
 func (pf *Scene) Instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	//
-	return pf.RootNode.instantiate(gi)
+	return pf.RootNode.instantiate(gi, pf)
 }
 
 func LoadSceneFromFile(pname, filepath string) *Scene {
 	newScene := new(Scene)
+	newScene.runtimeGB = make(map[string]game.GameObjectI)
 	//
 	newScene.From.From = FromFile
 	newScene.From.Meta = filepath
@@ -40,6 +42,7 @@ func LoadSceneFromFile(pname, filepath string) *Scene {
 
 func LoadSceneFromContent(pname string, content []byte) *Scene {
 	newScene := new(Scene)
+	newScene.runtimeGB = make(map[string]game.GameObjectI)
 	//
 	newScene.From.From = FromContent
 	newScene.From.Content = content
@@ -101,7 +104,7 @@ type SceneNode struct {
 	Children []*SceneNode
 }
 
-func (pn *SceneNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
+func (pn *SceneNode) instantiate(gi *game.GlobalInfo, scene *Scene) game.GameObjectI {
 
 	var res game.GameObjectI
 	if pn.Prefab == "" {
@@ -116,14 +119,16 @@ func (pn *SceneNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	} else { // 这是一个prefab
 		prefab := PrefabSystemIns.GetPrefab(pn.Prefab)
 		newgb := prefab.Instantiate(gi)
+		newgb.GetTransform().Postion.Clone(&pn.Pos)
 		res = newgb
 	}
 	gi.AddGameObject(res)
 	//
 	for _, onechild := range pn.Children {
-		newChildGB := onechild.instantiate(gi)
+		newChildGB := onechild.instantiate(gi, scene)
 		newChildGB.GetTransform().SetParent(res.GetTransform())
 	}
+	scene.runtimeGB[pn.Name] = res
 	return res
 }
 func (pn *SceneNode) ReadDataFromHTMLNode(htmlnode *html.Node) {
