@@ -81,7 +81,7 @@ NONE,NONE,NONE,NONE,NONE,NONE
 0|0|0|0|30|0.0,NONE,NONE,NONE,NONE,NONE
 0|0|0|0|30|0.0,NONE,NONE,NONE,NONE,NONE
 --------------------------
-MOVING
+yidong
 head,body,handleft,handright,legleft,legright
 NONE,NONE,NONE,0|0|0|-0|0|0.0,NONE,NONE
 NONE,NONE,0|0|0|2.0|0|0.0,0|0|0|-2.0|0|0.0,0|0|0|1.0|0|0.0,0|0|0|-1.0|0|0
@@ -531,7 +531,7 @@ NONE,NONE,0|0|0|0|0|-0.0,0|0|0|0|0|0.0,NONE,NONE
 NONE,NONE,0|0|0|0|0|-0.0,0|0|0|0|0|0.0,NONE,NONE
 
 --------------------------
-FangShou
+pugong
 head,body,handleft,handright,legleft,legright
 NONE,NONE,0|0|0|0|0|0.0,0|0|0|0|0|0.0,NONE,NONE
 NONE,NONE,0|0|0|0|0|0.0,0|0|0|0|0|0.0,NONE,NONE

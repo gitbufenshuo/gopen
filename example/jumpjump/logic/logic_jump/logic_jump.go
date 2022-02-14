@@ -8,7 +8,6 @@ import (
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
-	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
@@ -37,7 +36,9 @@ type LogicJump struct {
 	factor                          float32
 	gravity                         int64
 	frame                           int
-	ljs                             *LogicJumpSignal
+	outterFrame                     int64
+	doattmsFrame                    int64
+	underattmsFrame                 int64
 	//
 	fenshenList []*logic_follow.LogicFollow
 	ac          game.AnimationControllerI
@@ -57,7 +58,6 @@ func NewLogicJump(gi *game.GlobalInfo) game.LogicSupportI {
 	res.PlayerMode = PlayerMode_Static
 	res.gravity = -10 //
 	res.logicposx, res.logicposy = 0, 0
-	res.ljs = new(LogicJumpSignal)
 	res.factor = 5
 	return res
 }
@@ -99,35 +99,34 @@ func (lj *LogicJump) Update(gb game.GameObjectI) {
 }
 
 func (lj *LogicJump) OutterUpdate() {
+	lj.outterFrame++
 	lj.OnForce()
 	for idx, onefenshen := range lj.fenshenList {
 		onefenshen.Move(lj.logicposx, lj.logicposy, lj.logicposz, int64(idx*5))
 	}
 	//
 	if lj.PlayerMode == PlayerMode_UnderAtt {
-		lj.Velx = help.Int64To(lj.Velx, 0, 90)
-		lj.Velz = help.Int64To(lj.Velz, 0, 90)
-		if lj.Velx == 0 && lj.Velz == 0 {
-			lj.PlayerMode = PlayerMode_Static
+		if lj.outterFrame-lj.underattmsFrame > 20 {
+			lj.EnterPlayerMode_Static()
 		}
 		return
 	}
 	if lj.PlayerMode == PlayerMode_DoAtt {
-		lj.logicposx, lj.logicposz = help.Int64To(lj.logicposx, lj.rlogicposx, 80), help.Int64To(lj.logicposz, lj.rlogicposz, 80)
-		if lj.logicposx == lj.rlogicposx && lj.logicposz == lj.rlogicposz {
-			lj.PlayerMode = PlayerMode_Static
+		if lj.outterFrame-lj.doattmsFrame > 20 {
+			lj.EnterPlayerMode_Static()
 		}
 		return
 	}
 }
+func (lj *LogicJump) EnterPlayerMode_Static() {
+	lj.PlayerMode = PlayerMode_Static
+	lj.ac.ChangeMode("yidong")
+}
 
 func (lj *LogicJump) EnterPlayerMode_DoAtt() {
 	lj.PlayerMode = PlayerMode_DoAtt
-	lj.Velx = 0
-	lj.Velz = 0
-	lj.rlogicposx, lj.rlogicposz = lj.logicposx, lj.logicposz
-	lj.logicposx += 3000
-	lj.logicposz += 3000
+	lj.ac.ChangeMode("pugong")
+	lj.doattmsFrame = lj.outterFrame
 }
 
 func (lj *LogicJump) Skill_Yingfenshen() {
@@ -147,11 +146,7 @@ func (lj *LogicJump) Skill_Yingfenshen() {
 
 func (lj *LogicJump) EnterPlayerMode_UnderAtt() {
 	lj.PlayerMode = PlayerMode_UnderAtt
-	forward := lj.Transform.GetForward()
-	fx, _, fz := forward.GetValue3()
-	fmt.Println("forward", fx, fz)
-	lj.Velx = int64(fx * 5000)
-	lj.Velz = int64(fz * 5000)
+	lj.underattmsFrame = lj.outterFrame
 }
 
 func (lj *LogicJump) OnForce() {

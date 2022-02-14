@@ -343,13 +343,8 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 		if which, found := lm.UserMap[msg.Uid]; found {
 			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
 			logijump := lm.fromWhichGetLogic(which)
-			if logijump.PlayerMode == logic_jump.PlayerMode_Static {
-				logijump.Velx = msg.MoveValX
-				logijump.Velz = msg.MoveValZ
-				if msg.M {
-					logijump.Logicroty += 9000
-				}
-			}
+			logijump.Velx = msg.MoveValX
+			logijump.Velz = msg.MoveValZ
 		}
 	} else if msg.Kind == "doatt" {
 		if which, found := lm.UserMap[msg.Uid]; found {
