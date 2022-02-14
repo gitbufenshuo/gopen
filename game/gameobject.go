@@ -31,6 +31,7 @@ type GameObjectI interface {
 	GetRenderSupport() RenderSupportI
 	GetLogicSupport() []LogicSupportI
 	AddLogicSupport(LogicSupportI)
+	SetACSupport(AnimationControllerI)
 	GetACSupport() AnimationControllerI
 	GetTransform() *Transform
 }

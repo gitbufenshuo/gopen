@@ -11,6 +11,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
+	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 	"github.com/gitbufenshuo/gopen/gameex/sceneloader"
 	"github.com/gitbufenshuo/gopen/gameex/uithing/uibuttons/pk_basic_button"
 
@@ -129,7 +130,14 @@ func initLogic(gi *game.GlobalInfo) {
 		tableLayout.Arrange()
 		gi.AddManageObject(tableLayout)
 	}
-	if true {
+	{
+		// 主场景加载
+		mainscene := modelcustom.SceneSystemIns.GetScene("main")
+		mainscene.Instantiate(gi)
+	}
+	if false {
+		//
+		//
 		mm := manage_main.NewManageMain(gi)
 		gi.AddManageObject(mm)
 	}
@@ -149,12 +157,12 @@ func sceneLoad(gi *game.GlobalInfo) {
 	sl := sceneloader.NewSceneLoader(gi, "scenespec")
 	sl.LoadTextureList()
 	sl.LoadDongList()
-	sl.LoadCubeModelList()
 	sl.LoadPrefabList()
+	sl.LoadSceneList()
 }
 
 func main() {
-	gi := game.NewGlobalInfo(800, 600, "hello-blockcustom")
+	gi := game.NewGlobalInfo(800, 600, "hello-jumpjump")
 	gi.CustomInit = myInit
 	gi.StartGame("test")
 }

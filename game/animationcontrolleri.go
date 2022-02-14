@@ -15,11 +15,5 @@ type AniMoving struct {
 }
 
 type AnimationSystemI interface {
-	CreateAC(amname string, gbid int) AnimationControllerI
-	GetAC(gbid int) AnimationControllerI
-	GetMoving(gbid int) []*AniMoving
-	GameobjectDel(gbid int)
-	GameobjectDetach(gbid int)
-	// gbid 是主节点gameobject id
-	BindBoneNode(gbid int, bonename string, transform *Transform)
+	CreateAC(amname string) AnimationControllerI
 }

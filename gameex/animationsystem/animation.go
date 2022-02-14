@@ -176,6 +176,7 @@ type AnimationControlSpec struct {
 }
 
 type AnimationController struct {
+	innerid   int64
 	InitFrame *AnimationFrame
 	AM        *AnimationMeta
 	CurMode   string
@@ -184,8 +185,9 @@ type AnimationController struct {
 	NodeList []*AnimationControlSpec
 }
 
-func NewAnimationController() *AnimationController {
+func NewAnimationController(innerid int64) *AnimationController {
 	res := new(AnimationController)
+	res.innerid = innerid
 	return res
 }
 func (ac *AnimationController) UseAimationMeta(am *AnimationMeta) {
@@ -225,15 +227,6 @@ func (ac *AnimationController) RecordInitFrame() {
 		})
 	}
 	ac.InitFrame = initFrame
-}
-
-func (ac *AnimationController) Clone() *AnimationController {
-	newac := NewAnimationController()
-	newac.InitFrame = ac.InitFrame.Clone()
-	newac.AM = ac.AM
-	newac.CurMode = ac.CurMode
-	newac.CurIndex = ac.CurIndex
-	return newac
 }
 
 func (ac *AnimationController) Update() {

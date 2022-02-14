@@ -19,7 +19,6 @@ import (
 
 type SceneLoader struct {
 	gi          *game.GlobalInfo
-	cct         *modelcustom.CubeCustomTool
 	SpecPath    string // 路径
 	TextureList []string
 	//
@@ -37,7 +36,6 @@ func NewSceneLoader(gi *game.GlobalInfo, specpath string) *SceneLoader {
 	res := new(SceneLoader)
 	res.gi = gi
 	res.SpecPath = specpath
-	res.cct = modelcustom.NewCubeCustomTool(gi)
 	res.GameMap = make(map[string]game.GameObjectI)
 	if SceneLoaderMap == nil {
 		SceneLoaderMap = make(map[string]*SceneLoader)
@@ -63,29 +61,6 @@ func (sl *SceneLoader) LoadTextureList() {
 		path := path.Join(sl.SpecPath, "asset", texturepath)
 		sl.gi.AssetManager.LoadTextureFromFile(path, textureid)
 		sl.TextureList = append(sl.TextureList, textureid)
-	}
-}
-
-func (sl *SceneLoader) LoadCubeModelList() {
-	filename := path.Join(sl.SpecPath, "pick", "cubemodel.csv")
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("LoadCubeModelList", err)
-		return
-	}
-	defer file.Close()
-	//
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		text := scanner.Text()
-		if strings.HasPrefix(text, "//") {
-			continue
-		}
-		segs := strings.Split(text, " ")
-		_, cubepath := segs[0], segs[1]
-		path := path.Join(sl.SpecPath, "asset", cubepath)
-		gon := sl.cct.LoadFromFile(path)
-		sl.GameMap[gon.Name] = gon.GB
 	}
 }
 
@@ -132,5 +107,27 @@ func (sl *SceneLoader) LoadPrefabList() {
 		_name, _path := segs[0], segs[1]
 		fullpath := path.Join(sl.SpecPath, "asset", _path)
 		modelcustom.LoadPrefabFromFile(_name, fullpath)
+	}
+}
+
+func (sl *SceneLoader) LoadSceneList() {
+	filename := path.Join(sl.SpecPath, "pick", "scene.csv")
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("LoadSceneList", err)
+		return
+	}
+	defer file.Close()
+	//
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := scanner.Text()
+		if strings.HasPrefix(text, "//") {
+			continue
+		}
+		segs := strings.Split(text, " ")
+		_name, _path := segs[0], segs[1]
+		fullpath := path.Join(sl.SpecPath, "asset", "scene", _path)
+		modelcustom.LoadSceneFromFile(_name, fullpath)
 	}
 }

@@ -69,7 +69,7 @@ func (lj *LogicJump) getAC(gb game.GameObjectI) {
 	if lj.ac != nil {
 		return
 	}
-	lj.ac = lj.gi.AnimationSystem.GetAC(gb.ID_sg())
+	lj.ac = gb.GetACSupport()
 }
 func (lj *LogicJump) changeACMode(mode string) {
 	if lj.ac == nil {
