@@ -96,9 +96,3 @@ func (as *AnimationSystem) CreateAC(amname string) game.AnimationControllerI {
 
 func (as *AnimationSystem) Start() {
 }
-
-func (as *AnimationSystem) Update() {
-	for _, oneac := range as.ACRuntimeList {
-		oneac.Update()
-	}
-}

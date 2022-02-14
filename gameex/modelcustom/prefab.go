@@ -35,7 +35,11 @@ type Prefab struct {
 // 通过这个prefab 生成一个 gameobject
 func (pf *Prefab) Instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	//
-	return pf.RootNode.instantiate(gi)
+	gb := pf.RootNode.instantiate(gi)
+	if ac := gb.GetACSupport(); ac != nil {
+		ac.RecordInitFrame()
+	}
+	return gb
 }
 
 func LoadPrefabFromFile(pname, filepath string) *Prefab {
@@ -108,6 +112,7 @@ func FindBlockRoot(node *html.Node) *html.Node {
 }
 
 type PrefabNode struct {
+	Data  string
 	Name  string // node name
 	Kind  string // nil basic
 	Dong  string //
@@ -121,6 +126,7 @@ type PrefabNode struct {
 	Size     matmath.Vec4
 	///////////////
 	Children []*PrefabNode
+	ac       game.AnimationControllerI
 }
 
 func (pn *PrefabNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
@@ -155,7 +161,18 @@ func (pn *PrefabNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	}
 	gi.AddGameObject(res)
 	//
+	if pn.Dong != "" {
+		// 可能有动画
+		fmt.Println(pn.Data, pn.Dong)
+		if pn.Data == "blockroot" { // 根节点
+			pn.ac = gi.AnimationSystem.CreateAC(pn.Dong)
+			res.SetACSupport(pn.ac)
+		} else {
+			pn.ac.BindBoneNode(pn.Dong, res.GetTransform())
+		}
+	}
 	for _, onechild := range pn.Children {
+		onechild.ac = pn.ac
 		newChildGB := onechild.instantiate(gi)
 		newChildGB.GetTransform().SetParent(res.GetTransform())
 	}
@@ -166,6 +183,10 @@ func (pn *PrefabNode) ReadDataFromHTMLNode(htmlnode *html.Node) {
 	for _, oneattr := range htmlnode.Attr {
 		attrmap[oneattr.Key] = oneattr.Val
 	}
+	// data
+
+	pn.Data = htmlnode.Data
+
 	// name
 	if v, found := attrmap["name"]; found {
 		pn.Name = v

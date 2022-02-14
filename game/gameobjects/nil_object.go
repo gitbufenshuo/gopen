@@ -50,5 +50,5 @@ func (gb *NilObject) SetACSupport(ac game.AnimationControllerI) {
 	gb.ac = ac
 }
 func (gb *NilObject) GetACSupport() game.AnimationControllerI {
-	return nil
+	return gb.ac
 }
