@@ -6,6 +6,7 @@ type AnimationControllerI interface {
 	GetModeList() []string
 	NowMode() string
 	RecordInitFrame()
+	Update()
 }
 
 type AniMoving struct {
@@ -21,6 +22,4 @@ type AnimationSystemI interface {
 	GameobjectDetach(gbid int)
 	// gbid 是主节点gameobject id
 	BindBoneNode(gbid int, bonename string, transform *Transform)
-	CloneAC(oldgbid, newgbid int) AnimationControllerI
-	Update()
 }

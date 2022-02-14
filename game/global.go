@@ -262,14 +262,14 @@ func (gi *GlobalInfo) update() {
 	if gi.InputSystemManager != nil {
 		gi.InputSystemManager.Update()
 	}
-	if gi.AnimationSystem != nil {
-		gi.AnimationSystem.Update()
-	}
 	gi.InputMouseCtl.Update()
 	for _, gb := range gi.gameobjects {
 		logiclist := gb.GetLogicSupport()
 		for _, onelogic := range logiclist {
 			onelogic.Update(gb) // call the gameobjects' Update function
+		}
+		if ac := gb.GetACSupport(); ac != nil {
+			ac.Update() // 动画步进
 		}
 	}
 	for _, mb := range gi.manageobjects {
@@ -421,42 +421,42 @@ func (gi *GlobalInfo) DelGameObject(gb GameObjectI) {
 	tr.SetParent(nil)
 }
 
-// 实例化 相当于 克隆一份 todolist
-func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
-	res := gb.Clone() // 克隆自身, 复用渲染资源, 克隆logic(肯定)
-	gi.AddGameObject(res)
-	gi.CloneRecord[res.ID_sg()] = gb.ID_sg() // res 是由 gb 克隆的
-	gbtr := gb.GetTransform()
-	for idx := range gbtr.Children {
-		cres := gi.InstantiateGameObject(gbtr.Children[idx].GB)
-		cres.GetTransform().SetParent(res.GetTransform())
-	}
-	//
-	oldac := gi.AnimationSystem.GetAC(gb.ID_sg())
-	if oldac != nil {
-		gi.AnimationSystem.CloneAC(gb.ID_sg(), res.ID_sg())
-		newchildren := res.GetTransform().Children
-		for idx := range newchildren {
-			gi.processAni(newchildren[idx].GB, gb.ID_sg(), res.ID_sg())
-		}
-	}
-	return res
-}
+// // 实例化 相当于 克隆一份 todolist
+// func (gi *GlobalInfo) InstantiateGameObject(gb GameObjectI) GameObjectI {
+// 	res := gb.Clone() // 克隆自身, 复用渲染资源, 克隆logic(肯定)
+// 	gi.AddGameObject(res)
+// 	gi.CloneRecord[res.ID_sg()] = gb.ID_sg() // res 是由 gb 克隆的
+// 	gbtr := gb.GetTransform()
+// 	for idx := range gbtr.Children {
+// 		cres := gi.InstantiateGameObject(gbtr.Children[idx].GB)
+// 		cres.GetTransform().SetParent(res.GetTransform())
+// 	}
+// 	//
+// 	oldac := gi.AnimationSystem.GetAC(gb.ID_sg())
+// 	if oldac != nil {
+// 		gi.AnimationSystem.CloneAC(gb.ID_sg(), res.ID_sg())
+// 		newchildren := res.GetTransform().Children
+// 		for idx := range newchildren {
+// 			gi.processAni(newchildren[idx].GB, gb.ID_sg(), res.ID_sg())
+// 		}
+// 	}
+// 	return res
+// }
 
-func (gi *GlobalInfo) processAni(gb GameObjectI, oldgbid, newgbid int) {
-	fromgbid := gi.CloneRecord[gb.ID_sg()]
-	frommov := gi.AnimationSystem.GetMoving(fromgbid)
-	for idx := range frommov {
-		if frommov[idx].GBID == oldgbid {
-			gi.AnimationSystem.BindBoneNode(newgbid, frommov[idx].BoneName, gb.GetTransform())
-		}
-	}
-	//
-	children := gb.GetTransform().Children
-	for idx := range children {
-		gi.processAni(children[idx].GB, oldgbid, newgbid)
-	}
-}
+// func (gi *GlobalInfo) processAni(gb GameObjectI, oldgbid, newgbid int) {
+// 	fromgbid := gi.CloneRecord[gb.ID_sg()]
+// 	frommov := gi.AnimationSystem.GetMoving(fromgbid)
+// 	for idx := range frommov {
+// 		if frommov[idx].GBID == oldgbid {
+// 			gi.AnimationSystem.BindBoneNode(newgbid, frommov[idx].BoneName, gb.GetTransform())
+// 		}
+// 	}
+// 	//
+// 	children := gb.GetTransform().Children
+// 	for idx := range children {
+// 		gi.processAni(children[idx].GB, oldgbid, newgbid)
+// 	}
+// }
 
 func (gi *GlobalInfo) GetGameObject(gbid int) GameObjectI {
 	if res, found := gi.gameobjects[gbid]; found {

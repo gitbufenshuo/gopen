@@ -23,7 +23,6 @@ type LogicSupportI interface {
 	Update(GameObjectI)
 	OnDraw(GameObjectI)
 	OnDrawFinish(GameObjectI)
-	Clone() LogicSupportI
 }
 
 // the common gameobject Interface
@@ -32,8 +31,8 @@ type GameObjectI interface {
 	GetRenderSupport() RenderSupportI
 	GetLogicSupport() []LogicSupportI
 	AddLogicSupport(LogicSupportI)
+	GetACSupport() AnimationControllerI
 	GetTransform() *Transform
-	Clone() GameObjectI
 }
 type ManageObjectI interface {
 	ID_sg(...int) int

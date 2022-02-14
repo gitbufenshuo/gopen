@@ -1,8 +1,6 @@
 package gameobjects
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 )
@@ -14,6 +12,7 @@ type BasicObject struct {
 	gi                                 *game.GlobalInfo
 	renderS                            *supports.DefaultRenderSupport
 	logicS                             []game.LogicSupportI
+	ac                                 game.AnimationControllerI
 	modelname, texturename, shadername string
 }
 
@@ -59,20 +58,9 @@ func (gb *BasicObject) AddLogicSupport(logic game.LogicSupportI) {
 	gb.logicS = append(gb.logicS, logic)
 }
 
-// 如果 embed BasicObject , 则必须实现自己的 Clone
-func (gb *BasicObject) Clone() game.GameObjectI {
-	newgb := NewBasicObject(gb.gi, gb.modelname, gb.texturename, gb.shadername)
-	newgb.Transform.Postion.Clone(&gb.GetTransform().Postion)
-	newgb.Transform.Scale.Clone(&gb.GetTransform().Scale)
-	newgb.Transform.Rotation.Clone(&gb.GetTransform().Rotation)
-	logiclist := gb.GetLogicSupport()
-	for idx := range logiclist {
-		newl := logiclist[idx].Clone()
-		fmt.Println(">>    >>   >>   >>  logiclist clone", idx, newl)
-		if newl == nil {
-			continue
-		}
-		newgb.AddLogicSupport(newl) // 将 logicsupport 绑定
-	}
-	return newgb
+func (gb *BasicObject) SetACSupport(ac game.AnimationControllerI) {
+	gb.ac = ac
+}
+func (gb *BasicObject) GetACSupport() game.AnimationControllerI {
+	return nil
 }

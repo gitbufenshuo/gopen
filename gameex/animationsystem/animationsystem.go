@@ -63,14 +63,6 @@ func (as *AnimationSystem) CreateAC(amname string, gbid int) game.AnimationContr
 	return ac
 }
 
-func (as *AnimationSystem) CloneAC(oldgbid, newgbid int) game.AnimationControllerI {
-	ac := as.ACStoreList[oldgbid]
-	newac := ac.Clone() // NodeList 没有复制
-	as.ACRuntimeList[newgbid] = newac
-	as.ACStoreList[newgbid] = newac
-	return newac
-}
-
 // gbid: 主gameobject id
 func (as *AnimationSystem) BindBoneNode(gbid int, bonename string, transform *game.Transform) {
 	ac := as.GetAC(gbid)

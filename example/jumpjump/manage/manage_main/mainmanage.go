@@ -145,12 +145,16 @@ func (lm *ManageMain) clonePlayer() {
 	if lm.SubPlayerJump != nil {
 		return
 	}
-	lm.SubPlayer = lm.gi.InstantiateGameObject(lm.MainPlayer)
-	logiclist := lm.SubPlayer.GetLogicSupport()
-	for idx := range logiclist {
-		if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
-			lm.SubPlayerJump = v
-		}
+	{
+		/*
+			lm.SubPlayer = lm.gi.InstantiateGameObject(lm.MainPlayer)
+			logiclist := lm.SubPlayer.GetLogicSupport()
+			for idx := range logiclist {
+				if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
+					lm.SubPlayerJump = v
+				}
+			}
+		*/
 	}
 }
 

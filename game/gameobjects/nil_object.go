@@ -11,6 +11,7 @@ type NilObject struct {
 	Transform *game.Transform
 	gi        *game.GlobalInfo
 	logicS    []game.LogicSupportI
+	ac        game.AnimationControllerI
 }
 
 func NewNilObject(_gi *game.GlobalInfo) *NilObject {
@@ -45,19 +46,9 @@ func (gb *NilObject) AddLogicSupport(logic game.LogicSupportI) {
 	gb.logicS = append(gb.logicS, logic)
 }
 
-// 如果 embed NilObject , 则必须实现自己的 Clone
-func (gb *NilObject) Clone() game.GameObjectI {
-	newgb := NewNilObject(gb.gi)
-	newgb.Transform.Postion.Clone(&gb.GetTransform().Postion)
-	newgb.Transform.Scale.Clone(&gb.GetTransform().Scale)
-	newgb.Transform.Rotation.Clone(&gb.GetTransform().Rotation)
-	logiclist := gb.GetLogicSupport()
-	for idx := range logiclist {
-		newl := logiclist[idx].Clone()
-		if newl == nil {
-			continue
-		}
-		newgb.AddLogicSupport(logiclist[idx].Clone()) // 将 logicsupport 绑定
-	}
-	return newgb
+func (gb *NilObject) SetACSupport(ac game.AnimationControllerI) {
+	gb.ac = ac
+}
+func (gb *NilObject) GetACSupport() game.AnimationControllerI {
+	return nil
 }
