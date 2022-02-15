@@ -10,6 +10,7 @@ import (
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg/protodefine/pgocode/jump"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg/server/imple"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
+	"github.com/gitbufenshuo/gopen/example/jumpjump/share/pkem"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
@@ -38,6 +39,7 @@ type ManageMain struct {
 	turnMsgLocal *jump.JumpMSGTurn
 	frame        int
 	Turn         int64 // 回合
+	evmanager    *pkem.EventManager
 	//
 	apressed bool
 	dpressed bool
@@ -61,6 +63,7 @@ func NewManageMain(gi *game.GlobalInfo) *ManageMain {
 	res.gi = gi
 	res.UserMap = make(map[string]int64)
 	res.which = -1
+	res.evmanager = pkem.NewEventManager()
 	res.InMsgChan = make(chan *jump.JumpMSGTurn, 100)
 	res.OutMsgChan = make(chan *jump.JumpMSGTurn, 100)
 	// camera
@@ -201,6 +204,11 @@ func (lm *ManageMain) Update() {
 		// 对本地程序步进
 		lm.MainPlayerJump.OutterUpdate()
 		lm.SubPlayerJump.OutterUpdate()
+		// 对事件进行处理
+		lm.MainPlayerJump.OutterEV()
+		lm.SubPlayerJump.OutterEV()
+		// 清空事件
+		lm.evmanager.Clear()
 		// 回合收尾
 		lm.Local_Collect_End()
 		lm.Turn++ // 回合加1
@@ -302,13 +310,15 @@ func (lm *ManageMain) Action_Merge() {
 			M:        lm.mpressed,
 		})
 	} else { // 普通移动
-		lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
-			Kind:     "move",
-			Uid:      lm.UID,
-			MoveValX: mx,
-			MoveValZ: mz,
-			M:        lm.mpressed,
-		})
+		if mx*mx+mz*mz > 0 {
+			lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
+				Kind:     "move",
+				Uid:      lm.UID,
+				MoveValX: mx,
+				MoveValZ: mz,
+				M:        lm.mpressed,
+			})
+		}
 		if lm.kpressed { // 技能 影分身
 			lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
 				Kind: "skill-yingfenshen",
@@ -335,6 +345,8 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			} else {
 				lm.localPlayerJump = lm.SubPlayerJump
 			}
+			lm.localPlayerJump.SetPID(which)
+			lm.localPlayerJump.SetEVM(lm.evmanager)
 		}
 		fmt.Printf("{login}, (%s:%d) 设置相机绑定\n", msg.Uid, which)
 		return

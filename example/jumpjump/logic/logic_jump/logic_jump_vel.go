@@ -1,11 +1,11 @@
 package logic_jump
 
 func (lj *LogicJump) GetVelX() int64 {
-	return lj.movex * lj.moveSpeed / 100
+	return (lj.movex + lj.underattx) * lj.moveSpeed / 100
 }
 
 func (lj *LogicJump) GetVelZ() int64 {
-	return lj.movez * lj.moveSpeed / 100
+	return (lj.movez + lj.underattz) * lj.moveSpeed / 100
 }
 
 func (lj *LogicJump) OnForce() {

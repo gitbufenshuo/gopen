@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_follow"
+	"github.com/gitbufenshuo/gopen/example/jumpjump/share/pkem"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
@@ -26,10 +27,13 @@ type LogicJump struct {
 	Transform *game.Transform
 	//
 	PlayerMode                      PlayerMode
+	pid                             int64
+	evm                             *pkem.EventManager
 	Chosen                          bool
 	beginms                         float64
 	Velx, Vely, Velz                int64 // 当前总速度
 	movex, movez                    int64 // 由于wsad产生的速度
+	underattx, underattz            int64 // 由于 被攻击 产生的速度
 	logicposx, logicposy, logicposz int64
 	rlogicposx, rlogicposz          int64
 	Logicroty                       int64 // 1 代表 0.01°
@@ -73,6 +77,12 @@ func (lj *LogicJump) getAC(gb game.GameObjectI) {
 	}
 	lj.ac = gb.GetACSupport()
 }
+func (lj *LogicJump) SetPID(pid int64) {
+	lj.pid = pid
+}
+func (lj *LogicJump) SetEVM(evm *pkem.EventManager) {
+	lj.evm = evm
+}
 
 // 切换动画，不影响逻辑
 func (lj *LogicJump) changeACMode(mode string) {
@@ -107,6 +117,10 @@ func (lj *LogicJump) OutterUpdate() {
 	}
 	if lj.PlayerMode == PlayerMode_Moving {
 		lj.OnMovingUpdate()
+		return
+	}
+	if lj.PlayerMode == PlayerMode_DoAtt {
+		lj.OnDoAttUpdate()
 		return
 	}
 }

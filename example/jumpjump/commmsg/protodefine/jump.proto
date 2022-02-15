@@ -4,12 +4,15 @@ option go_package = "pgocode/jump";
 
 
 message JumpMSGOne {
-    string Kind = 1; //     string // move jump choose login
+    string Kind = 1; //     string // move jump choose login doatt underatt
 	string uid = 2; //  UID      string
 	int64 which = 3; // Which    int64 // 哪一个
 	int64 moveValX = 4; // MoveValX int64
 	int64 moveValZ = 5; // MoveValZ int64
 	bool m = 6; //M        bool
+	int64 PosX = 7;
+	int64 PosY = 8;
+	int64 PosZ = 9;
 }
 
 message JumpMSGTurn {
