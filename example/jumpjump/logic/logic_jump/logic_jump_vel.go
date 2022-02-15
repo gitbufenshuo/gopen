@@ -25,11 +25,11 @@ func (lj *LogicJump) OnForce() {
 	lj.factor = 5
 	{
 		// clamp x and z
-		if lj.logicposx < -20*1000 {
-			lj.logicposx = -20 * 1000
+		if lj.logicposx < -16*1000 {
+			lj.logicposx = -16 * 1000
 		}
-		if lj.logicposx > 20*1000 {
-			lj.logicposx = 20 * 1000
+		if lj.logicposx > 16*1000 {
+			lj.logicposx = 16 * 1000
 		}
 
 		if lj.logicposz < -10*1000 {

@@ -27,7 +27,7 @@ func init() {
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Transform.Postion.SetValue3(0, 20, 20)
+	gi.MainCamera.Transform.Postion.SetValue3(0, 25, 30)
 	gi.MainCamera.SetForward(0, -1, -1)
 	gi.MainCamera.NearDistance = 0.5
 	{
