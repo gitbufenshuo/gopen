@@ -338,15 +338,12 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			lm.which++
 		}
 		which := lm.UserMap[msg.Uid]
+		thelogic := lm.fromWhichGetLogic(which)
+		thelogic.SetPID(which)
+		thelogic.SetEVM(lm.evmanager)
 		if msg.Uid == lm.UID {
 			lm.Login = true
-			if which == 0 {
-				lm.localPlayerJump = lm.MainPlayerJump
-			} else {
-				lm.localPlayerJump = lm.SubPlayerJump
-			}
-			lm.localPlayerJump.SetPID(which)
-			lm.localPlayerJump.SetEVM(lm.evmanager)
+			lm.localPlayerJump = thelogic
 		}
 		fmt.Printf("{login}, (%s:%d) 设置相机绑定\n", msg.Uid, which)
 		return

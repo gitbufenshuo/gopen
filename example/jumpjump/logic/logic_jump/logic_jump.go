@@ -81,6 +81,7 @@ func (lj *LogicJump) SetPID(pid int64) {
 	lj.pid = pid
 }
 func (lj *LogicJump) SetEVM(evm *pkem.EventManager) {
+	fmt.Println("set evm", evm)
 	lj.evm = evm
 }
 
@@ -121,6 +122,10 @@ func (lj *LogicJump) OutterUpdate() {
 	}
 	if lj.PlayerMode == PlayerMode_DoAtt {
 		lj.OnDoAttUpdate()
+		return
+	}
+	if lj.PlayerMode == PlayerMode_UnderAtt {
+		lj.OnUnderAttUpdate()
 		return
 	}
 }

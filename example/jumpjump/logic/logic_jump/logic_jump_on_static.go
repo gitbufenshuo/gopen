@@ -39,9 +39,14 @@ func (lj *LogicJump) OnStaticProcessMSG_underatt(msg *jump.JumpMSGOne) {
 	underz := lj.logicposz - msg.PosZ
 	mo := math.Sqrt(float64((underx*underx + underz*underz)))
 	moint64 := int64(mo)
+	if moint64 == 0 {
+		moint64 = 1
+	}
 	underx = underx * 5000 / moint64
 	underz = underz * 5000 / moint64
 	fmt.Println("static underatt", underx, underz)
+	lj.underattx = underx
+	lj.underattz = underz
 	lj.LeaveStateStatic()   // 退出 static
 	lj.EnterStateUnderAtt() // 进入 underatt
 }
