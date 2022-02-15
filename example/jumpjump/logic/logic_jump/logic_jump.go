@@ -6,19 +6,18 @@ import (
 	"github.com/gitbufenshuo/gopen/example/htmlblockcustom/logic/logic_follow"
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
-	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 	"github.com/gitbufenshuo/gopen/matmath"
-	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
 type PlayerMode int
 
 const (
-	PlayerMode_Static   PlayerMode = 1 // 静止
-	PlayerMode_Jump     PlayerMode = 2 // 跳
-	PlayerMode_UnderAtt PlayerMode = 3 // 受攻击
-	PlayerMode_DoAtt    PlayerMode = 4 // 主动攻击
+	PlayerMode_Static   PlayerMode = iota + 1 // 静止
+	PlayerMode_Moving   PlayerMode = iota + 1 // 移动
+	PlayerMode_Jump     PlayerMode = iota + 1 // 跳
+	PlayerMode_UnderAtt PlayerMode = iota + 1 // 受攻击
+	PlayerMode_DoAtt    PlayerMode = iota + 1 // 主动攻击
 )
 
 type LogicJump struct {
@@ -29,7 +28,8 @@ type LogicJump struct {
 	PlayerMode                      PlayerMode
 	Chosen                          bool
 	beginms                         float64
-	Velx, Vely, Velz                int64 // 当前速度
+	Velx, Vely, Velz                int64 // 当前总速度
+	movex, movez                    int64 // 由于wsad产生的速度
 	logicposx, logicposy, logicposz int64
 	rlogicposx, rlogicposz          int64
 	Logicroty                       int64 // 1 代表 0.01°
@@ -39,6 +39,7 @@ type LogicJump struct {
 	outterFrame                     int64
 	doattmsFrame                    int64
 	underattmsFrame                 int64
+	moveSpeed                       int64 // 100 代表百分之百
 	//
 	fenshenList []*logic_follow.LogicFollow
 	ac          game.AnimationControllerI
@@ -59,6 +60,7 @@ func NewLogicJump(gi *game.GlobalInfo) game.LogicSupportI {
 	res.gravity = -10 //
 	res.logicposx, res.logicposy = 0, 0
 	res.factor = 5
+	res.moveSpeed = 100
 	return res
 }
 
@@ -71,11 +73,13 @@ func (lj *LogicJump) getAC(gb game.GameObjectI) {
 	}
 	lj.ac = gb.GetACSupport()
 }
+
+// 切换动画，不影响逻辑
 func (lj *LogicJump) changeACMode(mode string) {
 	if lj.ac == nil {
 		return
 	}
-	lj.ac.ChangeMode("MOVING")
+	lj.ac.ChangeMode(mode)
 }
 
 func (lj *LogicJump) Start(gb game.GameObjectI) {
@@ -84,18 +88,10 @@ func (lj *LogicJump) Start(gb game.GameObjectI) {
 }
 
 func (lj *LogicJump) Update(gb game.GameObjectI) {
+	// 此为逻辑狗无关的 update 比如说，同步逻辑位置到渲染位置
 	lj.frame++
 	lj.getAC(gb)         // 逻辑无关
 	lj.syncLogicPosY(gb) // 逻辑无关
-	return
-	if lj.PlayerMode == PlayerMode_Static {
-		lj.PlayerMode_StaticUpdate(gb)
-		return
-	}
-	if lj.PlayerMode == PlayerMode_Jump {
-		lj.PlayerMode_JumpUpdate(gb)
-		return
-	}
 }
 
 func (lj *LogicJump) OutterUpdate() {
@@ -105,28 +101,14 @@ func (lj *LogicJump) OutterUpdate() {
 		onefenshen.Move(lj.logicposx, lj.logicposy, lj.logicposz, int64(idx*5))
 	}
 	//
-	if lj.PlayerMode == PlayerMode_UnderAtt {
-		if lj.outterFrame-lj.underattmsFrame > 20 {
-			lj.EnterPlayerMode_Static()
-		}
+	if lj.PlayerMode == PlayerMode_Static {
+		lj.OnStaticUpdate()
 		return
 	}
-	if lj.PlayerMode == PlayerMode_DoAtt {
-		if lj.outterFrame-lj.doattmsFrame > 20 {
-			lj.EnterPlayerMode_Static()
-		}
+	if lj.PlayerMode == PlayerMode_Moving {
+		lj.OnMovingUpdate()
 		return
 	}
-}
-func (lj *LogicJump) EnterPlayerMode_Static() {
-	lj.PlayerMode = PlayerMode_Static
-	lj.ac.ChangeMode("yidong")
-}
-
-func (lj *LogicJump) EnterPlayerMode_DoAtt() {
-	lj.PlayerMode = PlayerMode_DoAtt
-	lj.ac.ChangeMode("pugong")
-	lj.doattmsFrame = lj.outterFrame
 }
 
 func (lj *LogicJump) Skill_Yingfenshen() {
@@ -144,46 +126,6 @@ func (lj *LogicJump) Skill_Yingfenshen() {
 	}
 }
 
-func (lj *LogicJump) EnterPlayerMode_UnderAtt() {
-	lj.PlayerMode = PlayerMode_UnderAtt
-	lj.underattmsFrame = lj.outterFrame
-}
-
-func (lj *LogicJump) OnForce() {
-	var upForce int64
-	if lj.logicposy <= 0 {
-		lj.logicposy = 0
-		upForce = -lj.gravity // 如果在地面，向上的弹力应该正好与重力相反
-		lj.Vely = 0
-	}
-	//
-	//deltams := float32(lj.gi.FrameElapsedMS / 1000) // 单位变成秒
-	mergeforce := lj.gravity + upForce // 合力
-	lj.Vely += (mergeforce) * 10
-	lj.logicposy += lj.Vely
-	lj.logicposx += lj.Velx
-	lj.logicposz += lj.Velz
-	lj.factor = 5
-	{
-		// clamp x and z
-		if lj.logicposx < -20*1000 {
-			lj.logicposx = -20 * 1000
-		}
-		if lj.logicposx > 20*1000 {
-			lj.logicposx = 20 * 1000
-		}
-
-		if lj.logicposz < -10*1000 {
-			lj.logicposz = -10 * 1000
-		}
-		if lj.logicposz > 10*1000 {
-			lj.logicposz = 10 * 1000
-		}
-	}
-
-	// fmt.Printf("lj.logicposy:%f lj.vel:%f imp:%f mode:%v\n", lj.logicposy, lj.vel, mergeforce*deltams, lj.PlayerMode)
-}
-
 func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	nowposx, nowposy, nowposz := gb.GetTransform().Postion.GetValue3()
 	nowposx += (float32(lj.logicposx)/1000 - nowposx) / lj.factor
@@ -192,36 +134,10 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	gb.GetTransform().Postion.SetValue3(
 		nowposx, nowposy, nowposz,
 	)
-	forward := matmath.CreateVec4(float32(lj.Velx), 0, float32(lj.Velz), 1)
+	forward := matmath.CreateVec4(float32(lj.GetVelX()), 0, float32(lj.GetVelZ()), 1)
 	gb.GetTransform().SetForward(forward, 0.2)
 	// curframe := float32(lj.gi.CurFrame)
 	// gb.GetTransform().Rotation.SetIndexValue(0, -30)
 	// gb.GetTransform().Rotation.SetIndexValue(1, 45)
 	// gb.GetTransform().Rotation.SetIndexValue(1, rawroty)
-}
-
-func (lj *LogicJump) PlayerMode_StaticUpdate(gb game.GameObjectI) {
-	///////////////////////
-	if !lj.Chosen {
-		return
-	}
-	if inputsystem.GetInputSystem().KeyDown(int(glfw.KeySpace)) {
-		lj.PlayerMode = PlayerMode_Jump
-		lj.logicposy = 1
-		lj.Vely = 30
-		lj.changeACMode("MOVING")
-	}
-}
-
-func (lj *LogicJump) PlayerMode_JumpUpdate(gb game.GameObjectI) {
-	if lj.logicposy < 0 {
-		lj.PlayerMode = PlayerMode_Static
-		lj.changeACMode("__init")
-	}
-	// deltams := lj.gi.FrameElapsedMS
-	// lj.energy
-}
-
-func (lj *LogicJump) Clone() game.LogicSupportI {
-	return NewLogicJump(lj.gi)
 }

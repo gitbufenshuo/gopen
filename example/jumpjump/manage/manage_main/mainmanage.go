@@ -337,36 +337,16 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			}
 		}
 		fmt.Printf("{login}, (%s:%d) 设置相机绑定\n", msg.Uid, which)
+		return
 		// lm.cameraFollow = lm.localPlayerJump.Transform
-	} else if msg.Kind == "move" {
-		// 通过 uid 找到 which
+	}
+	switch msg.Kind {
+	case "move", "doatt", "skill-yingfenshen":
 		if which, found := lm.UserMap[msg.Uid]; found {
 			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
 			logijump := lm.fromWhichGetLogic(which)
-			logijump.Velx = msg.MoveValX
-			logijump.Velz = msg.MoveValZ
-		}
-	} else if msg.Kind == "doatt" {
-		if which, found := lm.UserMap[msg.Uid]; found {
-			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
-			logijumpThis := lm.fromWhichGetLogic(which)
-			if logijumpThis.PlayerMode == logic_jump.PlayerMode_Static {
-				logijumpThis.EnterPlayerMode_DoAtt()
-			} else {
-				return
-			}
-			if len(lm.UserMap) == 2 {
-				logijumpOther := lm.fromWhichOtherLogic(which)
-				if logijumpOther.PlayerMode == logic_jump.PlayerMode_Static {
-					logijumpOther.EnterPlayerMode_UnderAtt()
-				}
-			}
-		}
-	} else if msg.Kind == "skill-yingfenshen" {
-		if which, found := lm.UserMap[msg.Uid]; found {
-			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
-			logijumpThis := lm.fromWhichGetLogic(which)
-			logijumpThis.Skill_Yingfenshen()
+			logijump.ProcessMSG(msg)
+			break
 		}
 	}
 }
