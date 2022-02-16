@@ -29,7 +29,6 @@ type LogicJump struct {
 	PlayerMode                      PlayerMode
 	pid                             int64
 	evm                             *pkem.EventManager
-	Chosen                          bool
 	beginms                         float64
 	Velx, Vely, Velz                int64 // 当前总速度
 	movex, movez                    int64 // 由于wsad产生的速度
@@ -71,6 +70,15 @@ func NewLogicJump(gi *game.GlobalInfo) game.LogicSupportI {
 func (lj *LogicJump) GetLogicPosX() int64 {
 	return lj.logicposx
 }
+
+func (lj *LogicJump) GetLogicPosY() int64 {
+	return lj.logicposy
+}
+
+func (lj *LogicJump) GetLogicPosZ() int64 {
+	return lj.logicposz
+}
+
 func (lj *LogicJump) getAC(gb game.GameObjectI) {
 	if lj.ac != nil {
 		return
@@ -79,6 +87,9 @@ func (lj *LogicJump) getAC(gb game.GameObjectI) {
 }
 func (lj *LogicJump) SetPID(pid int64) {
 	lj.pid = pid
+}
+func (lj *LogicJump) GetPID() int64 {
+	return lj.pid
 }
 func (lj *LogicJump) SetEVM(evm *pkem.EventManager) {
 	fmt.Println("set evm", evm)

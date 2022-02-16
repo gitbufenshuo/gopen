@@ -32,6 +32,9 @@ type ManageMain struct {
 	SubPlayer      game.GameObjectI
 	SubPlayerJump  *logic_jump.LogicJump
 	//
+	PlayerLogicList []*logic_jump.LogicJump
+	//
+	auto            bool
 	localPlayerJump *logic_jump.LogicJump
 	//
 	InMsgChan    chan *jump.JumpMSGTurn
@@ -49,6 +52,7 @@ type ManageMain struct {
 	jpressed bool
 	kpressed bool
 	ppressed bool
+	opressed bool
 	//
 	serverConn net.Conn
 	//
@@ -97,6 +101,7 @@ func (lm *ManageMain) Start() {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyP))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyJ))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyK))
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyO))
 	lm.gi.SetInputSystem(inputsystem.GetInputSystem())
 	//
 	{
@@ -105,9 +110,9 @@ func (lm *ManageMain) Start() {
 		for idx := range logiclist {
 			if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
 				lm.MainPlayerJump = v
-				lm.MainPlayerJump.Chosen = true
 			}
 		}
+		lm.PlayerLogicList = append(lm.PlayerLogicList, lm.MainPlayerJump)
 	}
 	{
 		lm.SubPlayer = modelcustom.SceneSystemIns.GetSceneOb("main", "subplayer")
@@ -115,9 +120,9 @@ func (lm *ManageMain) Start() {
 		for idx := range logiclist {
 			if v, ok := logiclist[idx].(*logic_jump.LogicJump); ok {
 				lm.SubPlayerJump = v
-				lm.SubPlayerJump.Chosen = true
 			}
 		}
+		lm.PlayerLogicList = append(lm.PlayerLogicList, lm.SubPlayerJump)
 	}
 	lm.connect()
 }
@@ -202,13 +207,9 @@ func (lm *ManageMain) Update() {
 			lm.MSG_Update(onemsg)
 		}
 		// 对本地程序步进
-		lm.MainPlayerJump.OutterUpdate()
-		lm.SubPlayerJump.OutterUpdate()
-		// 对事件进行处理
-		lm.MainPlayerJump.OutterEV()
-		lm.SubPlayerJump.OutterEV()
-		// 清空事件
-		lm.evmanager.Clear()
+		lm.Outter_Update()
+		// 事件
+		lm.Event_Update()
 		// 回合收尾
 		lm.Local_Collect_End()
 		lm.Turn++ // 回合加1
@@ -216,6 +217,34 @@ func (lm *ManageMain) Update() {
 }
 
 func (lm *ManageMain) Local_Total_Collect() {
+	opressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyO))
+	if lm.auto {
+		if lm.localPlayerJump.GetLogicPosX() < 0 {
+			lm.dpressed = true
+		} else {
+			lm.dpressed = false
+		}
+		if lm.localPlayerJump.GetLogicPosX() > 0 {
+			lm.apressed = true
+		} else {
+			lm.apressed = false
+		}
+		//
+		if lm.localPlayerJump.GetLogicPosZ() < 0 {
+			lm.spressed = true
+		} else {
+			lm.spressed = false
+		}
+		if lm.localPlayerJump.GetLogicPosZ() > 0 {
+			lm.wpressed = true
+		} else {
+			lm.wpressed = false
+		}
+		if !lm.opressed {
+			lm.opressed = opressed
+		}
+		return
+	}
 	apressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyA))
 	dpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyD))
 	wpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyW))
@@ -248,6 +277,9 @@ func (lm *ManageMain) Local_Total_Collect() {
 	if !lm.kpressed {
 		lm.kpressed = kpressed
 	}
+	if !lm.opressed {
+		lm.opressed = opressed
+	}
 	return
 }
 
@@ -260,10 +292,12 @@ func (lm *ManageMain) Local_Collect_End() {
 	lm.jpressed = false
 	lm.kpressed = false
 	lm.ppressed = false
+	lm.opressed = false
 }
 func (lm *ManageMain) Local_Total_Merge() {
 	lm.Login_Merge()
 	lm.Action_Merge()
+	lm.Auto_Merge()
 	return
 }
 
@@ -280,6 +314,13 @@ func (lm *ManageMain) Login_Merge() {
 			Kind: "login",
 			Uid:  lm.UID,
 		})
+	}
+}
+
+func (lm *ManageMain) Auto_Merge() {
+	if lm.opressed {
+		// 按下O键就是切换自动或者不自动
+		lm.auto = !lm.auto
 	}
 }
 
@@ -345,7 +386,7 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			lm.Login = true
 			lm.localPlayerJump = thelogic
 		}
-		fmt.Printf("{login}, (%s:%d) 设置相机绑定\n", msg.Uid, which)
+		fmt.Printf("{用户登录}, (uid:%s which:%d)\n", msg.Uid, which)
 		return
 		// lm.cameraFollow = lm.localPlayerJump.Transform
 	}
@@ -358,4 +399,29 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 			break
 		}
 	}
+}
+
+// 两个 player 步进
+func (lm *ManageMain) Outter_Update() {
+	for _, oneplayer := range lm.PlayerLogicList {
+		oneplayer.OutterUpdate()
+	}
+}
+
+func (lm *ManageMain) Event_Update() {
+	evlist := lm.evmanager.GetEvList()
+	for _, oneev := range evlist {
+		if oneev.EK == pkem.EK_DoAtt { // 如果是攻击事件
+			for _, oneplayer := range lm.PlayerLogicList {
+				if oneplayer.GetPID() != oneev.PID {
+					newmsg := new(jump.JumpMSGOne)
+					newmsg.Kind = "underatt"
+					newmsg.PosX, newmsg.PosY, newmsg.PosZ = oneev.PosX, oneev.PosY, oneev.PosZ
+					oneplayer.ProcessMSG(newmsg)
+				}
+			}
+		}
+	}
+	// 清空事件
+	lm.evmanager.Clear()
 }

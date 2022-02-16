@@ -42,6 +42,9 @@ func (lj *LogicJump) OnStaticProcessMSG_underatt(msg *jump.JumpMSGOne) {
 	if moint64 == 0 {
 		moint64 = 1
 	}
+	if moint64 > 2000 {
+		return
+	}
 	underx = underx * 5000 / moint64
 	underz = underz * 5000 / moint64
 	fmt.Println("static underatt", underx, underz)
