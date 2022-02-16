@@ -64,6 +64,9 @@ func myInit(gi *game.GlobalInfo) {
 		texture := resource.NewTexture()
 		texture.ReadFromFile("./scenespec/asset/png/particle.png")
 		gi.ParticalSystem = game.NewParticle(gi, texture)
+		// newentity := game.NewParticleEntity()
+		// newentity.CoreList = append(newentity.CoreList, game.NewParticleCore())
+		// gi.ParticalSystem.EntityList = append(gi.ParticalSystem.EntityList, newentity)
 	}
 	// 业务逻辑
 	initLogic(gi)

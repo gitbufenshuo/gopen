@@ -43,6 +43,8 @@ type LogicJump struct {
 	doattmsFrame                    int64
 	underattmsFrame                 int64
 	moveSpeed                       int64 // 100 代表百分之百
+	// doatt
+	doatt_which WhichAtt // 什么种的att
 	//
 	fenshenList []*logic_follow.LogicFollow
 	ac          game.AnimationControllerI

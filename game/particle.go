@@ -39,6 +39,7 @@ type ParticleEntity struct {
 	CoreList        []*ParticleCore
 	TargetTransform *Transform
 	Light           float32
+	Enabled         bool
 }
 
 func NewParticleEntity() *ParticleEntity {
@@ -69,10 +70,9 @@ func (pe *ParticleEntity) CalcLight() {
 }
 
 func (pe *ParticleEntity) UpdateRotation() {
-	for idx, onecore := range pe.CoreList {
-		onecore.Transform.Rotation.AddIndexValue(2, float32(idx))
-		onecore.Transform.Scale.SetIndexValue(0, float32(idx%10)/5)
-		onecore.Transform.Scale.SetIndexValue(1, float32(idx%10)/5)
+	for _, onecore := range pe.CoreList {
+		onecore.Transform.Rotation.SetValue4(1, 1, 1, rand.Float32()*90)
+		onecore.Transform.Scale.SetValue4(1, 1, 1, 1)
 	}
 }
 func (pe *ParticleEntity) UpdateTargetTransform() {
@@ -110,6 +110,9 @@ func (parti *Particle) Start() {
 func (parti *Particle) Update() {
 	parti.CalcLight()
 	for _, oneentity := range parti.EntityList {
+		if !oneentity.Enabled {
+			continue
+		}
 		oneentity.Update()
 	}
 }
@@ -125,6 +128,9 @@ func (parti *Particle) Draw() {
 	parti.UploadUniforms(vloc, ploc)
 
 	for _, oneentity := range parti.EntityList {
+		if !oneentity.Enabled {
+			continue
+		}
 		oneentity.Draw(mloc, lightloc)
 	}
 }

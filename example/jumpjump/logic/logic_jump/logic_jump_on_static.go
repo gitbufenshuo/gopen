@@ -29,7 +29,9 @@ func (lj *LogicJump) OnStaticProcessMSG_move(msg *jump.JumpMSGOne) {
 	lj.EnterStateMoving()
 }
 
+// 发起攻击
 func (lj *LogicJump) OnStaticProcessMSG_doatt(msg *jump.JumpMSGOne) {
+	lj.doatt_which = WhichAtt(msg.WhichAtt)
 	lj.EnterStateDoAtt()
 }
 

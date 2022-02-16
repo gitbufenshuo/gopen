@@ -34,6 +34,7 @@ func (lj *LogicJump) OnMovingProcessMSG_move(msg *jump.JumpMSGOne) {
 }
 
 func (lj *LogicJump) OnMovingProcessMSG_doatt(msg *jump.JumpMSGOne) {
+	lj.doatt_which = WhichAtt(msg.WhichAtt)
 	lj.EnterStateDoAtt()
 }
 
@@ -46,7 +47,7 @@ func (lj *LogicJump) OnMovingProcessMSG_underatt(msg *jump.JumpMSGOne) {
 	if moint64 == 0 {
 		moint64 = 1
 	}
-	if moint64 > 2000 {
+	if moint64 > 2500 {
 		return
 	}
 	underx = underx * 5000 / moint64

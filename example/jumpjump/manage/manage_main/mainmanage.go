@@ -9,6 +9,7 @@ import (
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg/protodefine/pgocode/jump"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/commmsg/server/imple"
+	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_bullet"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/share/pkem"
 	"github.com/gitbufenshuo/gopen/game"
@@ -33,6 +34,7 @@ type ManageMain struct {
 	SubPlayerJump  *logic_jump.LogicJump
 	//
 	PlayerLogicList []*logic_jump.LogicJump
+	BulletLogicList []*logic_bullet.LogicBullet
 	//
 	auto            bool
 	localPlayerJump *logic_jump.LogicJump
@@ -349,6 +351,7 @@ func (lm *ManageMain) Action_Merge() {
 			MoveValX: mx,
 			MoveValZ: mz,
 			M:        lm.mpressed,
+			WhichAtt: int64(logic_jump.Att_Pugong),
 		})
 	} else { // 普通移动
 		if mx*mx+mz*mz > 0 {
@@ -361,9 +364,11 @@ func (lm *ManageMain) Action_Merge() {
 			})
 		}
 		if lm.kpressed { // 技能 影分身
+			fmt.Println("lm.kpressed")
 			lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
-				Kind: "skill-yingfenshen",
-				Uid:  lm.UID,
+				Kind:     "doatt",
+				Uid:      lm.UID,
+				WhichAtt: int64(logic_jump.Att_Skill1),
 			})
 		}
 	}
@@ -406,22 +411,17 @@ func (lm *ManageMain) Outter_Update() {
 	for _, oneplayer := range lm.PlayerLogicList {
 		oneplayer.OutterUpdate()
 	}
-}
+	for _, onebullet := range lm.BulletLogicList {
+		if onebullet.ShouldDel {
 
-func (lm *ManageMain) Event_Update() {
-	evlist := lm.evmanager.GetEvList()
-	for _, oneev := range evlist {
-		if oneev.EK == pkem.EK_DoAtt { // 如果是攻击事件
-			for _, oneplayer := range lm.PlayerLogicList {
-				if oneplayer.GetPID() != oneev.PID {
-					newmsg := new(jump.JumpMSGOne)
-					newmsg.Kind = "underatt"
-					newmsg.PosX, newmsg.PosY, newmsg.PosZ = oneev.PosX, oneev.PosY, oneev.PosZ
-					oneplayer.ProcessMSG(newmsg)
-				}
-			}
 		}
+		targetlogic := lm.fromWhichGetLogic(onebullet.TargetPID)
+		if targetlogic == nil {
+			continue
+		}
+		onebullet.TargetPosX = targetlogic.GetLogicPosX()
+		onebullet.TargetPosY = targetlogic.GetLogicPosY()
+		onebullet.TargetPosZ = targetlogic.GetLogicPosZ()
+		onebullet.OutterUpdate()
 	}
-	// 清空事件
-	lm.evmanager.Clear()
 }

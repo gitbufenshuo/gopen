@@ -13,6 +13,7 @@ message JumpMSGOne {
 	int64 PosX = 7;
 	int64 PosY = 8;
 	int64 PosZ = 9;
+	int64 WhichAtt = 10; // 哪种攻击
 }
 
 message JumpMSGTurn {

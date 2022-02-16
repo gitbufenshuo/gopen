@@ -163,7 +163,7 @@ func (pn *PrefabNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	//
 	if pn.Dong != "" {
 		// 可能有动画
-		fmt.Println(pn.Data, pn.Dong)
+		//fmt.Println(pn.Data, pn.Dong)
 		if pn.Data == "blockroot" { // 根节点
 			pn.ac = gi.AnimationSystem.CreateAC(pn.Dong)
 			res.SetACSupport(pn.ac)
