@@ -24,6 +24,7 @@ func (lm *ManageMain) Event_Update() {
 			} else if oneev.SubKind == int64(logic_jump.Att_Skill1) {
 				prefab := modelcustom.PrefabSystemIns.GetPrefab("bullet")
 				newgb := prefab.Instantiate(lm.gi)
+				newgb.GetTransform().Scale.SetValue4(0.5, 0.5, 0.5, 1)
 				logiclist := newgb.GetLogicSupport()
 				for idx := range logiclist {
 					if v, ok := logiclist[idx].(*logic_bullet.LogicBullet); ok {
