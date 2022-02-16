@@ -104,6 +104,10 @@ func (sl *SceneLoader) LoadPrefabList() {
 			continue
 		}
 		segs := strings.Split(text, " ")
+		if len(segs) < 2 {
+			fmt.Println("LoadPrefabList", "注意prefab.csv有空行，最好删除，以免出错")
+			continue
+		}
 		_name, _path := segs[0], segs[1]
 		fullpath := path.Join(sl.SpecPath, "asset", "prefab", _path)
 		modelcustom.LoadPrefabFromFile(_name, fullpath)
