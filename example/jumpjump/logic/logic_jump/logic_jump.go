@@ -64,7 +64,7 @@ func NewLogicJump(gi *game.GlobalInfo) game.LogicSupportI {
 	res.PlayerMode = PlayerMode_Static
 	res.gravity = -10 //
 	res.logicposx, res.logicposy = 0, 0
-	res.factor = 5
+	res.factor = 10
 	res.moveSpeed = 100
 	return res
 }

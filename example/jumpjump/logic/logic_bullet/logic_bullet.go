@@ -70,7 +70,7 @@ func (lj *LogicBullet) OutterUpdate() {
 				newev.TargetPID = lj.TargetPID
 			}
 			lj.evm.FireEvent(newev)
-			fmt.Println(lj.attTime, newev.TargetPID, newev.EK)
+			fmt.Println("一个小傀儡正在攻击", lj.attTime, newev.TargetPID, newev.EK)
 			lj.attTime++
 			if lj.attTime > 5 {
 				lj.ShouldDel = true

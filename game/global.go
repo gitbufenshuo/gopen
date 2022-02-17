@@ -165,17 +165,25 @@ func (gi *GlobalInfo) StartGame(mode string) {
 		if !gi.dealWithTime(1) {
 			continue
 		}
-		gl.ClearColor(0.5, 0.5, 0.5, 1)
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		// window.SwapBuffers()
 		///////////////////////////////////////////////////
 		// the very update every frame
+		//updatebeginms := help.GetNowMS()
 		gi.update()
+		//updateendms := help.GetNowMS()
+		//fmt.Println("upadtediff ms", updateendms-updatebeginms)
+		// gl.ClearColor(0.5, 0.5, 0.5, 1)
+		// gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		//updatebeginms = help.GetNowMS()
 		gi.draw()
+		//updateendms = help.GetNowMS()
+		//fmt.Println("draw diff ms", updateendms-updatebeginms)
+
+		// window.SwapBuffers()
+
 		gi.OnFrameEnd()
 		///////////////////////////////////////////////////
 		// Maintenance
-		window.SwapBuffers()
 		glfw.PollEvents()
 
 	}
@@ -309,6 +317,14 @@ func (gi *GlobalInfo) update() {
 }
 func (gi *GlobalInfo) draw() {
 	// gi.dealWithTime(0)
+	// if gi.FrameElapsedMS > 30 {
+	// 	fmt.Println("报警报警，帧率过低，限制draw", gi.FrameElapsedMS)
+	// 	return
+	// }
+	gl.ClearColor(0.5, 0.5, 0.5, 1)
+	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+	//	fmt.Println("gi.drawGameobject", len(gi.gameobjects))
 	for _, gb := range gi.gameobjects {
 		gi.drawGameobject(gb)
 	}
@@ -335,6 +351,7 @@ func (gi *GlobalInfo) draw() {
 			gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 		}
 	}
+	gi.window.SwapBuffers()
 }
 
 func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
@@ -383,7 +400,10 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 	// draw
 	modelResource := rs.ModelAsset_sg().Resource.(*resource.Model)
 	vertexNum := len(modelResource.Indices)
+	//thetime := time.Now()
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
+	//endtime := time.Now()
+	//fmt.Println("gl.DrawElements cost", endtime.Sub(thetime), gi.CurFrame, gb.ID_sg())
 	for _, onelogic := range logiclist {
 		onelogic.OnDrawFinish(gb)
 	}

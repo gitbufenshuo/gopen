@@ -34,13 +34,20 @@ func myInit_Camera(gi *game.GlobalInfo) {
 		// skybox
 		// 1. load the cubemap
 		cubemap := resource.NewCubeMap()
+		// C17F4DB8CC0274DA12D60A6944762679.png
 		cubemap.ReadFromFile([]string{
-			"scenespec/asset/skybox/right.png",
-			"scenespec/asset/skybox/left.png",
-			"scenespec/asset/skybox/top.png",
-			"scenespec/asset/skybox/bottom.png",
-			"scenespec/asset/skybox/back.png",
-			"scenespec/asset/skybox/front.png",
+			"scenespec/asset/skybox/128.png",
+			"scenespec/asset/skybox/128.png",
+			"scenespec/asset/skybox/128.png",
+			"scenespec/asset/skybox/128.png",
+			"scenespec/asset/skybox/128.png",
+			"scenespec/asset/skybox/128.png",
+			// "scenespec/asset/skybox/right.png",
+			// "scenespec/asset/skybox/left.png",
+			// "scenespec/asset/skybox/top.png",
+			// "scenespec/asset/skybox/bottom.png",
+			// "scenespec/asset/skybox/back.png",
+			// "scenespec/asset/skybox/front.png",
 		})
 		cubemap.Upload()
 		gi.MainCamera.AddSkyBox(cubemap)

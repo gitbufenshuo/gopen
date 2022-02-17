@@ -16,6 +16,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
 	"github.com/gitbufenshuo/gopen/gameex/inputsystem"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
@@ -74,7 +75,30 @@ func NewManageMain(gi *game.GlobalInfo) *ManageMain {
 	res.OutMsgChan = make(chan *jump.JumpMSGTurn, 100)
 	// camera
 	res.cameraX, res.cameraY, res.cameraZ = gi.MainCamera.Transform.Postion.GetValue3()
+	res.LandInit()
 	return res
+}
+
+// 地形初始化
+func (lm *ManageMain) LandInit() {
+	// return
+	prefab := modelcustom.PrefabSystemIns.GetPrefab("bullet")
+
+	for x := int64(-3); x <= 3; x++ {
+		for y := int64(-3); y <= 3; y++ {
+			newgb := prefab.Instantiate(lm.gi)
+			newgb.GetTransform().Scale.SetValue4(0.5, 0.5, 0.5, 1)
+			logiclist := newgb.GetLogicSupport()
+			for idx := range logiclist {
+				if v, ok := logiclist[idx].(*logic_bullet.LogicBullet); ok {
+					v.LogicPosX = x * 10 * 1000
+					v.LogicPosY = y * 10 * 1000
+					v.LogicPosZ = -5 * 10 * 1000
+				}
+			}
+
+		}
+	}
 }
 
 func (lm *ManageMain) sendToServer() {
@@ -151,16 +175,10 @@ func (lm *ManageMain) connect() {
 
 func (lm *ManageMain) cameraControl() {
 	return
-	if lm.cameraFollow == nil {
-		return
-	}
 	mainCamera := lm.gi.MainCamera
-	fox, foy, foz := lm.cameraFollow.Postion.GetValue3()
-	mainCamera.Transform.Postion.SetValue3(
-		lm.cameraX+fox,
-		lm.cameraY+foy,
-		lm.cameraZ+foz,
-	)
+	frame := float32(lm.gi.CurFrame) / 100
+
+	mainCamera.SetForward(1, help.Sin(frame), help.Cos(frame))
 }
 
 func (lm *ManageMain) fromWhichGetLogic(which int64) *logic_jump.LogicJump {
@@ -335,14 +353,14 @@ func (lm *ManageMain) Action_Merge() {
 	}
 	var mx, mz int64
 	if lm.apressed {
-		mx = -500
+		mx = -1000
 	} else if lm.dpressed {
-		mx = 500
+		mx = 1000
 	}
 	if lm.wpressed {
-		mz = -500
+		mz = -1000
 	} else if lm.spressed {
-		mz = 500
+		mz = 1000
 	}
 	if lm.jpressed { // 发起攻击
 		lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
