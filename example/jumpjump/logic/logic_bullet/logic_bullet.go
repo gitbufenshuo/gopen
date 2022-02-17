@@ -13,6 +13,7 @@ type LogicBullet struct {
 	gi *game.GlobalInfo
 	*supports.NilLogic
 	evm *pkem.EventManager
+	gb  game.GameObjectI
 	//
 	TargetPID                          int64 // 目标对象的id
 	LogicPosX, LogicPosY, LogicPosZ    int64 // 当前位置
@@ -36,14 +37,20 @@ func (lj *LogicBullet) SetEVM(evm *pkem.EventManager) {
 	lj.evm = evm
 }
 
+func (lj *LogicBullet) Start(gb game.GameObjectI) {
+	lj.gb = gb
+}
+
 func (lj *LogicBullet) Update(gb game.GameObjectI) {
 	lj.syncLogicPosY(gb)
 }
 
 func (lj *LogicBullet) OutterUpdate() {
 	if lj.ShouldDel {
-		lj.LogicPosX += 100
-		lj.LogicPosZ += 100
+		lj.LogicPosY += 100
+		if lj.LogicPosY > 5000 {
+			lj.gi.DelGameObject(lj.gb)
+		}
 		return
 	}
 	lj.outterframe++
