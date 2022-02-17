@@ -90,7 +90,7 @@ func initLogic(gi *game.GlobalInfo) {
 		// ui system
 		rc := new(resource.RenderComponent)
 		buttonuispec := game.UISpec{
-			Pivot:          matmath.CreateVec4(-1, 0, 0, 0),
+			Pivot:          matmath.CreateVec4(-1, -1, 0, 0),
 			LocalPos:       matmath.CreateVec4(0, 0, 0, 0),
 			Width:          100,
 			Height:         100,
@@ -104,14 +104,8 @@ func initLogic(gi *game.GlobalInfo) {
 		newShaderR.ReadFromText(resource.ShaderUIButton_Bling_Text.Vertex, resource.ShaderUIButton_Bling_Text.Fragment)
 		newShaderR.Upload()
 		rc.ShaderR = newShaderR
-		tableLayout := game.NewUILayoutTable(gi)
-		tableLayout.ElementWidth = 101
-		tableLayout.ElementHeight = 101
-		tableLayout.Rows = 3
-		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-250, 150, 0, 0)
-		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(1, 1, 0, 0)
 		var buttonlist []game.UICanBeLayout
-		for idx := 0; idx != 1; idx++ {
+		for idx := 0; idx != 5; idx++ {
 			tr := resource.NewTexture()
 			tr.GenPure(1, 1, color.RGBA{0xbb, 0xbb, 0xbb, 0xbb})
 			// tr.GenRandom(8, 8)
@@ -121,7 +115,7 @@ func initLogic(gi *game.GlobalInfo) {
 			button := pk_basic_button.NewCustomButton(gi, pk_basic_button.ButtonConfig{
 				UISpec: buttonuispec,
 
-				Content: fmt.Sprintf("TAB键切换动作"),
+				Content: fmt.Sprintf("技能%d", idx+1),
 				Bling:   false, // 是否闪烁
 				SortZ:   0.01,  // 渲染层级，越小的，越靠近人眼
 				// ShaderText: resource.ShaderUIButton_Bling_Text, // 提供自己的shader
@@ -136,6 +130,14 @@ func initLogic(gi *game.GlobalInfo) {
 			gi.AddUIObject(button)
 			buttonlist = append(buttonlist, button)
 		}
+
+		tableLayout := game.NewUILayoutTable(gi)
+		tableLayout.ElementWidth = 101
+		tableLayout.ElementHeight = 101
+		tableLayout.Rows = 5
+		tableLayout.UISpec.LocalPos = matmath.CreateVec4(-200, -288, 0, 0)
+		tableLayout.UISpec.PosRelativity = matmath.CreateVec4(0, 1, 0, 0)
+
 		tableLayout.SetEles(buttonlist)
 		tableLayout.Arrange()
 		gi.AddManageObject(tableLayout)

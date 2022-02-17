@@ -140,7 +140,7 @@ func (uitext *UIText) SetText(content string) {
 		uitext.renderComponent.ModelR.Clear()
 	}
 	modelr := resource.NewUITextModel_BySpec(
-		matmath.CreateVec4(-1, 0, 0, 0),
+		matmath.CreateVec4(-1, -1, 0, 0),
 		width, height, outterWidth,
 	)
 	modelr.Upload()
