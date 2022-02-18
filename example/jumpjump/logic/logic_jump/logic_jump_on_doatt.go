@@ -66,7 +66,7 @@ func (lj *LogicJump) OnDoAttUpdate() {
 			}
 		}
 	} else if lj.doatt_which == Att_Skill1 {
-		if lj.outterFrame-lj.doattmsFrame > 2 {
+		if lj.outterFrame-lj.doattmsFrame > 16 {
 			// 此时释放 skill1,并切换到 static 状态
 			lj.LeaveStateDoAtt()
 			lj.EnterStateStatic()
