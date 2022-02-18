@@ -5,6 +5,7 @@ import (
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_bullet"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/logic/logic_jump"
 	"github.com/gitbufenshuo/gopen/example/jumpjump/share/pkem"
+	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
 )
 
@@ -25,17 +26,14 @@ func (lm *ManageMain) Event_Update() {
 				prefab := modelcustom.PrefabSystemIns.GetPrefab("bullet")
 				newgb := prefab.Instantiate(lm.gi)
 				newgb.GetTransform().Scale.SetValue4(0.5, 0.5, 0.5, 1)
-				logiclist := newgb.GetLogicSupport()
-				for idx := range logiclist {
-					if v, ok := logiclist[idx].(*logic_bullet.LogicBullet); ok {
-						lm.BulletLogicList = append(lm.BulletLogicList, v)
-						v.LogicPosX = oneev.PosX
-						v.LogicPosZ = oneev.PosZ
-						v.TargetPID = oneev.TargetPID
-						v.SetEVM(lm.evmanager)
-						lm.BulletLogicList = append(lm.BulletLogicList, v)
-					}
-				}
+				theif := game.GetLogicSupportComponent(newgb, (*logic_bullet.LogicBullet)(nil))
+				v := theif.(*logic_bullet.LogicBullet)
+				lm.BulletLogicList = append(lm.BulletLogicList, v)
+				v.LogicPosX = oneev.PosX
+				v.LogicPosZ = oneev.PosZ
+				v.TargetPID = oneev.TargetPID
+				v.SetEVM(lm.evmanager)
+				lm.BulletLogicList = append(lm.BulletLogicList, v)
 			}
 		}
 	}

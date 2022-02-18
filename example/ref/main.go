@@ -9,38 +9,13 @@ import (
 )
 
 func main() {
-	var ifa game.LogicSupportI
-	var shiti logic_bullet.LogicBullet
-	ifa = &shiti
+	shiti := (*logic_bullet.LogicBullet)(nil)
+	shitiif := interface{}(shiti)
+	shititype := reflect.TypeOf(shitiif)
 	{
-		a := reflect.TypeOf(ifa)
-		fmt.Println("refname:", a)
-		fmt.Println("  refname kind:", a.Kind())
-		fmt.Println("  refname elem kind:", a.Elem().Kind())
-	}
-	{
-		shitiaddr := &shiti
-		a := reflect.TypeOf(shitiaddr)
-		fmt.Println("refname:", a)
-		fmt.Println("  refname kind:", a.Kind())
-		fmt.Println("  refname elem kind:", a.Elem().Kind())
-	}
-	{
-		var zhi = func() {}
-		a := reflect.TypeOf(zhi)
-		fmt.Println("refname:", a)
-		fmt.Println("  refname kind:", a.Kind())
-		// fmt.Println("  refname elem kind:", a.Elem().Kind())
-	}
-	{
-		var ifa game.LogicSupportI
-		ifa = &shiti
-		var ifb *game.LogicSupportI
-		ifb = &ifa
-		a := reflect.TypeOf(ifb)
-		fmt.Println("refname:", a)
-		fmt.Println("  refname kind:", a.Kind())
-		fmt.Println("  refname elem kind:", a.Elem().Kind())
-		fmt.Println("  implements:", a.Elem().Implements(a.Elem()))
+		var logic game.LogicSupportI
+		logic = shiti
+		logictpe := reflect.TypeOf(logic)
+		fmt.Println("refname:", logictpe.ConvertibleTo(shititype))
 	}
 }

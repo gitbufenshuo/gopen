@@ -1,8 +1,11 @@
 package game
 
 import (
+	"reflect"
+
 	"github.com/gitbufenshuo/gopen/game/asset_manager"
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
@@ -23,6 +26,21 @@ type LogicSupportI interface {
 	Update(GameObjectI)
 	OnDraw(GameObjectI)
 	OnDrawFinish(GameObjectI)
+}
+
+func GetLogicSupportComponent(gb GameObjectI, tpe interface{}) interface{} {
+	list := gb.GetLogicSupport()
+	var theTargetLogic LogicSupportI
+	for _, onelogic := range list {
+		if help.TypeTheSame(onelogic, tpe) {
+			theTargetLogic = onelogic
+			break
+		}
+	}
+	if theTargetLogic == nil {
+		return nil
+	}
+	return reflect.ValueOf(theTargetLogic).Interface()
 }
 
 // the common gameobject Interface
