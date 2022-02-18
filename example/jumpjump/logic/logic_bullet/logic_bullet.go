@@ -56,8 +56,8 @@ func (lj *LogicBullet) OutterUpdate() {
 	lj.outterframe++
 	underx := lj.TargetPosX - lj.LogicPosX
 	underz := lj.TargetPosZ - lj.LogicPosZ
-	lj.LogicPosX += underx / 10
-	lj.LogicPosZ += underz / 10
+	lj.LogicPosX += underx / 50
+	lj.LogicPosZ += underz / 50
 	mo := math.Sqrt(float64((underx*underx + underz*underz)))
 	if mo < 3000 {
 		// 释放一个doatt事件

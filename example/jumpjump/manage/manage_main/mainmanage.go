@@ -353,14 +353,14 @@ func (lm *ManageMain) Action_Merge() {
 	}
 	var mx, mz int64
 	if lm.apressed {
-		mx = -1000
+		mx = -100
 	} else if lm.dpressed {
-		mx = 1000
+		mx = 100
 	}
 	if lm.wpressed {
-		mz = -1000
+		mz = -100
 	} else if lm.spressed {
-		mz = 1000
+		mz = 100
 	}
 	if lm.jpressed { // 发起攻击
 		lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
