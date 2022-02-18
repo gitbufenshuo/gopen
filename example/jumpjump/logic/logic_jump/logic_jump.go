@@ -43,6 +43,7 @@ type LogicJump struct {
 	doattmsFrame                    int64
 	underattmsFrame                 int64
 	moveSpeed                       int64 // 100 代表百分之百
+	jiasuFrame                      int64
 	// doatt
 	doatt_which WhichAtt // 什么种的att
 	//

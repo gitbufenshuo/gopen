@@ -1,11 +1,24 @@
 package logic_jump
 
 func (lj *LogicJump) GetVelX() int64 {
-	return (lj.movex + lj.underattx) * lj.moveSpeed / 100
+	var lastspeed int64 = lj.moveSpeed
+	if lj.jiasuFrame > 0 {
+		if lj.outterFrame-lj.jiasuFrame < 100 {
+			lastspeed *= 10
+		}
+	}
+
+	return (lj.movex + lj.underattx) * lastspeed / 100
 }
 
 func (lj *LogicJump) GetVelZ() int64 {
-	return (lj.movez + lj.underattz) * lj.moveSpeed / 100
+	var lastspeed int64 = lj.moveSpeed
+	if lj.jiasuFrame > 0 {
+		if lj.outterFrame-lj.jiasuFrame < 100 {
+			lastspeed *= 10
+		}
+	}
+	return (lj.movez + lj.underattz) * lastspeed / 100
 }
 
 func (lj *LogicJump) OnForce() {
@@ -39,6 +52,5 @@ func (lj *LogicJump) OnForce() {
 			lj.logicposz = 10 * 1000
 		}
 	}
-
 	// fmt.Printf("lj.logicposy:%f lj.vel:%f imp:%f mode:%v\n", lj.logicposy, lj.vel, mergeforce*deltams, lj.PlayerMode)
 }

@@ -56,6 +56,20 @@ func (lj *LogicJump) OnStaticProcessMSG_underatt(msg *jump.JumpMSGOne) {
 	lj.EnterStateUnderAtt() // 进入 underatt
 }
 
+func (lj *LogicJump) OnStaticProcessMSG_jiasu(msg *jump.JumpMSGOne) {
+	//
+	if lj.jiasuFrame == 0 {
+		fmt.Println("加速成功 释放")
+		lj.jiasuFrame = lj.outterFrame
+		return
+	}
+	if lj.outterFrame-lj.jiasuFrame < 120 {
+		fmt.Println("加速 冷却中", 120-lj.outterFrame-lj.jiasuFrame)
+		return
+	}
+	lj.jiasuFrame = lj.outterFrame
+}
+
 // 状态 接收msg
 func (lj *LogicJump) OnStaticProcessMSG(msg *jump.JumpMSGOne) {
 	if msg.Kind == "move" {
@@ -68,6 +82,10 @@ func (lj *LogicJump) OnStaticProcessMSG(msg *jump.JumpMSGOne) {
 	}
 	if msg.Kind == "underatt" {
 		lj.OnStaticProcessMSG_underatt(msg)
+		return
+	}
+	if msg.Kind == "jiasu" {
+		lj.OnStaticProcessMSG_jiasu(msg)
 		return
 	}
 }

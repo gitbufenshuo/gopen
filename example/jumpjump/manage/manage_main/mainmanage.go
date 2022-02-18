@@ -54,6 +54,7 @@ type ManageMain struct {
 	mpressed bool
 	jpressed bool
 	kpressed bool
+	lpressed bool
 	ppressed bool
 	opressed bool
 	//
@@ -127,6 +128,7 @@ func (lm *ManageMain) Start() {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyP))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyJ))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyK))
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyL))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyO))
 	lm.gi.SetInputSystem(inputsystem.GetInputSystem())
 	//
@@ -272,6 +274,7 @@ func (lm *ManageMain) Local_Total_Collect() {
 	mpressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyM))
 	jpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyJ))
 	kpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyK))
+	lpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyL))
 	ppressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyP))
 	if !lm.apressed {
 		lm.apressed = apressed
@@ -297,6 +300,9 @@ func (lm *ManageMain) Local_Total_Collect() {
 	if !lm.kpressed {
 		lm.kpressed = kpressed
 	}
+	if !lm.lpressed {
+		lm.lpressed = lpressed
+	}
 	if !lm.opressed {
 		lm.opressed = opressed
 	}
@@ -311,6 +317,7 @@ func (lm *ManageMain) Local_Collect_End() {
 	lm.mpressed = false
 	lm.jpressed = false
 	lm.kpressed = false
+	lm.lpressed = false
 	lm.ppressed = false
 	lm.opressed = false
 }
@@ -388,6 +395,11 @@ func (lm *ManageMain) Action_Merge() {
 				Uid:      lm.UID,
 				WhichAtt: int64(logic_jump.Att_Skill1),
 			})
+		} else if lm.lpressed {
+			lm.turnMsgLocal.List = append(lm.turnMsgLocal.List, &jump.JumpMSGOne{
+				Kind: "jiasu", // 隐身
+				Uid:  lm.UID,
+			})
 		}
 	}
 }
@@ -414,7 +426,7 @@ func (lm *ManageMain) MSG_Update(msg *jump.JumpMSGOne) {
 		// lm.cameraFollow = lm.localPlayerJump.Transform
 	}
 	switch msg.Kind {
-	case "move", "doatt", "skill-yingfenshen":
+	case "move", "doatt", "jiasu":
 		if which, found := lm.UserMap[msg.Uid]; found {
 			//fmt.Printf("{Collect}, (%s)(%d %d)\n", msg.UID, msg.MoveValX, msg.MoveValZ)
 			logijump := lm.fromWhichGetLogic(which)
