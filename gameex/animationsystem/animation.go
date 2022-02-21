@@ -94,6 +94,7 @@ func (af *AnimationFrame) Clone() *AnimationFrame {
 }
 
 type AnimationMeta struct {
+	Meta     string
 	AniMode  map[string][]*AnimationFrame
 	ModeList []string
 	IndexMap map[string]int
@@ -165,7 +166,9 @@ func LoadAnimationMetaFromData(data []byte) *AnimationMeta {
 func LoadAnimationMetaFromFile(filename string) *AnimationMeta {
 	data, _ := ioutil.ReadFile(filename)
 	fmt.Println("Begin LoadAnimationMetaFromFile", filename)
-	return LoadAnimationMetaFromData(data)
+	am := LoadAnimationMetaFromData(data)
+	am.Meta = filename
+	return am
 }
 
 type AnimationControlSpec struct {
@@ -192,6 +195,10 @@ func NewAnimationController(innerid int64) *AnimationController {
 }
 func (ac *AnimationController) UseAimationMeta(am *AnimationMeta) {
 	ac.AM = am
+	if len(am.ModeList) == 0 {
+		fmt.Printf("【❌❌❌】%s dong 文件，缺少关键动作\n", am.Meta)
+		os.Exit(1)
+	}
 	ac.CurMode = am.ModeList[0]
 	ac.CurIndex = 0
 }
