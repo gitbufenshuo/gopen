@@ -28,6 +28,7 @@ func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername str
 	gb.renderS.ShaderAsset_sg(_gi.AssetManager.FindByName(shadername))
 	if tass := _gi.AssetManager.FindByName(texturename); tass == nil {
 		fmt.Printf("NewBasicObject错误:%s图片未加载\n", texturename)
+		panic("")
 	}
 	gb.renderS.TextureAsset_sg(_gi.AssetManager.FindByName(texturename))
 	gb.renderS.DrawEnable_sg(true)
