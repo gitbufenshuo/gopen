@@ -2,6 +2,7 @@ package animationsystem
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gitbufenshuo/gopen/game"
 )
@@ -48,6 +49,10 @@ func (as *AnimationSystem) allocID() int64 {
 func (as *AnimationSystem) CreateAC(amname string) game.AnimationControllerI {
 	am := as.AnimationMataMap[amname]
 	//
+	if am == nil {
+		fmt.Printf("【❌❌❌】使用dong文件失败，缺少:%s\n", amname)
+		os.Exit(1)
+	}
 	acid := as.allocID()
 	ac := NewAnimationController(acid)
 	ac.UseAimationMeta(am)
