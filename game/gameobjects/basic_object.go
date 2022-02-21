@@ -1,6 +1,8 @@
 package gameobjects
 
 import (
+	"fmt"
+
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 )
@@ -24,6 +26,9 @@ func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername str
 	gb.renderS = supports.NewDefaultRenderSupport()
 	gb.renderS.ModelAsset_sg(_gi.AssetManager.FindByName(modelname))
 	gb.renderS.ShaderAsset_sg(_gi.AssetManager.FindByName(shadername))
+	if tass := _gi.AssetManager.FindByName(texturename); tass == nil {
+		fmt.Printf("NewBasicObject错误:%s图片未加载\n", texturename)
+	}
 	gb.renderS.TextureAsset_sg(_gi.AssetManager.FindByName(texturename))
 	gb.renderS.DrawEnable_sg(true)
 
