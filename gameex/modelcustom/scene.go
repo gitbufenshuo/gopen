@@ -118,6 +118,11 @@ func (pn *SceneNode) instantiate(gi *game.GlobalInfo, scene *Scene) game.GameObj
 		}
 	} else { // 这是一个prefab
 		prefab := PrefabSystemIns.GetPrefab(pn.Prefab)
+		if prefab == nil {
+			fmt.Println("SceneNode instantiate 错误", scene.From.From, scene.From.Meta)
+			fmt.Printf("    --->找不到 prefab:%s\n", pn.Prefab)
+			panic("")
+		}
 		newgb := prefab.Instantiate(gi)
 		newgb.GetTransform().Postion.Clone(&pn.Pos)
 		res = newgb
