@@ -2,3 +2,7 @@ grid.png.texture ./grid.png
 head.png.texture ./head.png
 hand.png.texture ./hand.png
 body.png.texture ./body.png
+dimian.png.texture ./dimian.png
+hong.png.texture ./hong.png
+shugan.png.texture ./shugan.png
+shuye.png.texture ./shuye.png

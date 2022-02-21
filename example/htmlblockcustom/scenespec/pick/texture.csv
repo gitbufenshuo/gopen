@@ -2,3 +2,4 @@ grid.png.texture ./grid.png
 head.png.texture ./head.png
 hand.png.texture ./hand.png
 body.png.texture ./body.png
+dimian.png.texture ./dimian.png
