@@ -4,24 +4,66 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"path"
 	"strings"
 
 	"github.com/gitbufenshuo/gopen/game"
+	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/game/gameobjects"
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 	"golang.org/x/net/html"
 )
 
 type Scene struct {
-	From      PrefabFrom
-	RootNode  *SceneNode
-	runtimeGB map[string]game.GameObjectI
+	From       PrefabFrom
+	RootNode   *SceneNode
+	CameraNode *SceneNode
+	runtimeGB  map[string]game.GameObjectI
 }
 
 // 通过这个 scene 生成一整个 场景
 func (pf *Scene) Instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	//
+	pf.CreateCamera(gi)
 	return pf.RootNode.instantiate(gi, pf)
+}
+func (pf *Scene) CreateCamera(gi *game.GlobalInfo) {
+	//
+	gi.MainCamera = game.NewDefaultCamera()
+	gi.MainCamera.Transform.Postion.SetValue3(pf.CameraNode.Pos.GetValue3())
+	gi.MainCamera.SetForward(pf.CameraNode.Forward.GetValue3())
+	gi.MainCamera.NearDistance = pf.CameraNode.Near
+	{
+		pngs := []string{}
+		for idx := range pf.CameraNode.SkyBox {
+			pngs = append(pngs,
+				path.Join("scenespec/asset/skybox/", pf.CameraNode.SkyBox[idx]),
+			)
+		}
+		// skybox
+		// 1. load the cubemap
+		cubemap := resource.NewCubeMap()
+		// C17F4DB8CC0274DA12D60A6944762679.png
+		// []string{
+		// 	// "scenespec/asset/skybox/128.png",
+		// 	// "scenespec/asset/skybox/128.png",
+		// 	// "scenespec/asset/skybox/128.png",
+		// 	// "scenespec/asset/skybox/128.png",
+		// 	// "scenespec/asset/skybox/128.png",
+		// 	// "scenespec/asset/skybox/right.png",
+		// 	// "scenespec/asset/skybox/right.png",
+		// 	// "scenespec/asset/skybox/left.png",
+		// 	// "scenespec/asset/skybox/top.png",
+		// 	// "scenespec/asset/skybox/bottom.png",
+		// 	// "scenespec/asset/skybox/back.png",
+		// 	// "scenespec/asset/skybox/front.png",
+		// }
+		cubemap.ReadFromFile(pngs)
+		cubemap.Upload()
+		gi.MainCamera.AddSkyBox(cubemap)
+	}
+
 }
 
 func LoadSceneFromFile(pname, filepath string) *Scene {
@@ -35,7 +77,7 @@ func LoadSceneFromFile(pname, filepath string) *Scene {
 		return nil
 	}
 	newScene.From.Content = data
-	newScene.RootNode = loadSceneFromContent(newScene.From.Content)
+	newScene.RootNode = newScene.loadSceneFromContent(newScene.From.Content)
 	SceneSystemIns.AddScene(pname, newScene)
 	return newScene
 }
@@ -47,18 +89,26 @@ func LoadSceneFromContent(pname string, content []byte) *Scene {
 	newScene.From.From = FromContent
 	newScene.From.Content = content
 	//
-	newScene.RootNode = loadSceneFromContent(newScene.From.Content)
+	newScene.RootNode = newScene.loadSceneFromContent(newScene.From.Content)
 	SceneSystemIns.AddScene(pname, newScene)
 	return newScene
 }
 
-func loadSceneFromContent(content []byte) *SceneNode {
+func (sc *Scene) loadSceneFromContent(content []byte) *SceneNode {
 	doc, err := html.Parse(bytes.NewReader(content))
 	if err != nil {
 		return nil
 	}
 	blockrootnode := FindHTMLRoot(doc, "root")
-	return readOneHTMLNode2SceneNode(blockrootnode)
+	sceneNode := readOneHTMLNode2SceneNode(blockrootnode)
+	{
+		// camera node
+		cameraHTMLNode := FindHTMLRoot(doc, "camera")
+		cameraNode := new(SceneNode)
+		cameraNode.ReadCaremaFromHTMLNode(cameraHTMLNode)
+		sc.CameraNode = cameraNode
+	}
+	return sceneNode
 }
 
 func readOneHTMLNode2SceneNode(htmlnode *html.Node) *SceneNode {
@@ -92,12 +142,15 @@ type SceneNode struct {
 	Kind   string // nil basic
 	Dong   string //
 	Logic  []string
+	SkyBox []string
 	Model  string
 	Image  string
 	Prefab string
 	//
 	Pos      matmath.Vec4 //
+	Forward  matmath.Vec4
 	Rotation matmath.Vec4 //
+	Near     float32
 	Pivot    matmath.Vec4
 	Size     matmath.Vec4
 	///////////////
@@ -136,6 +189,31 @@ func (pn *SceneNode) instantiate(gi *game.GlobalInfo, scene *Scene) game.GameObj
 	scene.runtimeGB[pn.Name] = res
 	return res
 }
+
+func (pn *SceneNode) ReadCaremaFromHTMLNode(htmlnode *html.Node) {
+	attrmap := make(map[string]string)
+	for _, oneattr := range htmlnode.Attr {
+		attrmap[oneattr.Key] = oneattr.Val
+	}
+	if v, found := attrmap["name"]; found {
+		pn.Name = v
+	}
+	if v, found := attrmap["pos"]; found {
+		pn.Pos = matmath.CreateVec4FromStr(v)
+	}
+	if v, found := attrmap["forward"]; found {
+		pn.Forward = matmath.CreateVec3FromStr(v)
+	}
+	pn.Near = 0.5
+	if v, found := attrmap["near"]; found {
+		pn.Near = help.Str2Float32(v)
+	}
+	if v, found := attrmap["skybox"]; found {
+		segs := strings.Split(v, ",")
+		pn.SkyBox = segs
+	}
+}
+
 func (pn *SceneNode) ReadDataFromHTMLNode(htmlnode *html.Node) {
 	attrmap := make(map[string]string)
 	for _, oneattr := range htmlnode.Attr {

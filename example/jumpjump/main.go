@@ -25,6 +25,7 @@ func init() {
 }
 
 func myInit_Camera(gi *game.GlobalInfo) {
+	return
 	// Set Up the Main Camera
 	gi.MainCamera = game.NewDefaultCamera()
 	gi.MainCamera.Transform.Postion.SetValue3(0, 25, 30)
@@ -41,7 +42,7 @@ func myInit_Camera(gi *game.GlobalInfo) {
 			"scenespec/asset/skybox/128.png",
 			"scenespec/asset/skybox/128.png",
 			"scenespec/asset/skybox/128.png",
-			"scenespec/asset/skybox/128.png",
+			"scenespec/asset/skybox/right.png",
 			// "scenespec/asset/skybox/right.png",
 			// "scenespec/asset/skybox/left.png",
 			// "scenespec/asset/skybox/top.png",

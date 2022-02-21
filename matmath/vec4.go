@@ -35,6 +35,20 @@ func CreateVec4FromStr(data string) Vec4 {
 			help.Str2Float32(segs[3])},
 	}
 }
+
+func CreateVec3FromStr(data string) Vec4 {
+	if data == "" {
+		return Vec4{}
+	}
+	segs := strings.Split(data, ",")
+	return Vec4{
+		data: [4]float32{
+			help.Str2Float32(segs[0]),
+			help.Str2Float32(segs[1]),
+			help.Str2Float32(segs[2])},
+	}
+}
+
 func (vec4 *Vec4) PrettyShow(reason string) {
 	fmt.Printf("%s:(", reason)
 	for i := 0; i != 4; i++ {
