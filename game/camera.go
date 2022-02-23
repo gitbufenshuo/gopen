@@ -62,7 +62,7 @@ type Camera struct {
 	FOV           float32
 	ViewT         matmath.MAT4
 	ProjectionT   matmath.MAT4
-	CubeMapObject *CubeMapObject
+	CubeMapObject GameObjectI
 }
 
 func NewDefaultCamera() *Camera {
@@ -75,9 +75,8 @@ func NewDefaultCamera() *Camera {
 	return c
 }
 
-func (camera *Camera) AddSkyBox(cubemap *resource.CubeMap) {
-	cmo := NewCubeMapObject(cubemap)
-	camera.CubeMapObject = cmo
+func (camera *Camera) AddSkyBox(gb GameObjectI) {
+	camera.CubeMapObject = gb
 }
 
 func (camera *Camera) SetForward(x, y, z float32) {

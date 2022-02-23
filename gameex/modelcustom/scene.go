@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"path"
 	"strings"
 
@@ -62,7 +63,13 @@ func (pf *Scene) CreateCamera(gi *game.GlobalInfo) {
 		cubemap.ReadFromFile(pngs)
 		cubemap.Upload()
 		gi.AssetManager.CreateCubemapSilent("skybox.cubemap", cubemap)
-		gi.MainCamera.AddSkyBox(cubemap)
+		model := resource.NewCubemapModel_BySpec(matmath.CreateVec4FromStr("0,0,0,1"), matmath.CreateVec4FromStr("2,2,2,1"))
+		modelresourcename := fmt.Sprintf("cameraskybox.%d.%d", rand.Int()%1000, rand.Int()%1000000)
+		// fmt.Println("modelresourcename", modelresourcename)
+		gi.AssetManager.CreateModelSilent(modelresourcename, model)
+		newGB := gameobjects.NewCubemapObject(gi, modelresourcename, "skybox.cubemap", "skybox_shader")
+		newGB.AddLogicSupport(gi.LogicSystem.GetLogicByName(gi, "logic_zhuan"))
+		gi.MainCamera.AddSkyBox(newGB)
 	}
 
 }

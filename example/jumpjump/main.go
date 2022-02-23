@@ -26,33 +26,6 @@ func init() {
 
 func myInit_Camera(gi *game.GlobalInfo) {
 	return
-	// Set Up the Main Camera
-	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Transform.Postion.SetValue3(0, 25, 30)
-	gi.MainCamera.SetForward(0, -1, -1)
-	gi.MainCamera.NearDistance = 0.5
-	{
-		// skybox
-		// 1. load the cubemap
-		cubemap := resource.NewCubeMap()
-		// C17F4DB8CC0274DA12D60A6944762679.png
-		cubemap.ReadFromFile([]string{
-			"scenespec/asset/skybox/128.png",
-			"scenespec/asset/skybox/128.png",
-			"scenespec/asset/skybox/128.png",
-			"scenespec/asset/skybox/128.png",
-			"scenespec/asset/skybox/128.png",
-			"scenespec/asset/skybox/right.png",
-			// "scenespec/asset/skybox/right.png",
-			// "scenespec/asset/skybox/left.png",
-			// "scenespec/asset/skybox/top.png",
-			// "scenespec/asset/skybox/bottom.png",
-			// "scenespec/asset/skybox/back.png",
-			// "scenespec/asset/skybox/front.png",
-		})
-		cubemap.Upload()
-		gi.MainCamera.AddSkyBox(cubemap)
-	}
 }
 func myInit(gi *game.GlobalInfo) {
 	myInit_Camera(gi) // init the main camera
@@ -158,7 +131,7 @@ func initLogic(gi *game.GlobalInfo) {
 
 func initShader(gi *game.GlobalInfo) {
 	gi.AssetManager.LoadShaderFromText(resource.ShaderMVPText.Vertex, resource.ShaderMVPText.Fragment, "mvp_shader")
-	gi.AssetManager.LoadShaderFromText(resource.ShaderCubemapText.Vertex, resource.ShaderCubemapText.Fragment, "cubemap_shader")
+	gi.AssetManager.LoadShaderFromText(resource.ShaderSkyboxText.Vertex, resource.ShaderSkyboxText.Fragment, "skybox_shader")
 }
 
 func initModel(gi *game.GlobalInfo) {

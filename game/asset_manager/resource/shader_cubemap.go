@@ -13,7 +13,8 @@ var ShaderCubemapText ShaderText = ShaderText{
 	
 	void main() {
 		textureDir = vert;
-		gl_Position = projection * view * model * vec4(vert, 1);
+		vec4 pos = projection * view * model * vec4(vert, 1);
+		gl_Position = pos;
 	}`,
 	Fragment: `#version 330
 

@@ -10,13 +10,16 @@ var ShaderSkyboxText ShaderText = ShaderText{
 
 	layout (location = 0) in vec3 vert;
 	uniform mat4 rotation;
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
 	
 	out vec3 textureDir;
 	
 	void main() {
-		vec4 wNormal = rotation * vec4(vert, 1);
 		textureDir = vert;
-		gl_Position = wNormal.xyww;
+		vec4 pos = projection * rotation * vec4(vert, 1);
+		gl_Position = pos.xyww;
 	}`,
 	Fragment: `#version 330
 
@@ -27,7 +30,6 @@ var ShaderSkyboxText ShaderText = ShaderText{
 	out vec4 outputColor;
 	
 	void main() {
-		// outputColor = vec4(1,0,0,1);
 		outputColor = texture(tex, textureDir);
 	}`,
 }

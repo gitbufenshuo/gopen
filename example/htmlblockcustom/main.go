@@ -25,24 +25,6 @@ func init() {
 
 func myInit_Camera(gi *game.GlobalInfo) {
 	// Set Up the Main Camera
-	gi.MainCamera = game.NewDefaultCamera()
-	gi.MainCamera.Transform.Postion.SetValue3(0, 3, 13)
-	gi.MainCamera.NearDistance = 0.5
-	{
-		// skybox
-		// 1. load the cubemap
-		cubemap := resource.NewCubeMap()
-		cubemap.ReadFromFile([]string{
-			"scenespec/asset/skybox/right.png",
-			"scenespec/asset/skybox/left.png",
-			"scenespec/asset/skybox/top.png",
-			"scenespec/asset/skybox/bottom.png",
-			"scenespec/asset/skybox/back.png",
-			"scenespec/asset/skybox/front.png",
-		})
-		cubemap.Upload()
-		gi.MainCamera.AddSkyBox(cubemap)
-	}
 }
 func myInit(gi *game.GlobalInfo) {
 	myInit_Camera(gi) // init the main camera

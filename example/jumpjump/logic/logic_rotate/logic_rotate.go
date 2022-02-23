@@ -29,7 +29,7 @@ func (lj *LogicRotate) Start(gb game.GameObjectI) {
 }
 
 func (lj *LogicRotate) Update(gb game.GameObjectI) {
-	zhi := float32(lj.gi.CurFrame) / 10
+	zhi := float32(lj.gi.CurFrame) / 100
 	//
 	x, z := help.Sin(zhi), help.Cos(zhi)
 	lj.nowForward.SetIndexValue(0, x)

@@ -410,14 +410,26 @@ func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
 }
 
 func (gi *GlobalInfo) drawSkyBox() {
-	var rotation = gi.MainCamera.Transform.RotationMAT4()
-	gi.MainCamera.CubeMapObject.shaderResource.Active()
-	gl.UniformMatrix4fv(gi.MainCamera.CubeMapObject.RotationLocation, 1, false, rotation.Address())
-	// change context
-	gi.MainCamera.CubeMapObject.modelResource.Active()
-	gi.MainCamera.CubeMapObject.cubemapResource.Active()
+	gb := gi.MainCamera.CubeMapObject
+	if gb == nil {
+		return
+	}
+	rs := gb.GetRenderSupport()
+	rs.ShaderAsset_sg().Resource.Active() // shader
+
+	gi.prepareMVP(gb)
+	logiclist := gb.GetLogicSupport()
+	for _, onelogic := range logiclist {
+		onelogic.Update(gb) // call the gameobjects' OnDraw function
+	}
+	rs.ModelAsset_sg().Resource.Active() // model
+	if _asset := rs.TextureAsset_sg(); _asset != nil {
+		_asset.Resource.Active()
+	}
 	// draw
-	vertexNum := len(gi.MainCamera.CubeMapObject.modelResource.Indices)
+	modelResource := rs.ModelAsset_sg().Resource.(*resource.Model)
+	vertexNum := len(modelResource.Indices)
+	//thetime := time.Now()
 	gl.DrawElements(gl.TRIANGLES, int32(vertexNum), gl.UNSIGNED_INT, gl.PtrOffset(0))
 }
 
