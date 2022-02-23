@@ -1,19 +1,22 @@
 package resource
 
-var ShaderCubemapText ShaderText = ShaderText{
+type ShaderText struct {
+	Vertex   string
+	Fragment string
+}
+
+var ShaderSkyboxText ShaderText = ShaderText{
 	Vertex: `#version 330
 
 	layout (location = 0) in vec3 vert;
 	uniform mat4 rotation;
-	uniform mat4 model;
-	uniform mat4 view;
-	uniform mat4 projection;
 	
 	out vec3 textureDir;
 	
 	void main() {
+		vec4 wNormal = rotation * vec4(vert, 1);
 		textureDir = vert;
-		gl_Position = projection * view * model * vec4(vert, 1);
+		gl_Position = wNormal.xyww;
 	}`,
 	Fragment: `#version 330
 
@@ -24,6 +27,7 @@ var ShaderCubemapText ShaderText = ShaderText{
 	out vec4 outputColor;
 	
 	void main() {
+		// outputColor = vec4(1,0,0,1);
 		outputColor = texture(tex, textureDir);
 	}`,
 }

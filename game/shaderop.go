@@ -32,6 +32,13 @@ func (sop *ShaderOP) IfMVP() {
 	sop.AddUniform("u_Color")
 }
 
+func (sop *ShaderOP) IfCubemap() {
+	sop.AddUniform("model")
+	sop.AddUniform("view")
+	sop.AddUniform("projection")
+	sop.AddUniform("rotation")
+}
+
 func (sop *ShaderOP) IfParticle() {
 	sop.AddUniform("model")
 	sop.AddUniform("view")

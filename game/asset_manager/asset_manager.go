@@ -79,6 +79,17 @@ func (am *AsssetManager) CreateModelSilent(assetname string, modelResource *reso
 	as.Resource.Upload()
 }
 
+func (am *AsssetManager) CreateCubemapSilent(assetname string, res *resource.CubeMap) {
+	as := NewAsset(assetname, AssetTypeCubeMap, nil)
+	err := am.Register(as.Name, as)
+	if err != nil {
+		return
+	}
+	as.Resource = res
+	am.Load(as)
+	as.Resource.Upload()
+}
+
 func (am *AsssetManager) LoadTextureFromFile(filepath, assetname string) {
 	var data TextureDataType
 	data.FilePath = filepath

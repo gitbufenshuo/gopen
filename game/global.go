@@ -379,10 +379,10 @@ func (gi *GlobalInfo) prepareMVP(co GameObjectI) {
 }
 
 func (gi *GlobalInfo) drawGameobject(gb GameObjectI) {
-	if gb.GetRenderSupport() == nil {
+	rs := gb.GetRenderSupport()
+	if rs == nil {
 		return
 	}
-	rs := gb.GetRenderSupport()
 	if !rs.DrawEnable_sg() {
 		return
 	}

@@ -158,6 +158,7 @@ func initLogic(gi *game.GlobalInfo) {
 
 func initShader(gi *game.GlobalInfo) {
 	gi.AssetManager.LoadShaderFromText(resource.ShaderMVPText.Vertex, resource.ShaderMVPText.Fragment, "mvp_shader")
+	gi.AssetManager.LoadShaderFromText(resource.ShaderCubemapText.Vertex, resource.ShaderCubemapText.Fragment, "cubemap_shader")
 }
 
 func initModel(gi *game.GlobalInfo) {

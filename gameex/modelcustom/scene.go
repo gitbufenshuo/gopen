@@ -61,6 +61,7 @@ func (pf *Scene) CreateCamera(gi *game.GlobalInfo) {
 		// }
 		cubemap.ReadFromFile(pngs)
 		cubemap.Upload()
+		gi.AssetManager.CreateCubemapSilent("skybox.cubemap", cubemap)
 		gi.MainCamera.AddSkyBox(cubemap)
 	}
 

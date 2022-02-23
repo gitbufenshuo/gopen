@@ -46,7 +46,7 @@ func NewCubeMapObject(cubemapTexture *resource.CubeMap) *CubeMapObject {
 	{
 		// shader
 		cubemapShader := resource.NewShaderProgram()
-		cubemapShader.ReadFromText(resource.ShaderCubeMapText.Vertex, resource.ShaderCubeMapText.Fragment)
+		cubemapShader.ReadFromText(resource.ShaderSkyboxText.Vertex, resource.ShaderSkyboxText.Fragment)
 		cubemapShader.Upload()
 		cmo.shaderResource = cubemapShader
 		//

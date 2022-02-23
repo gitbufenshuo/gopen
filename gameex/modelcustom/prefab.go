@@ -137,7 +137,7 @@ func (pn *PrefabNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
 		newGB.GetTransform().Postion.Clone(&pn.Pos)
 		newGB.GetTransform().Rotation.Clone(&pn.Rotation)
 		res = newGB
-	} else {
+	} else if pn.Kind == "basic" {
 		var modelkind = "block"
 		if pn.Model != "" {
 			modelkind = pn.Model
@@ -152,6 +152,24 @@ func (pn *PrefabNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
 		// fmt.Println("modelresourcename", modelresourcename)
 		gi.AssetManager.CreateModelSilent(modelresourcename, model)
 		newGB := gameobjects.NewBasicObject(gi, modelresourcename, pn.Image, "mvp_shader")
+		newGB.GetTransform().Postion.Clone(&pn.Pos)
+		newGB.GetTransform().Rotation.Clone(&pn.Rotation)
+		res = newGB
+	} else if pn.Kind == "cubemap" {
+		var modelkind = "block"
+		if pn.Model != "" {
+			modelkind = pn.Model
+		}
+		var model *resource.Model
+		if modelkind == "block" {
+			model = resource.NewCubemapModel_BySpec(pn.Pivot, pn.Size)
+		} else {
+			model = resource.NewCubemapModel_BySpec(pn.Pivot, pn.Size)
+		}
+		modelresourcename := fmt.Sprintf("prefabhtml.%s.%d.%d", pn.Name, rand.Int()%1000, rand.Int()%1000000)
+		// fmt.Println("modelresourcename", modelresourcename)
+		gi.AssetManager.CreateModelSilent(modelresourcename, model)
+		newGB := gameobjects.NewCubemapObject(gi, modelresourcename, pn.Image, "cubemap_shader")
 		newGB.GetTransform().Postion.Clone(&pn.Pos)
 		newGB.GetTransform().Rotation.Clone(&pn.Rotation)
 		res = newGB
