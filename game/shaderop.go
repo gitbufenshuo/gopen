@@ -29,7 +29,9 @@ func (sop *ShaderOP) IfMVP() {
 	sop.AddUniform("view")
 	sop.AddUniform("projection")
 	sop.AddUniform("rotation")
-	sop.AddUniform("u_Color")
+	sop.AddUniform("u_lightColor")
+	sop.AddUniform("u_lightDirection")
+	sop.AddUniform("u_viewPos")
 }
 
 func (sop *ShaderOP) IfCubemap() {

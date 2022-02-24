@@ -19,11 +19,11 @@ func NewLogicColorControl() *LogicColorControl {
 
 func (lcc *LogicColorControl) OnDraw(gb game.GameObjectI) {
 	rs := gb.GetRenderSupport()
-	rs.ShaderOP().SetUniform3f("u_Color", lcc.Color[0], lcc.Color[1], lcc.Color[2])
+	rs.ShaderOP().SetUniform3f("u_lightColor", lcc.Color[0], lcc.Color[1], lcc.Color[2])
 }
 func (lcc *LogicColorControl) OnDrawFinish(gb game.GameObjectI) {
 	rs := gb.GetRenderSupport()
-	rs.ShaderOP().SetUniform3f("u_Color", 0, 0, 0)
+	rs.ShaderOP().SetUniform3f("u_lightColor", 0, 0, 0)
 }
 func (lcc *LogicColorControl) Clone() game.LogicSupportI {
 	return NewLogicColorControl()

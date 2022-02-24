@@ -48,6 +48,7 @@ type GlobalInfo struct {
 	FontConfig            *help.FontConfig
 	CustomInit            func(*GlobalInfo)
 	MainCamera            *Camera
+	MainLight             *Light
 	ParticalSystem        *Particle
 	window                *glfw.Window
 	InputSystemKeyPress   []bool

@@ -95,7 +95,7 @@ func (camera *Camera) ViewMat() matmath.MAT4 {
 	cameraFront := matmath.CreateVec4(0, 0, 1, 1) // 朝着z轴负方向看
 	cameraFront.RightMul_InPlace(&rotationMat)
 	cameraUp := matmath.CreateVec4(0, 1, 0, 1)
-	cameraUp.RightMul_InPlace(&rotationMat)
+	//cameraUp.RightMul_InPlace(&rotationMat)
 	posx, posy, posz := cameraPos.GetValue3()
 	frontx, fronty, frontz := cameraFront.GetValue3()
 	// upx, upy, upz := cameraUp.GetValue3()

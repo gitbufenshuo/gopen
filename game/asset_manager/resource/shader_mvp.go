@@ -13,40 +13,49 @@ var ShaderMVPText ShaderText = ShaderText{
 	
 	out vec2 fragTexCoord;
 	out vec3 fragVertNormal;
+	out vec3 fragPos;
 	
 	void main() {
 		vec4 wNormal = rotation * vec4(vertNormal, 1);
 		fragTexCoord = vertTexCoord;
 		fragVertNormal = wNormal.xyz;
 		gl_Position = projection * view * model * vec4(vert, 1);
+		fragPos = gl_Position.xyz / gl_Position.w;
 	}`,
 	Fragment: `#version 330
 
 	uniform sampler2D tex;
-	uniform vec3 u_Color;
-	
+	uniform vec3 u_lightColor;
+	uniform vec3 u_lightDirection;
+	uniform vec3 u_viewPos;
+
 	in vec2 fragTexCoord;
 	in vec3 fragVertNormal;
+	in vec3 fragPos;
 	
 	out vec4 outputColor;
 	
 	void main() {
-		vec3 directLightSource = vec3(1,1,1);
-		outputColor = texture(tex, fragTexCoord);
-		float light = dot(fragVertNormal, directLightSource);
-		if (outputColor.w<0.5) {
+		float ambientStrength = 0.1;
+		float specularStrength = 0.6;
+
+		vec3 ambient = ambientStrength * u_lightColor;
+
+		vec4 sampleColor = texture(tex, fragTexCoord);
+		if (sampleColor.w<0.5) {
 			discard;
 		}
-		if (light > 1){
-			light = 1;
-		}
-		if(light < 0){
-			light = 0.2;
-		}
+		float diffuseLight = max(dot(fragVertNormal, normalize(u_lightDirection)),0);
 
-		outputColor.xyz *= light;
-		if (u_Color.x>0.01){
-			outputColor.xyz *= u_Color;
-		}
+		vec3 viewDir = normalize(u_viewPos - fragPos);
+		vec3 reflectDir = reflect(normalize(u_lightDirection), fragVertNormal);  
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+		vec3 specular = specularStrength * spec * u_lightColor;  
+		
+
+
+		sampleColor.xyz *= (ambient + diffuseLight + specular);
+		outputColor = sampleColor;
+
 	}`,
 }

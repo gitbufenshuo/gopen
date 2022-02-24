@@ -20,6 +20,7 @@ type Scene struct {
 	From       PrefabFrom
 	RootNode   *SceneNode
 	CameraNode *SceneNode
+	LightNode  *SceneNode
 	runtimeGB  map[string]game.GameObjectI
 }
 
@@ -27,7 +28,13 @@ type Scene struct {
 func (pf *Scene) Instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	//
 	pf.CreateCamera(gi)
+	pf.CreateLight(gi)
 	return pf.RootNode.instantiate(gi, pf)
+}
+func (pf *Scene) CreateLight(gi *game.GlobalInfo) {
+	gi.MainLight = game.NewLight()
+	gi.MainLight.SetLightColor(pf.LightNode.Color.GetValue3())
+	gi.MainLight.SetLightDirection(pf.LightNode.Direction.GetValue3())
 }
 func (pf *Scene) CreateCamera(gi *game.GlobalInfo) {
 	//
@@ -113,8 +120,15 @@ func (sc *Scene) loadSceneFromContent(content []byte) *SceneNode {
 		// camera node
 		cameraHTMLNode := FindHTMLRoot(doc, "camera")
 		cameraNode := new(SceneNode)
-		cameraNode.ReadCaremaFromHTMLNode(cameraHTMLNode)
+		cameraNode.ReadCameraFromHTMLNode(cameraHTMLNode)
 		sc.CameraNode = cameraNode
+	}
+	{
+		// light node
+		lightHTMLNode := FindHTMLRoot(doc, "light")
+		lightNode := new(SceneNode)
+		lightNode.ReadLightFromHTMLNode(lightHTMLNode)
+		sc.LightNode = lightNode
 	}
 	return sceneNode
 }
@@ -146,14 +160,16 @@ func FindHTMLRoot(node *html.Node, rootname string) *html.Node {
 }
 
 type SceneNode struct {
-	Name   string // node name
-	Kind   string // nil basic
-	Dong   string //
-	Logic  []string
-	SkyBox []string
-	Model  string
-	Image  string
-	Prefab string
+	Name      string // node name
+	Kind      string // nil basic
+	Dong      string //
+	Logic     []string
+	SkyBox    []string
+	Model     string
+	Image     string
+	Prefab    string
+	Color     matmath.Vec4
+	Direction matmath.Vec4
 	//
 	Pos      matmath.Vec4 //
 	Forward  matmath.Vec4
@@ -198,7 +214,7 @@ func (pn *SceneNode) instantiate(gi *game.GlobalInfo, scene *Scene) game.GameObj
 	return res
 }
 
-func (pn *SceneNode) ReadCaremaFromHTMLNode(htmlnode *html.Node) {
+func (pn *SceneNode) ReadCameraFromHTMLNode(htmlnode *html.Node) {
 	attrmap := make(map[string]string)
 	for _, oneattr := range htmlnode.Attr {
 		attrmap[oneattr.Key] = oneattr.Val
@@ -219,6 +235,22 @@ func (pn *SceneNode) ReadCaremaFromHTMLNode(htmlnode *html.Node) {
 	if v, found := attrmap["skybox"]; found {
 		segs := strings.Split(v, ",")
 		pn.SkyBox = segs
+	}
+}
+
+func (pn *SceneNode) ReadLightFromHTMLNode(htmlnode *html.Node) {
+	attrmap := make(map[string]string)
+	for _, oneattr := range htmlnode.Attr {
+		attrmap[oneattr.Key] = oneattr.Val
+	}
+	if v, found := attrmap["name"]; found {
+		pn.Name = v
+	}
+	if v, found := attrmap["color"]; found {
+		pn.Color = matmath.CreateVec3FromStr(v)
+	}
+	if v, found := attrmap["direction"]; found {
+		pn.Direction = matmath.CreateVec3FromStr(v)
 	}
 }
 
