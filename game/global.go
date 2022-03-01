@@ -322,6 +322,7 @@ func (gi *GlobalInfo) draw() {
 	// 	fmt.Println("报警报警，帧率过低，限制draw", gi.FrameElapsedMS)
 	// 	return
 	// }
+	gi.MainLight.Draw()
 	gl.ClearColor(0.5, 0.5, 0.5, 1)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 

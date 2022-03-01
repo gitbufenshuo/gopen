@@ -173,7 +173,7 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	gb.GetTransform().SetForward(forward, 0.2)
 	{
 		// light
-		lj.gi.MainLight.SetLightDirection(forward.GetValue3())
+		//lj.gi.MainLight.SetLightDirection(forward.GetValue3())
 	}
 	// curframe := float32(lj.gi.CurFrame)
 	// gb.GetTransform().Rotation.SetIndexValue(0, -30)

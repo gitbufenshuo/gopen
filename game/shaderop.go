@@ -34,6 +34,11 @@ func (sop *ShaderOP) IfMVP() {
 	sop.AddUniform("u_viewPos")
 }
 
+func (sop *ShaderOP) IfShadowMap() {
+	sop.AddUniform("model")
+	sop.AddUniform("lightSpaceMatrix")
+}
+
 func (sop *ShaderOP) IfCubemap() {
 	sop.AddUniform("model")
 	sop.AddUniform("view")

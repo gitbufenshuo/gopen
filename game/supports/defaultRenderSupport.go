@@ -74,11 +74,11 @@ func (drs *DefaultRenderSupport) SetUniform(tr *game.Transform, gi *game.GlobalI
 	gl.UniformMatrix4fv(sop.UniformLoc("view"), 1, false, viewMAT.Address())
 	gl.UniformMatrix4fv(sop.UniformLoc("projection"), 1, false, projectionMAT.Address())
 	gl.UniformMatrix4fv(sop.UniformLoc("rotation"), 1, false, rotationMAT.Address())
-	gl.UniformMatrix4fv(sop.UniformLoc("rotation"), 1, false, rotationMAT.Address())
 	{
 		lightColorx, lightColory, lightColorz := gi.MainLight.LightColor.GetValue3()
 		sop.SetUniform3f("u_lightColor", lightColorx, lightColory, lightColorz)
 		lightDirx, lightDiry, lightDirz := gi.MainLight.LightDirection.GetValue3()
+		//fmt.Println("u_lightDirection", lightDirx, lightDiry, lightDirz)
 		sop.SetUniform3f("u_lightDirection", lightDirx, lightDiry, lightDirz)
 	}
 	{

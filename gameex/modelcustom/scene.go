@@ -32,9 +32,10 @@ func (pf *Scene) Instantiate(gi *game.GlobalInfo) game.GameObjectI {
 	return pf.RootNode.instantiate(gi, pf)
 }
 func (pf *Scene) CreateLight(gi *game.GlobalInfo) {
-	gi.MainLight = game.NewLight()
+	gi.MainLight = game.NewLight(gi)
 	gi.MainLight.SetLightColor(pf.LightNode.Color.GetValue3())
 	gi.MainLight.SetLightDirection(pf.LightNode.Direction.GetValue3())
+	gi.MainLight.InitShadowMap()
 }
 func (pf *Scene) CreateCamera(gi *game.GlobalInfo) {
 	//

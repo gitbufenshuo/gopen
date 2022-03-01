@@ -153,7 +153,7 @@ func (t *Texture) Upload() {
 		gl.Ptr(t.Pixels))
 }
 func (t *Texture) Active() {
-	// gl.ActiveTexture(gl.TEXTURE0)
+	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, t.tbo)
 }
 
