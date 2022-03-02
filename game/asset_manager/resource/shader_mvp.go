@@ -10,52 +10,82 @@ var ShaderMVPText ShaderText = ShaderText{
 	uniform mat4 model;
 	uniform mat4 view;
 	uniform mat4 projection;
+	uniform mat4 lightSpaceMatrix;
+		
+	out VS_OUT {
+		vec3 FragPos;
+		vec3 Normal;
+		vec2 TexCoords;
+		vec4 FragPosLightSpace;
+	} vs_out;
 	
-	out vec2 fragTexCoord;
-	out vec3 fragVertNormal;
-	out vec3 fragPos;
-	
+
 	void main() {
-		vec4 wNormal = rotation * vec4(vertNormal, 1);
-		fragTexCoord = vertTexCoord;
-		fragVertNormal = wNormal.xyz;
+		vec4 fragpos = model * vec4(vert, 1.0);
+		vs_out.FragPos = vec3(fragpos.x,fragpos.y,fragpos.z);
+		vec4 fragnormal = rotation * vec4(vertNormal, 1);
+		vs_out.Normal = vec3(fragnormal.x,fragnormal.y,fragnormal.z);
+		vs_out.TexCoords = vertTexCoord;
+		vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
+
 		gl_Position = projection * view * model * vec4(vert, 1);
-		fragPos = gl_Position.xyz / gl_Position.w;
 	}`,
 	Fragment: `#version 330
+	out vec4 outputColor;
 
 	uniform sampler2D tex;
+	uniform sampler2D u_shadowMap;
+
 	uniform vec3 u_lightColor;
 	uniform vec3 u_lightDirection;
 	uniform vec3 u_viewPos;
 
-	in vec2 fragTexCoord;
-	in vec3 fragVertNormal;
-	in vec3 fragPos;
+	in VS_OUT {
+		vec3 FragPos;
+		vec3 Normal;
+		vec2 TexCoords;
+		vec4 FragPosLightSpace;
+	} fs_in;
 	
-	out vec4 outputColor;
+	float ShadowCalculation(vec4 fragPosLightSpace)
+	{
+		// perform perspective divide
+		vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+		// transform to [0,1] range
+		projCoords = projCoords * 0.5 + 0.5;
+		// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+		float closestDepth = texture(u_shadowMap, projCoords.xy).r; 
+		// get depth of current fragment from light's perspective
+		float currentDepth = projCoords.z;
+		// check whether current frag pos is in shadow
+		float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 	
+		return shadow;
+	}
+		
 	void main() {
 		float ambientStrength = 0.1;
 		float specularStrength = 0.6;
 
 		vec3 ambient = ambientStrength * u_lightColor;
 
-		vec4 sampleColor = texture(tex, fragTexCoord);
+		vec4 sampleColor = texture(tex, fs_in.TexCoords);
 		if (sampleColor.w<0.5) {
 			discard;
 		}
-		float diffuseLight = max(dot(fragVertNormal, normalize(u_lightDirection)),0);
+		float diffuseLight = max(dot(fs_in.Normal, normalize(u_lightDirection)),0);
 
-		vec3 viewDir = normalize(u_viewPos - fragPos);
-		vec3 reflectDir = reflect(normalize(u_lightDirection), fragVertNormal);  
+		vec3 viewDir = normalize(u_viewPos - fs_in.FragPos);
+		vec3 reflectDir = reflect(normalize(u_lightDirection), fs_in.Normal);  
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 		vec3 specular = specularStrength * spec * u_lightColor;  
 		
+		// calculate shadow
+		float shadow = ShadowCalculation(fs_in.FragPosLightSpace);                      
+	
+		vec3 lightres = (ambient + (1.0 - shadow) * (diffuseLight + specular)) * sampleColor.xyz;
 
-
-		sampleColor.xyz *= (ambient + diffuseLight + specular);
-		outputColor = sampleColor;
+		outputColor = vec4(lightres, sampleColor.w);
 
 	}`,
 }

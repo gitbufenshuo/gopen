@@ -83,6 +83,10 @@ func (light *Light) LightSpaceMat() {
 	light.lightspacet = viewt
 }
 
+func (light *Light) LightSpaceMatAddress() *float32 {
+	return light.lightspacet.Address()
+}
+
 func (light *Light) Draw() {
 	beginms := help.GetNowMS()
 	defer func() {

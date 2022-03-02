@@ -32,6 +32,8 @@ func (sop *ShaderOP) IfMVP() {
 	sop.AddUniform("u_lightColor")
 	sop.AddUniform("u_lightDirection")
 	sop.AddUniform("u_viewPos")
+	sop.AddUniform("u_shadowMap")
+	sop.AddUniform("lightSpaceMatrix")
 }
 
 func (sop *ShaderOP) IfShadowMap() {
