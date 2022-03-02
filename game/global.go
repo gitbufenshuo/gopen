@@ -115,6 +115,10 @@ func (gi *GlobalInfo) LoadFont(fontpath string) {
 }
 func (gi *GlobalInfo) FrameBufferSizeCallback(window *glfw.Window, width, height int) {
 	gi.width, gi.height = window.GetSize()
+	fbwidth, fbheight := window.GetFramebufferSize()
+	fmt.Println("getsize:", gi.width, gi.height)
+	fmt.Println("fbsize:", fbwidth, fbheight)
+
 }
 func (gi *GlobalInfo) StartGame(mode string) {
 	if err := glfw.Init(); err != nil {

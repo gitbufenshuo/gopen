@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/gitbufenshuo/gopen/game/asset_manager/resource"
 	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
@@ -88,16 +86,10 @@ func (light *Light) LightSpaceMatAddress() *float32 {
 }
 
 func (light *Light) Draw() {
-	beginms := help.GetNowMS()
-	defer func() {
-		endms := help.GetNowMS()
-		fmt.Println("shadowmap:", endms-beginms, light.totalgb)
-	}()
 	light.totalgb = 0
 	light.shader.Active()
 
-	width := light.gi.width
-	height := light.gi.height
+	width, height := light.gi.window.GetFramebufferSize()
 
 	gl.BindFramebuffer(gl.FRAMEBUFFER, light.depthMapFBO)
 	gl.Clear(gl.DEPTH_BUFFER_BIT)
@@ -111,7 +103,7 @@ func (light *Light) Draw() {
 		light.drawGameobject(gb)
 	}
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0) // 普通渲染到默认屏幕
-	gl.Viewport(0, 0, int32(width*2), int32(height*2))
+	gl.Viewport(0, 0, int32(width), int32(height))
 
 }
 func (light *Light) drawGameobject(gb GameObjectI) {
