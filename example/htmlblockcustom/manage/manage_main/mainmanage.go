@@ -44,7 +44,7 @@ func (lm *ManageMain) Update() {
 	if lm.gi.CurFrame%3 == 0 {
 		if lm.Dir > 0 {
 			for idx := 0; idx != 10; idx++ {
-				gb := gameobjects.NewBasicObject(lm.gi, lm.modelresourcename, "body.png.texture", "mvp_shader")
+				gb := gameobjects.NewBasicObject(lm.gi, lm.modelresourcename, "body.png.texture", "mvp_shader", false)
 				lm.gi.AddGameObject(gb)
 				gb.AddLogicSupport(logicinner.NewLogicRotate("1,1,1,1"))
 				gb.Transform.Postion.SetValue3(10*rand.Float32()-5, 10+0.10*rand.Float32(), 10*rand.Float32()-5)

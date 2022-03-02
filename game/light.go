@@ -17,7 +17,9 @@ type Light struct {
 	gi             *GlobalInfo
 	shader         *resource.ShaderProgram // opengl program
 	shaderOp       *ShaderOP
-	lightspacet    matmath.MAT4
+	// runtime thing
+	lightspacet matmath.MAT4
+	totalgb     int64
 }
 
 func NewLight(gi *GlobalInfo) *Light {
@@ -85,8 +87,9 @@ func (light *Light) Draw() {
 	beginms := help.GetNowMS()
 	defer func() {
 		endms := help.GetNowMS()
-		fmt.Println("shadowmap:", endms-beginms)
+		fmt.Println("shadowmap:", endms-beginms, light.totalgb)
 	}()
+	light.totalgb = 0
 	light.shader.Active()
 
 	width := light.gi.width
@@ -100,7 +103,8 @@ func (light *Light) Draw() {
 	// 此时 viewT 就是 lightSpaceMatrix
 	gl.Viewport(0, 0, 1024, 1024)
 	for _, gb := range light.gi.gameobjects {
-		light.gi.drawGameobject(gb)
+		// break
+		light.drawGameobject(gb)
 	}
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0) // 普通渲染到默认屏幕
 	gl.Viewport(0, 0, int32(width*2), int32(height*2))
@@ -114,6 +118,10 @@ func (light *Light) drawGameobject(gb GameObjectI) {
 	if !rs.DrawEnable_sg() {
 		return
 	}
+	if !rs.IsCastShadow() {
+		return
+	}
+	light.totalgb++
 	//
 	rs.ModelAsset_sg().Resource.Active() // model
 	light.setUniformGameobject(gb)

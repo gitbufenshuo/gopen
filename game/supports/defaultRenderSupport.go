@@ -13,6 +13,7 @@ type DefaultRenderSupport struct {
 	textureAsset *asset_manager.Asset
 	notDrawable  bool // could this gameobject be drawn
 	drawEnable   bool // enable - disable drawing
+	castShadow   bool // 是否会造成阴影
 	shaderOP     *game.ShaderOP
 }
 
@@ -93,6 +94,14 @@ func (drs *DefaultRenderSupport) ShaderOP() *game.ShaderOP {
 		drs.shaderOP.IfMVP()
 	}
 	return drs.shaderOP
+}
+
+func (drs *DefaultRenderSupport) IsCastShadow() bool {
+	return drs.castShadow
+}
+
+func (drs *DefaultRenderSupport) SetCastShadow(value bool) {
+	drs.castShadow = value
 }
 
 func (drs *DefaultRenderSupport) NotDrawable() bool {

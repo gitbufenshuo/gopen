@@ -18,6 +18,7 @@ type RenderSupportI interface {
 	ShaderOP() *ShaderOP
 	NotDrawable() bool
 	DrawEnable_sg(...bool) bool
+	IsCastShadow() bool
 }
 
 // 逻辑提供者

@@ -97,3 +97,6 @@ func (drs *CubemapRenderSupport) DrawEnable_sg(_bool ...bool) bool {
 	drs.drawEnable = _bool[0]
 	return drs.drawEnable
 }
+func (drs *CubemapRenderSupport) IsCastShadow() bool {
+	return false
+}

@@ -18,12 +18,13 @@ type BasicObject struct {
 	modelname, texturename, shadername string
 }
 
-func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername string) *BasicObject {
+func NewBasicObject(_gi *game.GlobalInfo, modelname, texturename, shadername string, castShadow bool) *BasicObject {
 	var gb BasicObject
 	gb.Transform = game.NewTransform(&gb)
 	gb.gi = _gi
 	gb.modelname, gb.texturename, gb.shadername = modelname, texturename, shadername
 	gb.renderS = supports.NewDefaultRenderSupport()
+	gb.renderS.SetCastShadow(castShadow)
 	gb.renderS.ModelAsset_sg(_gi.AssetManager.FindByName(modelname))
 	gb.renderS.ShaderAsset_sg(_gi.AssetManager.FindByName(shadername))
 	if tass := _gi.AssetManager.FindByName(texturename); tass == nil {

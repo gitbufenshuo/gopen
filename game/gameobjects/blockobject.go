@@ -5,6 +5,6 @@ import (
 )
 
 func NewBlockObject(gi *game.GlobalInfo, modelname, texturename string) *BasicObject {
-	res := NewBasicObject(gi, modelname, texturename, "mvp_shader")
+	res := NewBasicObject(gi, modelname, texturename, "mvp_shader", false)
 	return res
 }

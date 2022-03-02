@@ -112,13 +112,14 @@ func FindBlockRoot(node *html.Node) *html.Node {
 }
 
 type PrefabNode struct {
-	Data  string
-	Name  string // node name
-	Kind  string // nil basic
-	Dong  string //
-	Logic []string
-	Model string
-	Image string
+	Data       string
+	Name       string // node name
+	Kind       string // nil basic
+	CastShadow bool
+	Dong       string //
+	Logic      []string
+	Model      string
+	Image      string
 	//
 	Pos      matmath.Vec4 //
 	Rotation matmath.Vec4 //
@@ -151,7 +152,7 @@ func (pn *PrefabNode) instantiate(gi *game.GlobalInfo) game.GameObjectI {
 		modelresourcename := fmt.Sprintf("prefabhtml.%s.%d.%d", pn.Name, rand.Int()%1000, rand.Int()%1000000)
 		// fmt.Println("modelresourcename", modelresourcename)
 		gi.AssetManager.CreateModelSilent(modelresourcename, model)
-		newGB := gameobjects.NewBasicObject(gi, modelresourcename, pn.Image, "mvp_shader")
+		newGB := gameobjects.NewBasicObject(gi, modelresourcename, pn.Image, "mvp_shader", pn.CastShadow)
 		newGB.GetTransform().Postion.Clone(&pn.Pos)
 		newGB.GetTransform().Rotation.Clone(&pn.Rotation)
 		res = newGB
@@ -212,6 +213,10 @@ func (pn *PrefabNode) ReadDataFromHTMLNode(htmlnode *html.Node) {
 	// kind
 	if v, found := attrmap["kind"]; found {
 		pn.Kind = v
+	}
+	// castshadow
+	if v, found := attrmap["castshadow"]; found {
+		pn.CastShadow = v == "yes"
 	}
 	// Dong
 	if v, found := attrmap["dong"]; found {
