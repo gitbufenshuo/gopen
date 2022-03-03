@@ -51,8 +51,22 @@ var ShaderMVPText ShaderText = ShaderText{
 	{
 		// perform perspective divide
 		vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+		// 在圆圈之内就接着检测，在圆圈之外，必然是黑的
+
+		float chang = length(projCoords.xy);
+		if (chang>0.3){
+			return 1.0;
+		}
+
 		// transform to [0,1] range
 		projCoords = projCoords * 0.5 + 0.5;
+		if (projCoords.x<0 || projCoords.y<0){
+			return 1.0;
+		}
+		if (projCoords.x>1 || projCoords.y>1){
+			return 1.0;
+		}
+
 		// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
 		float closestDepth = texture(u_shadowMap, projCoords.xy).r; 
 		// get depth of current fragment from light's perspective
@@ -66,7 +80,7 @@ var ShaderMVPText ShaderText = ShaderText{
 		
 	void main() {
 		float ambientStrength = 0.1;
-		float specularStrength = 0.6;
+		float specularStrength = 6;
 
 		vec3 ambient = ambientStrength * u_lightColor;
 

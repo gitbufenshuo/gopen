@@ -8,6 +8,7 @@ import (
 	"github.com/gitbufenshuo/gopen/game"
 	"github.com/gitbufenshuo/gopen/game/supports"
 	"github.com/gitbufenshuo/gopen/gameex/modelcustom"
+	"github.com/gitbufenshuo/gopen/help"
 	"github.com/gitbufenshuo/gopen/matmath"
 )
 
@@ -173,7 +174,9 @@ func (lj *LogicJump) syncLogicPosY(gb game.GameObjectI) {
 	gb.GetTransform().SetForward(forward, 0.2)
 	{
 		// light
-		// lj.gi.MainLight.SetLightDirection(forward.GetValue3())
+		sinzhi := help.Sin(float32(lj.gi.CurFrame)/100) * 2
+		coszhi := help.Cos(float32(lj.gi.CurFrame)/100) * 2
+		lj.gi.MainLight.SetLightDirection(sinzhi, 1, coszhi)
 	}
 	// curframe := float32(lj.gi.CurFrame)
 	// gb.GetTransform().Rotation.SetIndexValue(0, -30)

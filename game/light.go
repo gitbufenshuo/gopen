@@ -76,10 +76,10 @@ func (light *Light) InitShadowMap() {
 func (light *Light) LightSpaceMat() {
 	cameraUp := matmath.CreateVec4(0, 1, 0, 1)
 	lpx, lpy, lpz := light.LightDirection.GetValue3()
-	cameraPos := matmath.CreateVec4(lpx*10, lpy*10, lpz*10, 1)
+	cameraPos := matmath.CreateVec4(lpx*20, lpy*20, lpz*20, 1)
 	cameraTarget := matmath.CreateVec4(0, 0, 0, 1)
 	viewt := matmath.LookAtFrom4(&cameraPos, &cameraTarget, &cameraUp)
-	projectiont := matmath.GenOrthographicMat4(0, 100, 30, 30)
+	projectiont := matmath.GenOrthographicMat4(0, 100, 50, 1)
 	viewt.RightMul_InPlace(&projectiont)
 	light.lightspacet = viewt
 }
