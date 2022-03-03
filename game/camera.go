@@ -85,6 +85,18 @@ func (camera *Camera) SetForward(x, y, z float32) {
 	)
 }
 
+// 中间过程, 辅助函数, 设置 target, 真正影响的是 forward
+func (camera *Camera) SetTarget(x, y, z float32) {
+	px, py, pz := camera.Transform.Postion.GetValue3()
+	camera.SetForward(x-px, y-py, z-pz)
+}
+
+func (camera *Camera) GetForward() matmath.Vec4 {
+	fo := camera.Transform.GetForward()
+	fo.Value3MulScalar(-1)
+	return fo
+}
+
 func (camera *Camera) ViewMat() matmath.MAT4 {
 	// pos 是起始位置
 	worldMat := camera.Transform.WorldModel()

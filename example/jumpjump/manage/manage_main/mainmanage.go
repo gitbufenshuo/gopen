@@ -47,21 +47,22 @@ type ManageMain struct {
 	Turn         int64 // 回合
 	evmanager    *pkem.EventManager
 	//
-	apressed bool
-	dpressed bool
-	wpressed bool
-	spressed bool
-	mpressed bool
-	jpressed bool
-	kpressed bool
-	lpressed bool
-	ppressed bool
-	opressed bool
+	apressed  bool
+	dpressed  bool
+	wpressed  bool
+	spressed  bool
+	mpressed  bool
+	jpressed  bool
+	kpressed  bool
+	lpressed  bool
+	ppressed  bool
+	opressed  bool
+	f1pressed bool
 	//
 	serverConn net.Conn
 	//
 	cameraX, cameraY, cameraZ float32
-	cameraFollow              *game.Transform
+	cameraRotateCounter       int64
 }
 
 func NewManageMain(gi *game.GlobalInfo) *ManageMain {
@@ -130,6 +131,7 @@ func (lm *ManageMain) Start() {
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyK))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyL))
 	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyO))
+	inputsystem.GetInputSystem().BeginWatchKey(int(glfw.KeyF1))
 	lm.gi.SetInputSystem(inputsystem.GetInputSystem())
 	//
 	{
@@ -153,6 +155,7 @@ func (lm *ManageMain) Start() {
 		lm.PlayerLogicList = append(lm.PlayerLogicList, lm.SubPlayerJump)
 	}
 	lm.connect()
+	lm.cameraInit()
 }
 
 func (lm *ManageMain) connect() {
@@ -175,12 +178,33 @@ func (lm *ManageMain) connect() {
 	go lm.readFromServer()
 }
 
-func (lm *ManageMain) cameraControl() {
-	return
-	mainCamera := lm.gi.MainCamera
-	frame := float32(lm.gi.CurFrame) / 100
+func (lm *ManageMain) cameraInit() {
 
-	mainCamera.SetForward(1, help.Sin(frame), help.Cos(frame))
+	mainCamera := lm.gi.MainCamera
+	x, y, z := mainCamera.Transform.Postion.GetValue3()
+	fo := mainCamera.GetForward()
+	fx, fy, fz := fo.GetValue3()
+	fmt.Println("MainCameraPos:", x, y, z)
+	fmt.Println("MainCameraForward:", fx, fy, fz)
+
+	// mainCamera.SetForward(1, help.Sin(frame), help.Cos(frame))
+}
+
+func (lm *ManageMain) cameraControl() {
+	if lm.f1pressed {
+		lm.cameraRotateCounter++
+		mainCamera := lm.gi.MainCamera
+		frame := float32(lm.cameraRotateCounter) / 100
+		sinvalue := help.Sin(frame)
+		// -1 1 --> -PI/4 PI/4
+		sinvalue *= (3.141592653 / 4)
+		/////////////////////////////////////////
+		R := help.Sqrt(lm.cameraY*lm.cameraY + lm.cameraZ*lm.cameraZ)
+		lastz := R * help.Cos(sinvalue)
+		lasty := R * help.Sin(sinvalue)
+		mainCamera.Transform.Postion.SetValue3(0, lasty, lastz)
+		mainCamera.SetTarget(0, 0, 0)
+	}
 }
 
 func (lm *ManageMain) fromWhichGetLogic(which int64) *logic_jump.LogicJump {
@@ -276,6 +300,7 @@ func (lm *ManageMain) Local_Total_Collect() {
 	kpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyK))
 	lpressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyL))
 	ppressed := inputsystem.GetInputSystem().KeyDown(int(glfw.KeyP))
+	f1pressed := inputsystem.GetInputSystem().KeyPress(int(glfw.KeyF1))
 	if !lm.apressed {
 		lm.apressed = apressed
 	}
@@ -306,6 +331,9 @@ func (lm *ManageMain) Local_Total_Collect() {
 	if !lm.opressed {
 		lm.opressed = opressed
 	}
+	if !lm.f1pressed {
+		lm.f1pressed = f1pressed
+	}
 	return
 }
 
@@ -320,6 +348,7 @@ func (lm *ManageMain) Local_Collect_End() {
 	lm.lpressed = false
 	lm.ppressed = false
 	lm.opressed = false
+	lm.f1pressed = false
 }
 func (lm *ManageMain) Local_Total_Merge() {
 	lm.Login_Merge()

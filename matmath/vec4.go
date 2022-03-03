@@ -166,6 +166,14 @@ func (vec4 *Vec4) GrabColToVec(mat4 *MAT4, col int) {
 	}
 }
 
+// 前三个元素乘以一个值
+func (vec4 *Vec4) Value3MulScalar(value float32) {
+	vec4.data[0] *= value
+	vec4.data[1] *= value
+	vec4.data[2] *= value
+	return
+}
+
 // vec4 = mat4 * vec4
 func (vec4 *Vec4) RightMul_InPlace(mat4 *MAT4) {
 	var resarr [4]float32
