@@ -31,7 +31,10 @@ func (light *Light) SetLightColor(x, y, z float32) {
 	light.LightColor.SetValue3(x, y, z)
 }
 
-// const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+const (
+	SHADOW_WIDTH  = 1024
+	SHADOW_HEIGHT = 1024
+)
 
 func (light *Light) SetLightDirection(x, y, z float32) {
 	chang := help.Float3len(x, y, z)
@@ -47,7 +50,7 @@ func (light *Light) InitShadowMap() {
 	gl.ActiveTexture(gl.TEXTURE1)
 	gl.BindTexture(gl.TEXTURE_2D, light.depthMap)
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT,
-		1024, 1024, 0, gl.DEPTH_COMPONENT, gl.FLOAT, gl.Ptr(nil))
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, gl.DEPTH_COMPONENT, gl.FLOAT, gl.Ptr(nil))
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
@@ -97,7 +100,7 @@ func (light *Light) Draw() {
 	//
 	light.LightSpaceMat() // 计算lightspacematrix
 	// 此时 viewT 就是 lightSpaceMatrix
-	gl.Viewport(0, 0, 1024, 1024)
+	gl.Viewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT)
 	for _, gb := range light.gi.gameobjects {
 		// break
 		light.drawGameobject(gb)
