@@ -11,8 +11,9 @@ Golang writen 3D render library and some game-relative concepts.
 # try some examples
 
 ```
-    cd gopen/example/htmlblockcustom
-    go run main.go
+    cd gopen/example/jumpjump
+    go build -o jumpjump.out
+    ./jumpjump.out local
 ```
 
 # bug report
